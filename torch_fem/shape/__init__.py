@@ -106,6 +106,6 @@ def get_shape_grad(element_type, quadrature_weights, quadrature_points, element_
 
     shape_grad, jac = find_shape_grad[element_type](quadrature_points, element_coords, return_jac=True) # [n_element, n_quadrature, n_basis, n_dim], [n_element, n_quadrature, n_dim, n_dim]
 
-    jacdet = torch.det(jac)
+    jacdet = torch.abs(torch.det(jac))
     jxw    = jacdet * quadrature_weights
     return shape_grad, jxw

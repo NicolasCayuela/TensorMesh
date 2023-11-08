@@ -68,5 +68,5 @@ if __name__ == '__main__':
 
     Us_gt = [dataset.solution(mesh.points, dt*i) for i in range(n)]
 
-    mesh.plot({"prediction":Us, "ground truth":Us_gt},save_path="heat.gif", backend="matplotlib", dt=dt)
+    mesh.plot({"prediction":Us, "ground truth":Us_gt},save_path="heat.mp4", backend="matplotlib", dt=dt)
     

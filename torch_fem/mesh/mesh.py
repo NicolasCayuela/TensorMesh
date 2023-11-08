@@ -206,6 +206,12 @@ class Mesh(nn.Module):
     def write(self, file_name:str,file_format:str=None):
         return self.save(file_name, file_format)
 
+    def node_adjacency(self):
+        pass 
+
+    def edge_adjacency(self):
+        pass
+
     def elements(self, cell_type=None):
         if cell_type is None:
             cell_type = self.default_cell_type

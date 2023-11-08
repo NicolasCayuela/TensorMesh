@@ -54,7 +54,7 @@ if __name__ == '__main__':
 
     K = K_asm(mesh.points)
     F = torch.zeros_like(mesh.points)
-    F[mesh.point_data['is_top_boundary'], 1] = 0.05
+    F[mesh.point_data['is_top_boundary'], 1] = -1
     F = F.flatten()
 
     dirichlet_mask = torch.zeros_like(mesh.points, dtype=torch.bool)

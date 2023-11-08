@@ -273,8 +273,6 @@ class ElementAssembler(nn.Module):
             cell_type = mesh.default_cell_type
         return cls(elements, n_point, cell_type, quadrature_order)
 
-
-
 class NodeAssembler(nn.Module):
     def __init__(self, elements, n_point, cell_type, quadrature_order=1):
         super().__init__()

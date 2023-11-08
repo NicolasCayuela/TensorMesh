@@ -1,8 +1,6 @@
-from .heat import MultiSinCos as HeatMultiSinCos
-from .wave import MultiSinCos as WaveMultiSinCos
-
-from .circle import gen_circle, gen_hollow_circle
-from .rectangle import gen_rectangle, gen_hollow_rectangle
-from .sphere import gen_sphere, gen_hollow_sphere
-from .cube import gen_cube, gen_hollow_cube
-from .L import gen_L
+from .equation import HeatMultiFrequency, WaveMultiFrequency, PoissonMultiFrequency
+from .mesh import gen_circle, gen_hollow_circle\
+                , gen_rectangle, gen_hollow_rectangle\
+                , gen_sphere, gen_hollow_sphere\
+                , gen_cube, gen_hollow_cube\
+                , gen_L

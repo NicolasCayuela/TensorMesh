@@ -7,6 +7,7 @@ from scipy.interpolate import griddata
 import matplotlib.tri as tri
 import matplotlib.patches as patches
 from matplotlib.collections import PatchCollection
+from matplotlib import animation
 
 
 def plot(kwargs, mesh,  save_path=None, dt=None,show_mesh=False):
@@ -45,7 +46,6 @@ def plot(kwargs, mesh,  save_path=None, dt=None,show_mesh=False):
             img,cb = draw_mesh(points, elements, value[0], ax=ax[i], show_colorbar=True,show_mesh=show_mesh)
             ax[i].set_title(key)
             cbs.append(cb)
-            cbs.append(fig.colorbar(img, ax=ax[i]))
             imgs.append(img)
         if dt is not None:
             fig.suptitle(f"t={0*dt:7.5f}")
@@ -63,6 +63,44 @@ def plot(kwargs, mesh,  save_path=None, dt=None,show_mesh=False):
                 fig.suptitle(f"Frame:{frame:5d}")
         anim = FuncAnimation(fig, update, frames=len(value), interval=100)
         anim.save(save_path, fps=10,  dpi=400)
+
+class StreamPlotter:
+    def __init__(self,   nrows=1, ncols=1,  filename=None):
+        if filename is None:
+            filename = "stream_plotter.mp4"
+        fig, axes = plt.subplots(1, ncols, figsize=(5*ncols, 5)) 
+        self.fig  = fig 
+        self.axes = axes
+        self.filename = filename
+
+    def __enter__(self):
+        # Set up the writer
+        self.writer = animation.writers['ffmpeg'](fps=10, metadata=dict(artist='Me'), bitrate=1800)
+        self.writer.setup(self.fig, self.filename, dpi=100)
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        # Finish the animation
+        self.writer.finish()
+        if exc_type is not None:
+            print(exc_type, exc_value, traceback)
+            return False
+
+    def grab_frame(self, **savefig_kwargs):
+        # Grab the current frame
+        self.writer.grab_frame(**savefig_kwargs)
+
+    def draw_mesh(self, mesh, value, ax=None, show_colorbar=True):
+        if ax is None:
+            assert not isinstance(self.axes, np.ndarray), "ax must be specified when there are multiple axes"
+            ax = self.axes 
+        draw_mesh(mesh.points, 
+                  mesh.elements(), 
+                  value, 
+                  ax=ax, 
+                  show_colorbar=False, 
+                  show_mesh=True)
+        self.grab_frame()
 
 def draw_mesh(points, elements, value, ax=None, show_colorbar=True,show_mesh=False):
     """
@@ -127,3 +165,5 @@ def draw_mesh(points, elements, value, ax=None, show_colorbar=True,show_mesh=Fal
         return img, cb
     
     return img
+
+

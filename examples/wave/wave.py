@@ -37,9 +37,9 @@ if __name__ == '__main__':
     dt = 0.001 
     c  = 4.0
     n  = 100
-
     torch.random.manual_seed(123456)
-    mesh = Mesh.gen_rectangle(chara_length=0.02)
+    
+    mesh = Mesh.gen_rectangle(chara_length=0.01)
    
     dataset = WaveMultiSinCos(K=4, c=c)
 
@@ -77,5 +77,5 @@ if __name__ == '__main__':
 
     Us_gt = [dataset.solution(mesh.points, dt*i) for i in range(n)]
 
-    mesh.plot({"prediction":Us, "ground truth":Us_gt},save_path="wave.gif", backend="matplotlib", dt=dt)
+    mesh.plot({"prediction":Us, "ground truth":Us_gt},save_path="wave.mp4", backend="matplotlib", dt=dt, show_mesh=True )
     
