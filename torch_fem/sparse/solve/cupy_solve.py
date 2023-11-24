@@ -1,0 +1,61 @@
+
+import torch 
+from torch.autograd import Function
+import cupy as cp 
+import cupyx.scipy.sparse.linalg
+import warnings
+from ..utils import tensor2cupy, cupy2tensor, shapeT
+
+class SparseSolveCupy(Function):
+    @staticmethod
+    def forward(ctx, edata, row, col, shape, b):
+        A_cupy = cupyx.scipy.sparse.coo_matrix((
+            tensor2cupy(edata), (tensor2cupy(row), tensor2cupy(col))), 
+            shape = shape).tocsr()
+        u_cupy = cupyx.scipy.sparse.linalg.spsolve(A_cupy, tensor2cupy(b))
+        u = cupy2tensor(u_cupy)
+        ctx.save_for_backward(edata, row, col, u)
+        ctx.A_shape = shape
+        return u
+    
+    @staticmethod
+    def backward(ctx, grad_output):
+        edata, row, col, u = ctx.saved_tensors
+        
+        A_T             = cupyx.scipy.sparse.coo_matrix((
+            tensor2cupy(edata), (tensor2cupy(col), tensor2cupy(row))), 
+            shape=shapeT(ctx.A_shape)).tocsr()
+        b_grad          = cupyx.scipy.sparse.linalg.spsolve(A_T, tensor2cupy(grad_output))
+        b_grad          = cupy2tensor(b_grad)
+
+        edata_grad      = - b_grad[row] * u[col]
+
+        return edata_grad, None, None, None, b_grad
+    
+
+class SparseLUSolveCupy(Function):
+    @staticmethod
+    def forward(ctx, edata, row, col, shape, b):
+        A_cupy = cupyx.scipy.sparse.coo_matrix((
+            tensor2cupy(edata), (tensor2cupy(row), tensor2cupy(col))), 
+            shape = shape).tocsc()
+        lu_cupy = cupyx.scipy.sparse.linalg.splu(A_cupy)
+        u_cupy = lu_cupy.solve(tensor2cupy(b))
+        u = cupy2tensor(u_cupy)
+        ctx.save_for_backward(edata, row, col, u)
+        ctx.A_shape = shape
+        return u
+    
+    @staticmethod
+    def backward(ctx, grad_output):
+        edata, row, col, u = ctx.saved_tensors
+        
+        A_T             = cupyx.scipy.sparse.coo_matrix((
+            tensor2cupy(edata), (tensor2cupy(col), tensor2cupy(row))), 
+            shape=shapeT(ctx.A_shape)).tocsc()
+        b_grad          = cupyx.scipy.sparse.linalg.splu(A_T).solve(tensor2cupy(grad_output))
+        b_grad          = cupy2tensor(b_grad)
+
+        edata_grad      = - (b_grad[row] * u[col]).sum(-1)
+        return edata_grad, None, None, None, b_grad
+

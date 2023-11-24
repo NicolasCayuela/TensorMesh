@@ -66,7 +66,7 @@ multi frequency dataset
 .. raw:: html
 
     <div style="display: flex; justify-content: center; align-items: center;">
-    <video width="400" height="400" controls>
+    <video width="600" height="600" controls>
       <source src="../_static/wave_torchfem.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>

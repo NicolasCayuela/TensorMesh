@@ -42,11 +42,11 @@ class NodeAssembler(nn.Module):
 
             \\mathcal P_e: \\mathbb{R}_{\\text{sparse}}^{|\mathcal C_e| \\times B_e} \\rightarrow \\mathbb{R}^{|\mathcal V|}
 
-        where :math:`\mathcal C` is the set of elements, :math:`B` is the number of basis, :math:`\mathcal V` is the set of nodes/vertices/points.
+        where :math:`\\mathcal C` is the set of elements, :math:`B` is the number of basis, :math:`\mathcal V` is the set of nodes/vertices/points.
 
         projector from element to edge
     elements : BufferDict[str, torch.Tensor]
-        The element type is the key, which should be one of :meth:`torch_fem.shape.element_types`.
+        The element type is the key, which should be one of :meth:`torch_feme.shape.element_types`.
         Each :obj:`element_type` corresponds to a 2D tensor of shape :math:`[N, B]`, where :math:`N` is the number of elements and :math:`B` is the number of basis functions
         element connectivity of each element type
     n_points : int
@@ -69,7 +69,8 @@ class NodeAssembler(nn.Module):
                    quadrature_points,
                    shape_val,
                    projector, 
-                   elements):
+                   elements,
+                   n_points):
         super().__init__()
 
         element_types = list(quadrature_weights.keys())
@@ -83,20 +84,21 @@ class NodeAssembler(nn.Module):
         
         self.dimension          = dimension
         self.element_types      = element_types
+        self.n_points           = n_points
 
         self.__post_init__()
         
     def _integrate(self, batch_integral, jxw, n_element, n_basis, use_element_parallel):
         if not use_element_parallel:
             error_msg = f"the shape returned by forward function is {batch_integral.shape} which is not supported, should either be [batch_size,{n_basis}] or [batch_size,{n_basis}, dof_per_point]"
-            assert batch_integral.shape[1] == n_basis, error_msg
             assert batch_integral.dim() == 2 or batch_integral.dim() == 3, error_msg
+            assert batch_integral.shape[1] == n_basis, error_msg
             batch_integral = torch.einsum("qi...,eq->ei...", batch_integral, jxw) # [n_element, n_basis, ...]
         else:
             error_msg = f"the shape returned by forward function is {batch_integral.shape} which is not supported, should either be [{n_element},batch_size,{n_basis}] or [{n_element},batch_size,{n_basis}, dof_per_point]"
+            assert batch_integral.dim() == 3 or batch_integral.dim() == 4, error_msg
             assert batch_integral.shape[0] == n_element, error_msg
             assert batch_integral.shape[2] == n_basis, error_msg
-            assert batch_integral.dim() == 3 or batch_integral.dim() == 4, error_msg
             batch_integral = torch.einsum("eqb...,eq->eb...", batch_integral, jxw) # [n_element, n_basis, ...]
         return batch_integral
     
@@ -225,10 +227,10 @@ class NodeAssembler(nn.Module):
                             in_dims=element_dims
                         )
                         use_element_parallel = True
+     
+                batch_integral = fn(*args) # [n_element, batch_size, n_basis, ...] or [batch_size,  n_basis, ...]
 
-                batch_integral = fn(*args) # [n_element, batch_size, n_basis, n_basis, ...] or [n_batch, batch_size, n_basis, ...]
-
-                batch_integral = self.integrate(batch_integral, jxw, n_element, n_basis, use_element_parallel)
+                batch_integral = self._integrate(batch_integral, jxw, n_element, n_basis, use_element_parallel)
 
                 if element_integral is None:
                     element_integral = batch_integral
@@ -240,7 +242,7 @@ class NodeAssembler(nn.Module):
             else:
                 integral += self.projector[element_type](element_integral) # [n_edge, ...]
 
-        return self.build_output(integral)
+        return self._build_output(integral)
 
     def __post_init__(self):
         """Override this function to precompute some data after the initialization
@@ -313,13 +315,15 @@ class NodeAssembler(nn.Module):
         torch_fem.assemble.NodeAssembler
             the new node_assembler sharing the same mesh
         """
-        assert isinstance(obj, ElementAssembler)
+        err_msg = f"the object {obj} should inheritate from NodeAssembler"
+        assert isinstance(obj, NodeAssembler), err_msg
         return cls(
                 obj.quadrature_weights,
                 obj.quadrature_points,
                 obj.shape_val,
                 obj.projector, 
-                obj.elements
+                obj.elements,
+                obj.n_points
         )
 
     @classmethod
@@ -357,7 +361,7 @@ class NodeAssembler(nn.Module):
             get_quadrature(element_type, quadrature_order) # [n_quadrature], [n_quadrature, n_dim]
             shape_val[element_type] = get_shape_val(element_type, quadrature_points[element_type]) # [n_quadrature, n_basis]
             projector[element_type] = Projector(
-                from_ = torch.arange(n_element * n_basis),
+                from_ = torch.arange(n_element * n_basis).to(value.device),
                 to_   = value.flatten(),
                 from_shape = (n_element, n_basis),
                 to_shape   = (n_points,)
@@ -373,6 +377,7 @@ class NodeAssembler(nn.Module):
                    quadrature_points,
                    shape_val,
                    projector, 
-                   elements)
+                   elements,
+                   n_points)
 
 NodeAssembler.type.__doc__ = nn.Module.type.__doc__

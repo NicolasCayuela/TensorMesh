@@ -23,7 +23,7 @@ Node Adjacency
     plt.show()
 
 .. image:: ../_static/node_adjacency.png
-    :width: 400px
+    :width: 600px
     :align: center
 
 Element Adjacency
@@ -49,5 +49,5 @@ Element Adjacency
     plt.show()
 
 .. image:: ../_static/element_adjacency.png
-    :width: 400px
+    :width: 600px
     :align: center

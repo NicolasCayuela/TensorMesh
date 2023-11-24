@@ -2,9 +2,15 @@
 
 
 ## tests
-- [ ] assemble
-  - [ ] elemenet
-  - [ ] node 
+- [x] assemble
+  - [x] elemenet
+  - [x] node 
+- [ ] sparse
+  - [ ] solve
+    - [x] scipy solve
+    - [ ] petsc solve
+    - [x] cupy(cusolve) solve
+  - [x] mm
 - [x] adjacency
   - [x] node adjacency
   - [x] element adjacency
@@ -72,6 +78,7 @@
     - [ ] generator
       - [x] gmsh backend
       - [ ] add more function
+      - [ ] add distmsh support, since gmsh requires complex dependencies
     - [x] (hollow)rectangle
     - [x] (hollow)circle 
     - [x] Lshape
@@ -81,6 +88,9 @@
 - [ ] sparse matrix 
   - [x] spmv/spmm 
   - [x] spsolve
+  - [x] combine
+    - [x] combine vector
+    - [x] combine matrix
   - [ ] elementwise-op
     - [x] same layout 
     - [ ] different layout 
@@ -91,8 +101,8 @@
 - [ ] strong form to weak form
 
 ### Efficiency
-- [ ] quadrature loop
-- [ ] PETsc backend
+- [x] quadrature loop
+- [x] PETsc backend
 - [ ] distributed mesh 
   - [ ] distributed mesh assemble 
   - [ ] distributed linear system solve

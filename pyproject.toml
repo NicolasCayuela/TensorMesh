@@ -39,15 +39,19 @@ dependencies=[
     "cupy",
     "matplotlib", 
     "pyvista",
+    "toml",
+    "gmsh",
+    "matplotlib"
 ]
 
 [project.optional-dependencies]
 benchmark=[
     "scikit-fem",
-    "wandb",
+    "fenics",
     "pandas",
-    "networkx",
+    "petsc4py",
     "matplotlib",
+    "seaborn"
 ]
 test=[
     "pytest",
@@ -61,7 +65,7 @@ repository="https://github.com/walkerchi/torch-fem.git"
 changelog="https://github.com/walkerchi/torch-fem/blob/master/CHANGELOG.md"
 
 [tool.flit.module]
-name="torch_geometric"
+name="torch_fem"
 
 [tool.yapf]
 based_on_style = "pep8"
@@ -88,13 +92,13 @@ ignore = [
     "D107",  # Ignore "Missing docstring in __init__"
     "D205",  # Ignore "blank line required between summary line and description"
 ]
-src = ["torch_geometric"]
+src = ["torch_fem"]
 line-length = 80
 indent-width = 4
 target-version = "py38"
 
 [tool.ruff.lint.pydocstyle]
-convention = "google"
+convention = "numpy"
 
 [tool.pytest.ini_options]
 addopts = [

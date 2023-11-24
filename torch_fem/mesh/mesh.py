@@ -27,6 +27,12 @@ from ..nn import BufferDict
 
 class Mesh(nn.Module):
     """
+    Parameters
+    ----------
+    mesh: :meth:`meshio.Mesh`
+        a meshio mesh object
+    
+
     Attributes
     ----------
     points: torch.Tensor 
@@ -58,10 +64,6 @@ class Mesh(nn.Module):
     """
 
     def __init__(self, mesh):
-        """
-        mesh: meshio.Mesh
-            a meshio mesh object
-        """
         super().__init__()
         # turn is_... or ..._mask to bool
         for key in list(mesh.point_data.keys()):
@@ -225,12 +227,14 @@ class Mesh(nn.Module):
     
     def node_adjacency(self, element_type=None):
         """get the node adjacency matrix, inside each element, the nodes are considered fully connected
+
         Parameters
         ----------
         element_type : str or Iterable[str] or None
             the type of the elements
             if :obj:`None` is the :obj:`default_element_type`
             default : :obj:`None`
+
         Returns
         -------
         SparseMatrix 
@@ -253,12 +257,14 @@ class Mesh(nn.Module):
 
     def element_adjacency(self, element_type=None):
         """get the element adjacency matrix, the element are considered connected only if they share a boundary/facet
+        
         Parameters
         ----------
         element_type : str or Iterable[str] or None
             the type of the elements, should be of same dimension
             if :obj:`None` is the :obj:`default_element_type`
             default : :obj:`None`
+
         Returns
         -------
         SparseMatrix 
@@ -383,6 +389,15 @@ class Mesh(nn.Module):
         else:
             raise Exception(f"element_type must be str or Iterable[str], but got {element_type}")
     
+    def clone(self):
+        """The gradient will vanish if you use :obj:`torch.Tensor.clone` to clone the mesh, so we provide this method to clone the mesh
+        Returns
+        -------
+        torch_fem.mesh.Mesh
+            the cloned mesh
+        """
+        return Mesh(self.to_meshio())
+
     def plot(self, values= None, save_path=None, backend="matplotlib", dt=None, show_mesh=False):
         """
             Parameters
@@ -527,7 +542,7 @@ class Mesh(nn.Module):
         torch_fem.mesh.Mesh
             the mesh object
         """
-        return cls.read_file(file_name, file_format)
+        return cls.read(file_name, file_format)
 
     @staticmethod
     def gen_rectangle(chara_length=0.1,

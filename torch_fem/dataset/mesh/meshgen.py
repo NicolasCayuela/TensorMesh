@@ -64,6 +64,7 @@ class MeshGen:
            
     def add_rectangle(self, left, bottom, width, height, element="tri"):
         """add a rectangle to the geometry
+
         Parameters
         ----------
         left: float
@@ -99,6 +100,7 @@ class MeshGen:
 
     def remove_rectangle(self, left, bottom, width, height):
         """remove the rectangle from the geometry
+
         Parameters
         ----------
         left: float
@@ -125,6 +127,7 @@ class MeshGen:
 
     def add_circle(self, cx, cy, r, element="tri"):
         """add a circle to the geometry
+
         Parameters
         ----------
         cx: float
@@ -157,6 +160,7 @@ class MeshGen:
 
     def remove_circle(self, cx, cy, r):
         """remove the cirlce from the geometry
+
         Parameters
         ----------
         cx: float
@@ -181,6 +185,7 @@ class MeshGen:
 
     def add_cube(self, x, y, z, dx, dy, dz):
         """add a cube to the geometry, only works for 3d
+
         Parameters
         ----------
         x: float
@@ -210,6 +215,7 @@ class MeshGen:
 
     def remove_cube(self, x, y, z, dx, dy, dz):
         """remove the cube from the geometry, only works for 3d
+
         Parameters
         ----------
         x: float
@@ -240,6 +246,7 @@ class MeshGen:
 
     def add_sphere(self, x, y, z, r):
         """add a sphere to the geometry, only works for 3d
+
         Parameters
         ----------
         x: float
@@ -265,6 +272,7 @@ class MeshGen:
 
     def remove_sphere(self, x, y, z, r):
         """remove the sphere from the geometry, only works for 3d
+
         Parameters
         ----------
         x: float
@@ -292,6 +300,7 @@ class MeshGen:
 
     def gen(self, show=False):
         """generate the mesh from the geometry
+        
         Parameters
         ----------
         show: bool, optional

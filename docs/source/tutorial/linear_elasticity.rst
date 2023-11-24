@@ -77,6 +77,6 @@ Pressed Hollow Rectangle
 
 
 .. image:: ../_static/press_hollow_rectangle.png
-    :width: 400
+    :width: 600
     :align: center
 

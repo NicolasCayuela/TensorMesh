@@ -3,3 +3,8 @@
 **.gmsh_cache**
 **.DS_Store**
 docs/build
+**.ipynb_checkpoints**
+benchmark/**/*
+!benchmark/**/*.py
+!benchmark/**/*.ipynb
+*.csv 

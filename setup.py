@@ -1,0 +1,60 @@
+from setuptools import setup, find_packages
+
+setup(
+    name="torch-fem",
+    version="0.1.0",
+    author="walkerchi",
+    author_email="walker.chi.000@gmail.com",
+    description="Graph Neural Network Library for PyTorch",
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
+    url="https://torch-fem.readthedocs.io",
+    project_urls={
+        "Documentation": "https://torch-fem.readthedocs.io",
+        "Source": "https://github.com/walkerchi/torch-fem.git",
+        "Changelog": "https://github.com/walkerchi/torch-fem/blob/master/CHANGELOG.md",
+    },
+    packages=find_packages(),
+    install_requires=[
+        "tqdm",
+        "numpy",
+        "scipy",
+        "torch>=1.8.0",
+        "meshio",
+        "cupy",
+        "matplotlib",
+        "pyvista",
+    ],
+    extras_require={
+        "benchmark": [
+            "scikit-fem",
+            "wandb",
+            "pandas",
+            "matplotlib",
+        ],
+        "test": [
+            "pytest",
+            "pytest-cov",
+        ],
+    },
+    classifiers=[
+        "Development Status :: 5 - Production/Stable",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3 :: Only",
+    ],
+    keywords=[
+        "deep-learning",
+        "ai-for-science",
+        "pytorch",
+        "finite-element-methods",
+        "geometric-deep-learning",
+        "graph-neural-networks",
+        "graph-convolutional-networks",
+    ],
+    python_requires=">=3.8",
+)

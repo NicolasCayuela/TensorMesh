@@ -103,16 +103,16 @@ class ElementAssembler(nn.Module):
         
         .. math::
 
-            \\mathcal P_e: \\mathbb{R}_{\\text{sparse}}^{|\mathcal C_e| \\times B_e \\times B_e} \\rightarrow \\mathbb{R}^{|\mathcal E|}
+            \\mathcal P_e: \\mathbb{R}_{\\text{sparse}}^{|\\mathcal C_e| \\times B_e \\times B_e} \\rightarrow \\mathbb{R}^{|\\mathcal E|}
 
-        where :math:`\mathcal C` is the set of elements, :math:`B` is the number of basis, :math:`\mathcal E` is the set of edges.
+        where :math:`\\mathcal C` is the set of elements, :math:`B` is the number of basis, :math:`\\mathcal E` is the set of edges.
 
     elements : BufferDict[str, torch.Tensor]
         The element type is the key, which should be one of :meth:`torch_fem.shape.element_types`.
-        Each :obj:`element_type` corresponds to a 2D tensor of shape :math:`[|\mathcal C|, B]`, where :math:`\mathcal C` is the set of elements, :math:`B` is the number of basis
+        Each :obj:`element_type` corresponds to a 2D tensor of shape :math:`[|\\mathcal C|, B]`, where :math:`\\mathcal C` is the set of elements, :math:`B` is the number of basis
         the element connectivity of each element type, e.g. :obj:`{"triangle6": torch.tensor([[0, 1, 2], [1, 2, 3]])}`
     edges : torch.Tensor
-        2D tensor of shape :math:`[2, |\mathcal E|]`, where :math:`\mathcal E` is the set of edges
+        2D tensor of shape :math:`[2, |\\mathcal E|]`, where :math:`\\mathcal E` is the set of edges
         edge connectivity considering all element_types, e.g. :obj:`torch.tensor([[0, 1, 2], [1, 2, 3]])`
     n_points : int
         number of points
@@ -184,18 +184,18 @@ class ElementAssembler(nn.Module):
     def _integrate(self, batch_integral, jxw, n_element, n_basis, use_element_parallel):
         if use_element_parallel:
             error_msg = f"the shape returned by forward function is {[*batch_integral.shape]} which is not supported, should either be [{n_element}, batch_size, {n_basis},{n_basis}] or [{n_element}, batch_size,{n_basis},{n_basis}, dof_per_point, dof_per_point]"
+            assert batch_integral.dim() == 4 or batch_integral.dim() == 6, error_msg
             assert batch_integral.shape[0] == n_element, error_msg
             assert batch_integral.shape[2] == n_basis, error_msg 
             assert batch_integral.shape[3] == n_basis, error_msg
-            assert batch_integral.dim() == 4 or batch_integral.dim() == 6, error_msg
             if batch_integral.dim() == 6:
                 assert batch_integral.shape[-1] == batch_integral.shape[-2], error_msg
             batch_integral = torch.einsum("eqij...,eq->eij...", batch_integral, jxw)
         else:
             error_msg = f"the shape returned by forward function is {[*batch_integral.shape]} which is not supported, should either be [batch_size, {n_basis},{n_basis}] or [batch_size,{n_basis},{n_basis}, dof_per_point, dof_per_point]"
+            assert batch_integral.dim() == 3 or batch_integral.dim() == 5, error_msg
             assert batch_integral.shape[1] == n_basis, error_msg
             assert batch_integral.shape[2] == n_basis, error_msg
-            assert batch_integral.dim() == 3 or batch_integral.dim() == 5, error_msg
             if batch_integral.dim() == 5:
                 assert batch_integral.shape[-1] == batch_integral.shape[-2], error_msg
             batch_integral = torch.einsum("qij...,eq->eij...", batch_integral, jxw)

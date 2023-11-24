@@ -23,7 +23,6 @@ Torch-FEM Document
    tutorial/mesh_gen
    tutorial/adjacency
    tutorial/poisson
-   tutorial/heat 
    tutorial/wave
    tutorial/linear_elasticity
 
@@ -37,5 +36,6 @@ Torch-FEM Document
    api_reference/sparse
    api_reference/assemble
    api_reference/operator
+   api_reference/ode
    api_reference/functional
    

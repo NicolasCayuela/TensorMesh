@@ -1,6 +1,19 @@
 import torch 
 import cupy as cp
 
+try:
+    import petsc4py
+    is_petsc_available = True
+except ImportError:
+    is_petsc_available = False
+    
+try:
+    import cupy 
+    is_cupy_available = True
+except ImportError:
+    is_cupy_available = False
+
+
 def tensor2cupy(tensor):
     """turn torch.Tensor to cupy.ndarray
     Parameters

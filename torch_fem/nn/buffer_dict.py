@@ -62,10 +62,15 @@ class BufferDict(nn.Module):
     def __includes__(self, key):
         return key in self.keys()
 
+    def is_floating_point(self):
+        return any(map(lambda x:x.is_floating_point(), self.values()))
+
+    def is_complex(self):
+        return any(map(lambda x:x.is_complex(), self.values()))
+
     @property
     def dtype(self):
         return next(iter(self.buffers().values())).dtype
-
 
     @property
     def device(self):
@@ -84,3 +89,10 @@ class BufferDict(nn.Module):
       
     def __repr__(self):
         return str(self)
+    
+    def to_dict(self):
+        return {key:value for key, value in self.items()}
+
+    def clone(self):
+        data = {key:value.clone() for key, value in self.items()}
+        return BufferDict(data)
