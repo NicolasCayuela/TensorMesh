@@ -19,11 +19,15 @@ class KAssembler(ElementAssembler):
         self.f  = lambda x: -epsilon**2*x*(x**2 - 1)
         self.df = lambda x: -epsilon**2*(3*x**2 - 1)
     def forward(self, u, v, gradu, gradv, c, gradc, cold):
-        breakpoint()
+       
         return -1.0 * (self.dcdotdc * mul(u, v) +
-                self.dD(c) * u * dot(gradc, gradv) + 
+                self.dD(c) * u * (gradv  @ gradc) + 
                 self.D(c) * dot(gradu, gradv) -
                 self.df(c) * mul(u, v))
+        # return -1.0 * (self.dcdotdc * mul(u, v) +
+        #         self.dD(c) * u * dot(gradc, gradv) + 
+        #         self.D(c) * dot(gradu, gradv) -
+        #         self.df(c) * mul(u, v))
    
 
 class RAssembler(NodeAssembler):
@@ -38,8 +42,8 @@ class RAssembler(NodeAssembler):
 
     def forward(self, v, gradv, c, gradc, cold):
         cdot = (c - cold) / self.dt
-
-        R =  cdot * v + self.D(c) * (gradc * gradv).sum(-1) - self.f(c) * v
+        
+        R =  cdot * v + self.D(c) * (gradv @ gradc) - self.f(c) * v
       
         return R
     
