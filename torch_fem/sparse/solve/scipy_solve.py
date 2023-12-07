@@ -1,7 +1,6 @@
 from typing import Any
 import torch 
 from torch.autograd import Function
-import cupy as cp 
 import scipy.sparse.linalg
 import warnings
 from ..utils import tensor2cupy, cupy2tensor, shapeT

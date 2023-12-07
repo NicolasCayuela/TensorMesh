@@ -1,8 +1,6 @@
 
 import torch
 from torch.autograd import Function
-import cupy as cp
-import cupyx.scipy.sparse 
 import scipy.sparse
 from ..utils import shapeT
 
