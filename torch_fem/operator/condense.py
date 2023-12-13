@@ -72,10 +72,10 @@ class Condenser:
         is_inner_u,    is_inner_v    = is_inner_dof[edge_u], is_inner_dof[edge_v]
         is_outer_u,    is_outer_v    = is_outer_dof[edge_u], is_outer_dof[edge_v]
         is_inner_edge, is_ou2in_edge = is_inner_u & is_inner_v, is_inner_u & is_outer_v
-        n_inner_dofs, n_outer_dofs = is_inner_dof.sum(), is_outer_dof.sum()
-        local_nids = torch.full((n_dof,), -1, dtype=torch.long)
-        local_nids[is_inner_dof] = torch.arange(n_inner_dofs)
-        local_nids[is_outer_dof] = torch.arange(n_outer_dofs)
+        n_inner_dofs, n_outer_dofs = is_inner_dof.sum().item(), is_outer_dof.sum().item()
+        local_nids = torch.full((n_dof,), -1, dtype=torch.long, device=matrix.device)
+        local_nids[is_inner_dof] = torch.arange(n_inner_dofs, device=matrix.device)
+        local_nids[is_outer_dof] = torch.arange(n_outer_dofs, device=matrix.device)
 
         self.inner_row = local_nids[edge_u[is_inner_edge]]
         self.inner_col = local_nids[edge_v[is_inner_edge]]
@@ -111,7 +111,7 @@ class Condenser:
         """
         if rhs is None:
             rhs = torch.zeros(matrix.shape[0])
-
+       
         if self.inner_row is None:
             self._compute_layout(matrix)
 
@@ -127,7 +127,6 @@ class Condenser:
         K_ou2in = SparseMatrix(
             matrix.edata[self.is_ou2in_edge], self.ou2in_row, self.ou2in_col, self.ou2in_shape, 
         )
-
         self.K_ou2in = K_ou2in
 
         self.dirichlet_value = self.dirichlet_value.type(K_inner.edata.dtype).to(K_inner.edata.device)

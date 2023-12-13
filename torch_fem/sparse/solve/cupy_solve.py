@@ -9,6 +9,7 @@ if is_cupy_available:
     cupyx = importlib.import_module('cupyx')
     cp    = importlib.import_module('cupy')
     importlib.import_module('cupyx.scipy.sparse')
+    importlib.import_module('cupyx.scipy.sparse.linalg')
 
 class SparseSolveCupy(Function):
     @staticmethod

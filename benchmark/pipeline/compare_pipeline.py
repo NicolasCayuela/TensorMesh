@@ -47,7 +47,8 @@ class ThFEM:
         self.mesh = mesh
         self.batch_size = batch_size
         self.K_asm  = thfem.LaplaceElementAssembler.from_mesh(self.mesh)
-        self.f_asm  = thfem.ConstNodeAssembler.from_mesh(self.mesh)
+        self.f_asm  = thfem.const_element_assembler(c=1).from_mesh(self.mesh)
+        # self.f_asm  = thfem.ConstNodeAssembler.from_mesh(self.mesh)
 
     def __call__(self):
         K     = self.K_asm(self.mesh.points, batch_size=self.batch_size)

@@ -398,7 +398,7 @@ class Mesh(nn.Module):
         """
         return Mesh(self.to_meshio())
 
-    def plot(self, values= None, save_path=None, backend="matplotlib", dt=None, show_mesh=False):
+    def plot(self, values= None, save_path=None, backend="matplotlib", dt=None, show_mesh=False, fix_clim=False):
         """
             Parameters
             ----------
@@ -437,7 +437,7 @@ class Mesh(nn.Module):
         if values is None:
             return plot_mesh_matplotlib(self, save_path)
         else:
-            return plot_value_matplotlib(values, self, save_path, dt, show_mesh)
+            return plot_value_matplotlib(values, self, save_path, dt, show_mesh, fix_clim)
 
     @property
     def n_point(self):

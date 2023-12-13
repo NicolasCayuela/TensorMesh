@@ -25,6 +25,8 @@ def tensor2cupy(tensor):
     cupy.ndarray
         the output cupy array
     """
+    assert is_cupy_available, "cupy is not available"
+    assert tensor.device.type == "cuda", "the device of tensor must be cuda"
     return cp.from_dlpack(torch.utils.dlpack.to_dlpack(tensor))
 def cupy2tensor(cupy):
     """turn cupy.ndarray to torch.Tensor

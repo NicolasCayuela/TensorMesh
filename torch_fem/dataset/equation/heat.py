@@ -1,12 +1,12 @@
 import torch
 
 class HeatMultiFrequency:
-    """Multi-frequency heat equation, with :math:`0` boundary condition 
+    r"""Multi-frequency heat equation, with :math:`0` boundary condition 
 
 
     .. math::
 
-        \\frac{\\partial u }{\\partial t} = \\Delta u 
+        \frac{\partial u }{\partial t} = \Delta u 
 
     where :math:`t \in [0,T],\quad(x_1,x_2)\in  [-1,1]^2`,
     with the boundary condition :math:`u(t, \pm 1, \pm 1) = 0`
@@ -31,11 +31,11 @@ class HeatMultiFrequency:
         self.d = d
 
     def initial_condition(self, points):
-        """Generate the heat source function at each point in the domain
+        r"""Generate the heat source function at each point in the domain
         
         .. math::
 
-            u(0,x_1,x_2,\\mu) = -\\frac{1}{d}\\sum_{m=1}^d  \\mu_m sin(\\pi m x_1)sin(\\pi m x_2)/\\sqrt m
+            u(0,x_1,x_2,\mu) = -\frac{1}{d}\sum_{m=1}^d  \mu_m sin(\pi m x_1)sin(\pi m x_2)/\sqrt m
 
         Parameters
         ----------
@@ -48,11 +48,12 @@ class HeatMultiFrequency:
                 1D tensor of shape :math:`[|\mathcal V|]` or :math:`[N, |\mathcal V|]`, where :math:`N` is the number of samples, :math:`|\mathcal V|` is the number of vertices
         """
         assert points.shape[-1] == 2, f"the shape of points must be [n_points, 2], but got {points.shape}"
-        assert (points<=1 and points>=-1).all(), f"the points must be in [-1,1]^2, but got {points}"
+        assert ((points<=1.0) &(points>=-1)).all(), f"the points must be in [-1,1]^2, but got {points}"
 
         mu = self.mu
         d  = self.d
         m = torch.arange(1, d+1)
+        m = m.type(mu.dtype).to(mu.device)
         if len(mu.shape) == 1:
             mu = mu[None, :] # (1, d)
             m  = m[None, :]  # (1, d)
@@ -67,11 +68,11 @@ class HeatMultiFrequency:
         return u0
   
     def solution(self, points, t):
-        """Generate the poisson solution function at each point in the domain
+        r"""Generate the poisson solution function at each point in the domain
            
         .. math::
 
-            u(t,x_1,x_2,\\mu) = -\\frac{1}{d}\\sum_{m=1}^d \\frac{\\mu_m}{\\sqrt{m}} e^{-2m^2\\pi^2t} sin(\\pi m  x_1)sin(\\pi mx_2)
+            u(t,x_1,x_2,\mu) = -\frac{1}{d}\sum_{m=1}^d \frac{\mu_m}{\sqrt{m}} e^{-2m^2\pi^2t} sin(\pi m  x_1)sin(\pi mx_2)
             
         Parameters
         ----------
@@ -86,12 +87,13 @@ class HeatMultiFrequency:
             1D tensor of shape :math:`[|\mathcal V|]` or :math:`[N, |\mathcal V|]`, where :math:`N` is the number of samples, :math:`|\mathcal V|` is the number of vertices
         """
         assert points.shape[-1] == 2, f"the shape of points must be [n_points, 2], but got {points.shape}"
-        assert (points<=1 and points>=-1).all(), f"the points must be in [-1,1]^2, but got {points}"
+        assert ((points<=1.0) & (points>=-1.0)).all(), f"the points must be in [-1,1]^2, but got {points}"
         assert t >= 0, f"t must be non-negative, but got {t}"
 
         mu = self.mu
         d  = self.d
         m = torch.arange(1, d+1)
+        m = m.type(mu.dtype).to(mu.device)
         if len(mu.shape) == 1:
             mu = mu[None, ...] # (1, d)
             m  = m[None, ...]  # (1, d)

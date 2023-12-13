@@ -1,12 +1,20 @@
 import os
 import torch
-import pyvista as pv
+
 import numpy as np
+
+try: 
+    import pyvista as pv
+    is_pyvista_available = True
+except ImportError:
+    pv = None
+    is_pyvista_available = False
 
 # Make sure to import torch if you're using it
 # import torch
 
 def plot_value(kwargs, mesh, save_path=None, dt=None, show_mesh=False):
+    assert is_pyvista_available, "Please install pyvista to use this function"
     is_2d = mesh.points.shape[1] == 2
     mesh.write("tmp.vtk", file_format="vtk")
     mesh = pv.read("tmp.vtk",)

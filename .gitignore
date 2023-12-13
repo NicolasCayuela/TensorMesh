@@ -21,3 +21,6 @@ experimental/
 # but keep .py and .ipynb files and any specifically mentioned files
 benchmark/**/*.png
 benchmark/**/!(*.py|*.ipynb)
+examples/**/*.mp4
+examples/**/*.png
+!examples/**/eth.png

@@ -62,6 +62,7 @@ class PoissonMultiFrequency:
         K = self.K
        
         i, j = torch.meshgrid(torch.arange(1,K+1), torch.arange(1,K+1)) # (K, K)
+        i, j = i.type(points.dtype).to(points.device), j.type(points.dtype).to(points.device)
         if len(self.a.shape) == 2:
             a  = self.a[None, :, :] # (1, K, K)
             i,j = i[None, :, :], j[None, :, :] # (1, K, K)
@@ -94,6 +95,7 @@ class PoissonMultiFrequency:
         """
         K = self.K
         i,j  = torch.meshgrid(torch.arange(1, K+1), torch.arange(1,K+1)) # (K, K)
+        i, j = i.type(points.dtype).to(points.device), j.type(points.dtype).to(points.device)
         if len(self.a.shape) == 2:
             a  = self.a[None, :, :] # (1, K, K)
             i,j = i[None, :, :], j[None, :, :] # (1, K, K)
@@ -102,5 +104,5 @@ class PoissonMultiFrequency:
             a  = self.a[:, None, :, :] # (N, 1, K, K)
             i,j = i[None, None, :, :], j[None, None, :, :] # (1, 1, K, K)
             x,y = points[:, 0][None, :, None, None], points[:, 1][None, :, None, None] # (1, n_points, 1, 1)
-        u = 1/ torch.pi /K/K * (a * (i*i+j*j)**(self.r-1) * torch.sin(torch.pi * i * x) * torch.sin(torch.pi * j * y) ).sum((-2,  -1))
+        u = 1/ torch.pi /K/K * (a * (i*i+j*j)**(-self.r-1) * torch.sin(torch.pi * i * x) * torch.sin(torch.pi * j * y) ).sum((-2,  -1))
         return u

@@ -1,4 +1,5 @@
 
+from scipy.__config__ import show
 import torch 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -56,7 +57,7 @@ def plot_mesh(mesh, save_path=None):
     else:
         fig.savefig(save_path, dpi=400)
            
-def plot_value(kwargs, mesh,  save_path=None, dt=None,show_mesh=False):
+def plot_value(kwargs, mesh,  save_path=None, dt=None,show_mesh=False,fix_clim=False):
     """
         Parameters:
         -----------
@@ -68,7 +69,10 @@ def plot_value(kwargs, mesh,  save_path=None, dt=None,show_mesh=False):
     elements = mesh.elements()
    
     ncols = len(kwargs.keys())
-    fig, ax = plt.subplots(1, ncols, figsize=(5*ncols, 5))
+    width = mesh.points[:,0].max() - mesh.points[:,0].min()
+    height = mesh.points[:,1].max() - mesh.points[:,1].min()
+    ratio  = (width / height).item()
+    fig, ax = plt.subplots(1, ncols, figsize=(5*ncols * ratio, 5))
     key, value = next(iter(kwargs.items()))
     if isinstance(points, torch.Tensor):
         points = points.detach().cpu().numpy()
@@ -86,10 +90,16 @@ def plot_value(kwargs, mesh,  save_path=None, dt=None,show_mesh=False):
     elif isinstance(value, (list, tuple)):
         if save_path is None:
             save_path = 'mesh.gif'
+        if fix_clim:
+            vmin = min([v.min() for v in value])
+            vmax = max([v.max() for v in value])
         cbs = []
         imgs = []
         for i, (key, value) in enumerate(kwargs.items()):
             img,cb = draw_mesh(points, elements, value[0], ax=ax[i], show_colorbar=True,show_mesh=show_mesh)
+            if fix_clim:
+                img.set_clim(vmin, vmax)
+                cb.update_normal(img)
             ax[i].set_title(key)
             cbs.append(cb)
             imgs.append(img)
@@ -100,25 +110,30 @@ def plot_value(kwargs, mesh,  save_path=None, dt=None,show_mesh=False):
         def update(frame):
             for i, (key, value) in enumerate(kwargs.items()):
                 v   = value[frame].detach().cpu().numpy() if isinstance(value[frame], torch.Tensor) else value[frame]
-                imgs[i].set_clim(v.min(), v.max())
+                if not fix_clim:   
+                    imgs[i].set_clim(v.min(), v.max())
                 imgs[i].set_array(v)
-                cbs[i].update_normal(imgs[i])
+                if not fix_clim:
+                    cbs[i].update_normal(imgs[i])
             if dt is not None:
                 fig.suptitle(f"t={frame*dt:7.5f}")
             else:
                 fig.suptitle(f"Frame:{frame:5d}")
+            return imgs
         anim = FuncAnimation(fig, update, frames=len(value), interval=100)
         anim.save(save_path, fps=10,  dpi=400)
 
 
 class StreamPlotter:
-    def __init__(self,   nrows=1, ncols=1,  filename=None):
+    def __init__(self,   nrows=1, ncols=1, width=5, height=5, filename=None):
         if filename is None:
             filename = "stream_plotter.mp4"
-        fig, axes = plt.subplots(1, ncols, figsize=(5*ncols, 5)) 
+        fig, axes = plt.subplots(nrows, ncols, figsize=(width*ncols, height)) 
         self.fig  = fig 
         self.axes = axes
         self.filename = filename
+        self.ax2img = {}
+        self.ax2cb  = {}
 
     def __enter__(self):
         # Set up the writer
@@ -137,17 +152,43 @@ class StreamPlotter:
         # Grab the current frame
         self.writer.grab_frame(**savefig_kwargs)
 
-    def draw_mesh(self, mesh, value, ax=None, show_colorbar=True):
+    def update(self):
+        self.grab_frame()
+
+    def draw_mesh(self, mesh, value, ax=None, show_colorbar=True, title=None, update=True, show_mesh=True, umin=None, umax=None):
         if ax is None:
             assert not isinstance(self.axes, np.ndarray), "ax must be specified when there are multiple axes"
             ax = self.axes 
-        draw_mesh(mesh.points, 
-                  mesh.elements(), 
-                  value, 
-                  ax=ax, 
-                  show_colorbar=False, 
-                  show_mesh=True)
-        self.grab_frame()
+        if ax in self.ax2img:
+            img = self.ax2img[ax]
+            img.set_array(value)
+            if umin is not None and umax is not None:
+                img.set_clim(umin, umax)
+            if show_colorbar:
+                self.ax2cb[ax].update_normal(img)
+        else:
+            img = draw_mesh(mesh.points, 
+                    mesh.elements(), 
+                    value, 
+                    ax=ax, 
+                    show_colorbar=show_colorbar, 
+                    show_mesh=show_mesh)
+            if show_colorbar:
+                img, cb = img
+                self.ax2img[ax] = img
+                self.ax2cb[ax] = cb
+                if umin is not None and umax is not None:
+                    img.set_clim(umin, umax)
+                    cb.update_normal(img)
+            else:
+                self.ax2img[ax] = img
+                if umin is not None and umax is not None:
+                    img.set_clim(umin, umax)
+
+        if title is not None:
+            ax.set_title(title)
+        if update:
+            self.grab_frame()
 
 def draw_mesh(points, elements, value, ax=None, show_colorbar=True,show_mesh=False):
     """

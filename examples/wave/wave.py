@@ -3,8 +3,8 @@ sys.path.append("../..")
 
 import torch
 from torch_fem import ElementAssembler, Mesh,Condenser
-from torch_fem.dataset import WaveMultiSinCos
-from torch_fem.utils import mul, dot
+from torch_fem.dataset import WaveMultiFrequency
+from torch_fem.functional import mul, dot
 
 class AAssembler(ElementAssembler):
     def forward(self, gradu, gradv):
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     
     mesh = Mesh.gen_rectangle(chara_length=0.01)
    
-    dataset = WaveMultiSinCos(K=4, c=c)
+    dataset = WaveMultiFrequency(K=4, c=c)
 
     u0 = dataset.initial_condition(mesh.points)
     
