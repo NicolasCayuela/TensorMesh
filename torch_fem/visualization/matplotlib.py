@@ -115,7 +115,7 @@ class StreamPlotter:
     def __init__(self,   nrows=1, ncols=1,  filename=None):
         if filename is None:
             filename = "stream_plotter.mp4"
-        fig, axes = plt.subplots(1, ncols, figsize=(5*ncols, 5)) 
+        fig, axes = plt.subplots(nrows, ncols, figsize=(5*ncols, 5)) 
         self.fig  = fig 
         self.axes = axes
         self.filename = filename
@@ -137,7 +137,10 @@ class StreamPlotter:
         # Grab the current frame
         self.writer.grab_frame(**savefig_kwargs)
 
-    def draw_mesh(self, mesh, value, ax=None, show_colorbar=True):
+    def update(self):
+        self.grab_frame()
+
+    def draw_mesh(self, mesh, value, ax=None, show_colorbar=True, title=None, update=True):
         if ax is None:
             assert not isinstance(self.axes, np.ndarray), "ax must be specified when there are multiple axes"
             ax = self.axes 
@@ -147,7 +150,10 @@ class StreamPlotter:
                   ax=ax, 
                   show_colorbar=False, 
                   show_mesh=True)
-        self.grab_frame()
+        if title is not None:
+            ax.set_title(title)
+        if update:
+            self.grab_frame()
 
 def draw_mesh(points, elements, value, ax=None, show_colorbar=True,show_mesh=False):
     """

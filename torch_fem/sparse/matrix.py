@@ -50,6 +50,7 @@ class SparseMatrix(nn.Module):
         self.register_buffer("edata", edata)
         self.register_buffer("row", row)
         self.register_buffer("col", col)
+      
         self.shape = shape
 
         self.layout_hash = hashlib.sha256(row.cpu().numpy().tobytes() + col.cpu().numpy().tobytes()).hexdigest()

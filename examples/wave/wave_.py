@@ -3,8 +3,8 @@ sys.path.append("../..")
 
 import torch
 from torch_fem import ElementAssembler, Mesh,Condenser
-from torch_fem.dataset import WaveMultiSinCos
-from torch_fem.utils import mul, dot
+from torch_fem.dataset import WaveMultiFrequency
+from torch_fem.functional import mul, dot
 import skfem
 import meshio
 import numpy as np
@@ -41,7 +41,7 @@ def wave_torchfem(dt=0.001, c=4.0, n=100):
     mesh = Mesh.gen_rectangle(chara_length=0.05)
     # mesh = Mesh.gen_rectangle(chara_length=0.01, element_type="quad")
    
-    dataset = WaveMultiSinCos(K=4, c=c)
+    dataset = WaveMultiFrequency(K=4, c=c)
 
     u0 = dataset.initial_condition(mesh.points)
     
