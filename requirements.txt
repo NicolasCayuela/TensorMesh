@@ -9,3 +9,4 @@ pyvista
 toml 
 gmsh 
 matplotlib
+psutil

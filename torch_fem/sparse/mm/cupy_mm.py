@@ -6,11 +6,13 @@ from ..utils import tensor2cupy, cupy2tensor, shapeT, is_cupy_available
 
 if is_cupy_available:
     cupyx = importlib.import_module('cupyx')
+    cp    = importlib.import_module('cupy')
     importlib.import_module('cupyx.scipy.sparse')
 
 class SparseMMCupy(Function):
     @staticmethod
     def forward(ctx, edata, row, col, shape, B):
+        cp.cuda.Device(edata.device.index).use()
         A_cupy = cupyx.scipy.sparse.coo_matrix((
             tensor2cupy(edata), (tensor2cupy(row), tensor2cupy(col))), 
             shape = shape)
@@ -34,6 +36,7 @@ class SparseMMCupy(Function):
 class SparseMVCupy(Function):
     @staticmethod
     def forward(ctx, edata, row, col, shape, B):
+        cp.cuda.Device(edata.device.index).use()
         A_cupy = cupyx.scipy.sparse.coo_matrix((
             tensor2cupy(edata), (tensor2cupy(row), tensor2cupy(col))
             ), shape = shape)

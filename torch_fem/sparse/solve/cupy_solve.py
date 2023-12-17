@@ -14,6 +14,7 @@ if is_cupy_available:
 class SparseSolveCupy(Function):
     @staticmethod
     def forward(ctx, edata, row, col, shape, b):
+        cp.cuda.Device(edata.device.index).use()
         A_cupy = cupyx.scipy.sparse.coo_matrix((
             tensor2cupy(edata), (tensor2cupy(row), tensor2cupy(col))), 
             shape = shape).tocsr()
@@ -26,7 +27,6 @@ class SparseSolveCupy(Function):
     @staticmethod
     def backward(ctx, grad_output):
         edata, row, col, u = ctx.saved_tensors
-        
         A_T             = cupyx.scipy.sparse.coo_matrix((
             tensor2cupy(edata), (tensor2cupy(col), tensor2cupy(row))), 
             shape=shapeT(ctx.A_shape)).tocsr()
@@ -41,6 +41,7 @@ class SparseSolveCupy(Function):
 class SparseLUSolveCupy(Function):
     @staticmethod
     def forward(ctx, edata, row, col, shape, b):
+        cp.cuda.Device(edata.device.index).use()
         A_cupy = cupyx.scipy.sparse.coo_matrix((
             tensor2cupy(edata), (tensor2cupy(row), tensor2cupy(col))), 
             shape = shape).tocsc()

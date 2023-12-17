@@ -24,6 +24,7 @@ setup(
         "cupy",
         "matplotlib",
         "pyvista",
+        "psutil",
     ],
     extras_require={
         "benchmark": [

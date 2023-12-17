@@ -1,18 +1,24 @@
 import torch 
+import os 
 
-try:
-    import petsc4py
-    is_petsc_available = True
-except ImportError:
+if "TORCH_FEM_USE_PETSC" not in os.environ or os.environ["TORCH_FEM_USE_PETSC"] == "true":
+    try:
+        import petsc4py
+        is_petsc_available = True
+    except ImportError:
+        is_petsc_available = False
+else:
     is_petsc_available = False
     
-try:
-    import cupy 
-    import cupy as cp
-    is_cupy_available = True
-except ImportError:
+if "TORCH_FEM_USE_CUPY" not in os.environ or os.environ["TORCH_FEM_USE_CUPY"] == "true":
+    try:
+        import cupy 
+        import cupy as cp
+        is_cupy_available = True
+    except ImportError:
+        is_cupy_available = False
+else:
     is_cupy_available = False
-
 
 def tensor2cupy(tensor):
     """turn torch.Tensor to cupy.ndarray

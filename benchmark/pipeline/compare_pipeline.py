@@ -12,8 +12,9 @@ import seaborn as sns
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 import fenics
-from memory_profiler import memory_usage, profile
-
+from torch_fem.profile import TimeProfiler, CPUProfiler, CUDAProfiler, get_max_memory_for_index, get_memory_for_index
+import argparse
+import numpy as np
 
 class SkFEM:
     def __init__(self, mesh, element="tri"):
@@ -80,60 +81,16 @@ class feFEM:
         fenics.solve(a == L, u)
         return u
 
-       
-class SimpleMemoryHook(cp.cuda.MemoryHook):
-    def __init__(self):
-        self.alloc_size = 0
-        self.free_size = 0
-        self.cur_size = 0
-        self.peak_size = 0
-
-    def malloc_preprocess(self, device_id, size, mem_size):
-        self.alloc_size += size
-        self.cur_size += size
-        self.peak_size = max(self.peak_size, self.cur_size)
-
-    def free_preprocess(self, device_id, mem_size, mem_ptr, pmem_id):
-        self.free_size += mem_size
-        self.cur_size -= mem_size
-
-    def print_report(self):
-        print(f'Total allocated: {self.alloc_size} bytes')
-        print(f'Total freed: {self.free_size} bytes')
-        print(f'Current memory usage: {self.alloc_size - self.free_size} bytes')
-
-
-def cpu_mem_peak(fun):
-    mem = memory_usage(fun, interval=0.001, max_usage=True, include_children=True) 
-    # base = memory_usage(lambda : None,interval=0.001, max_usage=True, include_children=True)
-    return mem
-def gpu_mem_peak(fun):
-    torch.cuda.synchronize()
-    start = torch.cuda.memory_allocated()
-    torch.cuda.reset_peak_memory_stats() 
-    with SimpleMemoryHook() as hook:
-        fun()
-    cupy_peak = hook.peak_size
-    torch.cuda.synchronize()
-    torch_peak = torch.cuda.max_memory_allocated()  -start
-    gpu_peak_mem = (torch_peak+ cupy_peak)/ 1e6
-    return gpu_peak_mem
-def timeit(fun):
-    torch.cpu.synchronize()
-    torch.cuda.synchronize()
-    start = time.perf_counter()
-    fun()
-    torch.cpu.synchronize()
-    torch.cuda.synchronize()
-    end = time.perf_counter()
-    return end-start
-def plot_comparison(element_type, chara_lengths, n_times, csv_path):
+def plot_comparison(element_type, chara_lengths, n_times, csv_path, device="cuda:0"):
     data = {
-        "dofs":[],
+        "degree of freedom":[],
         "backend":[],
-        "time":[],
-        "CPU mem in GB":[],
-        "GPU mem in GB":[],
+        "time in s":[],
+        "chara length":[],
+        "CPU peak mem in GB":[],
+        "CPU mean mem in GB":[],
+        "GPU peak mem in GB":[],
+        "GPU mean mem in GB":[],
     }
     pbar = tqdm(total=len(chara_lengths)*n_times*4)
 
@@ -147,29 +104,39 @@ def plot_comparison(element_type, chara_lengths, n_times, csv_path):
         # th_fem_cpu = ThFEM(mesh.clone())
         th_fem_cpu_1 = ThFEM(mesh.clone(), batch_size=1)
         # th_fem_gpu   = ThFEM(mesh.clone().to("cuda:0"))
-        th_fem_gpu_1 = ThFEM(mesh.clone().to("cuda:0"), batch_size=1)
+        th_fem_gpu_1 = ThFEM(mesh.clone().to(device), batch_size=1)
         sk_fem       = SkFEM(mesh, element=element_type)
         fe_fem       = feFEM(mesh)
-        for _ in range(n_times):
-            for name, fem in zip([
-                                        # "torch_fem cpu(None)", 
-                                        "torch_fem cpu",
-                                        # "torch_fem cuda(None)", 
-                                        "torch_fem cuda",
-                                        "scikit-fem", 
-                                        "fenics"], [
-                                                    # th_fem_cpu, 
-                                                    th_fem_cpu_1,
-                                                    # th_fem_gpu, 
-                                                    th_fem_gpu_1,
-                                                    sk_fem, 
-                                                    fe_fem]):
-
-                data["dofs"].append(mesh.points.shape[0])
+        
+        for name, fem in zip([
+                                # "torch_fem cpu(None)", 
+                                "torch_fem cpu",
+                                # "torch_fem cuda(None)", 
+                                "torch_fem cuda",
+                                "scikit-fem", 
+                                "fenics"], [
+                                            # th_fem_cpu, 
+                                            th_fem_cpu_1,
+                                            # th_fem_gpu, 
+                                            th_fem_gpu_1,
+                                            sk_fem, 
+                                            fe_fem]):
+            for _ in range(n_times):
+                
+                with CPUProfiler() as cpu_profiler:
+                    fem()
+                data["CPU peak mem in GB"].append(cpu_profiler.max())
+                data["CPU mean mem in GB"].append(cpu_profiler.mean())
+                with CUDAProfiler() as cuda_profiler:
+                    fem()
+                data["GPU peak mem in GB"].append(cuda_profiler.max())
+                data["GPU mean mem in GB"].append(cuda_profiler.mean())
+                with TimeProfiler() as time_profiler:
+                    fem()
+                data["time in s"].append(time_profiler.time)
+                data["chara length"].append(chara_length)
+                data["degree of freedom"].append(mesh.points.shape[0])
                 data["backend"].append(name)
-                data["time"].append(timeit(fem))
-                data["CPU mem in GB"].append(cpu_mem_peak(fem) / 1e3)
-                data["GPU mem in GB"].append(gpu_mem_peak(fem) / 1e3)
                 pbar.update(1)
                 pbar.set_postfix({
                     "dofs":mesh.points.shape[0],
@@ -177,17 +144,6 @@ def plot_comparison(element_type, chara_lengths, n_times, csv_path):
                     "backend":name,
                 })
     
-    
-    # df = {"metric":[],
-    #       "value":[],
-    #       "backend":[],
-    #       "chara_length":[]}
-    # for i in range(len(data["chara_length"])):
-    #     for metric in ["time", "CPU RAM in MB", "GPU RAM in MB"]:
-    #         df['metric'].append(metric)
-    #         df['value'].append(data[metric][i])
-    #         df['backend'].append(data["backend"][i])
-    #         df['chara_length'].append(data["chara_length"][i])
 
     df = pd.DataFrame(data)
     df.to_csv(csv_path)
@@ -196,9 +152,9 @@ def plot_comparison(element_type, chara_lengths, n_times, csv_path):
 
     markers = ["o", "s", "p", "^"]
     linestyles = ["--", "--", "--", "--"]
-    sns.pointplot(x="dofs", y="time", hue="backend", markers=markers, linestyles=linestyles,  data=df, ax=ax[0])
-    sns.pointplot(x="dofs", y="CPU mem in GB", hue="backend",markers=markers, linestyles=linestyles,  data=df, ax=ax[1])
-    sns.pointplot(x="dofs", y="GPU mem in GB", hue="backend",markers=markers, linestyles=linestyles, data=df, ax=ax[2])
+    sns.pointplot(x="degree of freedom", y="time in s", hue="backend", markers=markers, linestyles=linestyles,  data=df, ax=ax[0])
+    sns.pointplot(x="degree of freedom", y="CPU peak mem in GB", hue="backend",markers=markers, linestyles=linestyles,  data=df, ax=ax[1])
+    sns.pointplot(x="degree of freedom", y="GPU peak mem in GB", hue="backend",markers=markers, linestyles=linestyles, data=df, ax=ax[2])
     # for i in range(3):
     #     ax[i].set_xscale("log")
     #     ax[i].set_yscale("log")
@@ -274,20 +230,67 @@ def test():
         print(stat)
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--device_index", type=int, default=0)
+    parser.add_argument("-n", "--num_dofs", type=int ,  default=3)
+    parser.add_argument("-t", "--times", type=int ,  default=5)
+    args = parser.parse_args()
+
+    mem = get_max_memory_for_index(args.device_index) - get_memory_for_index(args.device_index)
+
+    class Rectangle:
+        @staticmethod
+        def mem2dof(mem):
+            return (50 + mem) / 0.02
+        @staticmethod
+        def dof2mem(dof):
+            return dof * 0.02 - 50
+        @staticmethod
+        def dof2chara_length(dof):
+            return 1/np.sqrt(dof) * 1.2
+        @staticmethod
+        def mem2chara_length(mem):
+            return Rectangle.dof2chara_length(Rectangle.mem2dof(mem))
+    
+    max_mem  = 0.9 * mem 
+    max_dof= Rectangle.mem2dof(max_mem)
+    dofs = np.linspace(100, max_dof, args.num_dofs)
+    print(f"mems: {Rectangle.dof2mem(dofs)}")
+    chara_lengths = Rectangle.dof2chara_length(dofs)
 
     fig = plot_comparison(
         element_type="tri",
-        chara_lengths=[0.05, 0.01, 0.005],
-        n_times=5,
+        chara_lengths=chara_lengths,
+        n_times=args.times,
         csv_path="compare_2d.csv",
+        device=f"cuda:{args.device_index}"
     )
     fig.savefig("compare_2d.png")
 
+    class Cube:
+        @staticmethod
+        def mem2dof(mem):
+            return (50 + mem) / 0.04
+        @staticmethod
+        def dof2chara_length(dof):
+            return 1/(dof)**(1/3) * 1.33
+        @staticmethod
+        def mem2chara_length(mem):
+            return Cube.dof2chara_length(Cube.mem2dof(mem))
+
+
+    max_mem  = 0.9 * mem 
+    max_dof= Cube.mem2dof(max_mem)
+    print(f"dofs: {dofs}")
+    dofs = np.linspace(100, max_dof, args.num_dofs)
+    chara_lengths = Cube.dof2chara_length(dofs)
+
     fig = plot_comparison(
         element_type="tetra",
-        chara_lengths=[0.1,  0.08, 0.05],
-        n_times=5,
+        chara_lengths=chara_lengths,
+        n_times=args.times,
         csv_path="compare_3d.csv",
+        device=f"cuda:{args.device_index}"
     )
 
     fig.savefig("compare_3d.png")

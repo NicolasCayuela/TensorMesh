@@ -124,6 +124,8 @@ class SparseMatrix(nn.Module):
         torch.Tensor
             the result of the multiplication of shape [a] or [a,h]
         """
+        assert x.shape[0] == self.shape[1], f"the first dim of x should be the same as the second dim of the sparse matrix, but got [{self.shape[0]},{self.shape[1]}] @ [{x.shape[0]},..] "
+        assert x.device == self.edata.device, f"the device of x should be the same as the device of the sparse matrix, but got {x.device}, {self.edata.device}"
         return spmm(self.edata, self.row, self.col, self.shape, x)
 
     def __neg__(self):
@@ -145,6 +147,7 @@ class SparseMatrix(nn.Module):
             the result of the solution of shape [b] or [b,h]
         """
         assert x.shape[0] == self.shape[1], f"the first dim of x should be the same as the second dim of the sparse matrix, but got {x.shape[0]}, {self.shape[1]}"
+        assert x.device == self.edata.device, f"the device of x should be the same as the device of the sparse matrix, but got {x.device}, {self.edata.device}"
         return spsolve(self.edata, self.row, self.col, self.shape, x, backend=backend)
 
     def requires_grad_(self, requires_grad: bool = True):
