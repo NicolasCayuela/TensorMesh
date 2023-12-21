@@ -154,9 +154,9 @@ def benchmark_fem(data, element_type, chara_length, pbar, ntimes=5, target="torc
     cpu_mean_mems = np.array(cpu_mean_mems)
     times = np.array(times)
 
-    # remove the outlier by 3 sigma
+    # remove the outlier by 10 sigma
     values = cpu_peak_mems[(cpu_peak_mems != cpu_peak_mems.max()) & (cpu_peak_mems != cpu_peak_mems.min())]
-    valid_mask = np.abs( cpu_peak_mems - values.mean() ) < 3*values.std()
+    valid_mask = np.abs( cpu_peak_mems - values.mean() ) < 10*values.std()
 
     cpu_peak_mems = cpu_peak_mems[valid_mask]
     cpu_mean_mems = cpu_mean_mems[valid_mask]
@@ -170,9 +170,9 @@ def benchmark_fem(data, element_type, chara_length, pbar, ntimes=5, target="torc
     data["GPU peak mem in MB"].extend(gpu_peak_mems.tolist())
     data["GPU mean mem in MB"].extend(gpu_mean_mems.tolist())
     data["time in s"].extend(times.tolist())
-    data["chara length"].extend([chara_length]*len(times))
-    data["degree of freedom"].extend([(~mesh.boundary_mask).sum().item()]*len(times))
-    data["backend"].extend([target]*len(times))
+    data["chara length"].extend([chara_length]*valid_mask.sum())
+    data["degree of freedom"].extend([(~mesh.boundary_mask).sum().item()]*valid_mask.sum())
+    data["backend"].extend([target]*valid_mask.sum())
 
 
 def draw_error_bar(data, x,  y, hue, ax):
@@ -224,10 +224,15 @@ def plot_comparison(element_type,
         chara_indexes = set(np.where(np.array(df["chara length"]) == chara_length)[0].tolist())
         for backend in backends:
             backend_indexes = set(np.where(np.array(df["backend"]) == backend)[0].tolist())
-            if not force and len(chara_indexes.intersection(backend_indexes)) > 0:
-                for _ in range(n_times):
-                    pbar.update(1)
-                continue
+            indexes = chara_indexes.intersection(backend_indexes)
+            if force:
+                for key, value in df.items():
+                    df[key] = [v for i, v in enumerate(value) if i not in indexes]
+            else:
+                if len(indexes) > 0:
+                    for _ in range(n_times):
+                        pbar.update(1)
+                    continue
             gc.collect()
             torch.cuda.empty_cache()
             cp.get_default_memory_pool().free_all_blocks()
@@ -336,13 +341,13 @@ if __name__ == '__main__':
     if not args.only_3d:
         if args.backend == "torchfem_cpu":
             if args.server:
-                chara_lengths = [0.05, 0.01, 0.005, 0.002, 0.0015, 0.0005, 0.00025]
+                chara_lengths = [0.05, 0.01, 0.005, 0.002, 0.0015, 0.0012, 0.0005, 0.00025]
             else:
                 chara_lengths = [0.05, 0.01, 0.005, 0.002, 0.0015, 0.0012]
             backends = ["torch_fem cpu"]
         elif args.backend == "torchfem_cuda":
             if args.server:
-                chara_lengths = [0.05, 0.01, 0.005, 0.002, 0.0015, 0.0005, 0.00025]
+                chara_lengths = [0.05, 0.01, 0.005, 0.002, 0.0015, 0.0012, 0.0005, 0.00025]
             else:
                 chara_lengths = [0.05, 0.01, 0.005, 0.002, 0.0015, 0.0012]
             backends = ["torch_fem cuda"]
@@ -377,16 +382,16 @@ if __name__ == '__main__':
 
         if args.backend == "torchfem_cpu":
             if args.server:
-                chara_lengths = [0.2, 0.1, 0.05, 0.04, 0.02,0.015]
+                chara_lengths = [0.2, 0.1, 0.05, 0.04, 0.02, 0.015, 0.01, 0.008]
             else:
-                chara_lengths = [0.2, 0.1, 0.05, 0.04, 0.02, 0.01, 0.008]
+                chara_lengths = [0.2, 0.1, 0.05, 0.04, 0.02, 0.015, 0.01, 0.008]
             backends = ["torch_fem cpu"]
 
         elif args.backend == "torchfem_cuda":
             if args.server:
-                chara_lengths = [0.2, 0.1, 0.05, 0.04, 0.02,0.015]
+                chara_lengths = [0.2, 0.1, 0.05, 0.04, 0.02,0.015,0.01, 0.008]
             else:
-                chara_lengths = [0.2, 0.1, 0.05, 0.04, 0.02, 0.01, 0.008]
+                chara_lengths = [0.2, 0.1, 0.05, 0.04, 0.02,0.015]
             backends = ["torch_fem cuda"]
 
         elif args.backend == "fenics":
