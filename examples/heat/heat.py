@@ -3,7 +3,7 @@ sys.path.append("../..")
 
 import torch
 from torch_fem import ElementAssembler, Mesh,Condenser
-from torch_fem.dataset import HeatMultiSinCos
+from torch_fem.dataset import HeatMultiFrequency
 
 class AAssembler(ElementAssembler):
     def forward(self, gradu, gradv):
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     torch.random.manual_seed(42)
     mesh = Mesh.gen_rectangle(chara_length=0.02, element_type="tri")
 
-    dataset = HeatMultiSinCos(d=8)
+    dataset = HeatMultiFrequency(d=8)
 
     u0 = dataset.initial_condition(mesh.points)
     
