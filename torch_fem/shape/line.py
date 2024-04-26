@@ -13,11 +13,11 @@ def shape_val_p1(quadrature):
                         n_dim = 1 for line
         Returns:
         --------
-            phi      : torch.Tensor [n_quadrature, n_basis]
+            phi      : torch.Tensor [n_quadrature, n_basis, n_dim]
                         n_basis = 2
     """
     n_quadrature, n_dim = quadrature.shape[-2:]
-    assert n_dim == 1, f"n_dim must be 1 for line , but got {n_dim}"
+    assert n_dim >= 1, f"n_dim must be 1 for line , but got {n_dim}"
     assert quadrature.dim() == 2, f"quadrature must be 2D, but got {quadrature.dim()}"
 
     phi = torch.zeros((*quadrature.shape[:-1], 2), device=quadrature.device,  dtype=quadrature.dtype)

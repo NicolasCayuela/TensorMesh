@@ -2,56 +2,68 @@ import re
 import torch
 import torch.nn as nn
 from itertools import chain
+from collections import OrderedDict
+from typing import Union, Sequence, Optional,Dict,Iterable, Tuple, Mapping
+
+
 class BufferDict(nn.Module):
-    def __init__(self, data = None):
+    def __init__(self, data:Optional[Dict[str, torch.Tensor]] = None):
         super().__init__()
         if data is None:
-            data = {}
-        self._data = {} # used for storing data that cannot be used as a valid name
+            data= {}
+        self._data:Dict[str,torch.Tensor] = OrderedDict() # used for storing data that cannot be used as a valid name
         pattern = re.compile("^[a-zA-Z_][a-zA-Z0-9_]*$")
       
         for key in list(data.keys()):
             if not pattern.match(key):
                 self._data[key] = data.pop(key)
         for key, value in data.items():
-            if isinstance(value, nn.Module):
-                setattr(self, key, value)
-            elif isinstance(value, torch.Tensor):
+            if isinstance(value, torch.Tensor):
                 self.register_buffer(key, value)
             else:
                 raise TypeError(f"Cannot register a {type(value)} as a buffer or a parameter")
     
-    def as_parameter(self, key):
-        buffer = self._buffers.pop(key)
-        self.register_parameter(key, buffer)
+    def as_parameter(self, key:str):
+        """Convert a buffer to a parameter"""
+        buffer = self._buffers.pop(key) 
+        self.register_parameter(key, buffer) # type: ignore
         
-    def as_buffer(self, key):
+    def as_buffer(self, key:str):
+        """Convert a parameter to a buffer"""
         parameter = self._parameters.pop(key)
         self.register_buffer(key, parameter)
         
-    def keys(self):
-        return chain(self._buffers.keys(), self._parameters.keys(), self._data.keys(), self._modules.keys())
+    def keys(self)->Iterable[str]:
+        return chain(self._buffers.keys(), self._parameters.keys(), self._data.keys())
     
-    def items(self):
-        return chain(self._buffers.items(), self._parameters.items(), self._data.items(), self._modules.items())
+    def items(self)->Iterable[Tuple[str, torch.Tensor]]:
+        return chain(self._buffers.items(), self._parameters.items(), self._data.items()) # type: ignore
     
-    def values(self):
-        return chain(self._buffers.values(), self._parameters.values(), self._data.values(), self._modules.values())
+    def values(self)->Iterable[torch.Tensor]:
+        return chain(self._buffers.values(), self._parameters.values(), self._data.values()) # type: ignore
     
-    def __getitem__(self, key):
+    def __hash__(self):
+        return hash((super().__hash__(), hash(tuple(self._data.keys())), hash(tuple(self._data.values()))))
+
+    def __getitem__(self, key:str)->torch.Tensor:
         if key not in self.keys():
             raise KeyError(f"{key} is not found in the BufferDict")
         
-        return self._buffers[key] if key in self._buffers else self._parameters[key] if key in self._parameters else self._data[key] if key in self._data else self._modules[key]
+        assert key in self.keys()
 
-    def __setitem__(self, key, value):
+        if key in self._buffers.keys():
+            return self._buffers[key] # type: ignore
+        elif key in self._parameters.keys():
+            return self._parameters[key] # type: ignore
+        else:
+            return self._data[key]
+        
+    def __setitem__(self, key:str, value:torch.Tensor):
         pattern = re.compile("^[a-zA-Z_][a-zA-Z0-9_]*$")
         if not pattern.match(key):
             self._data[key] = value
         else:
-            if isinstance(value, nn.Module):
-                setattr(self, key, value)
-            elif isinstance(value, torch.Tensor):
+            if isinstance(value, torch.Tensor):
                 self.register_buffer(key, value)
             else:
                 raise TypeError(f"Cannot register a {type(value)} as a buffer or a parameter")
@@ -62,19 +74,19 @@ class BufferDict(nn.Module):
     def __includes__(self, key):
         return key in self.keys()
 
-    def is_floating_point(self):
+    def is_floating_point(self)->bool:
         return any(map(lambda x:x.is_floating_point(), self.values()))
 
-    def is_complex(self):
+    def is_complex(self)->bool:
         return any(map(lambda x:x.is_complex(), self.values()))
 
     @property
     def dtype(self):
-        return next(iter(self.buffers().values())).dtype
+        return next(iter(self.buffers().values())).dtype # type: ignore
 
     @property
     def device(self):
-        return next(iter(self.buffers().values())).device
+        return next(iter(self.buffers().values())).device # type: ignore
     
     def _apply(self, fn):
         self = super()._apply(fn)
@@ -90,9 +102,9 @@ class BufferDict(nn.Module):
     def __repr__(self):
         return str(self)
     
-    def to_dict(self):
+    def to_dict(self)->Mapping[str, torch.Tensor|nn.Module]:
         return {key:value for key, value in self.items()}
 
-    def clone(self):
-        data = {key:value.clone() for key, value in self.items()}
+    def clone(self)->'BufferDict':
+        data = {key:value.clone() for key, value in self.items()} # type: ignore
         return BufferDict(data)

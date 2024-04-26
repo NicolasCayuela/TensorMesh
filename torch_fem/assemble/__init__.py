@@ -1,6 +1,6 @@
 from .element_assembler import ElementAssembler
 from .node_assembler import NodeAssembler
-from .boundary_assmbler import BoundaryAssmebler
+from .facet_assmbler import FacetAssembler
 from .builtin import LaplaceElementAssembler, \
                         MassElementAssembler, \
                         const_node_assembler,\

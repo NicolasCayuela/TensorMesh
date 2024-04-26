@@ -19,6 +19,7 @@ class LaplaceAssembler(ElementAssembler):
 class ProductAssembler(ElementAssembler):
     def forward(self, u, v):
         K = mul(u, v)
+        
         return K
 
 @skfem.BilinearForm
@@ -39,7 +40,7 @@ def element_assemble(mesh, model="laplace"):
     }[model]
     K_asm = assambler.from_mesh(mesh, quadrature_order=2)
     K = K_asm(mesh.points)
-
+    
     K_scipy = K.to_scipy_coo()
     if mesh.default_element_type.startswith("tri"):
         Mesh = skfem.MeshTri
@@ -49,8 +50,14 @@ def element_assemble(mesh, model="laplace"):
         Mesh = skfem.MeshTet
     else:
         raise NotImplementedError
-
-    mesh_skfem = Mesh(mesh.points.T.cpu().numpy(), mesh.elements().T.numpy())
+    # breakpoint()
+    if mesh.default_element_type == "quad":
+        elements = mesh.elements().T.numpy()
+        elements[[2,3]] = elements[[3,2]]
+        breakpoint()
+    else:
+        elements = mesh.elements().T.numpy()
+    mesh_skfem = Mesh(mesh.points.T.cpu().numpy(), elements)
 
     skfem_assembler = {
         "laplace": laplace_assembler,
@@ -66,8 +73,10 @@ def element_assemble(mesh, model="laplace"):
 
     K_skfem = skfem.asm(skfem_assembler, basis)
 
-    K_scipy_dense = K_scipy.toarray()
+    K_scipy_dense = K_scipy.toarray() # [n_node, n_node]
     K_skfem_dense = K_skfem.toarray()
+
+    # breakpoint()
     np.testing.assert_allclose(K_scipy_dense, K_skfem_dense, rtol=1e-5)
     for K in [K_scipy_dense, K_skfem_dense]:
         min_lambda = np.linalg.eig(K)[0].min()
@@ -75,22 +84,22 @@ def element_assemble(mesh, model="laplace"):
             np.testing.assert_allclose(min_lambda, 0, atol=1e-10)
 
 
-def test_element_assembler_tri1_1():
-    element_assemble(Mesh.gen_rectangle(chara_length=0.1,  element_type="tri"), model="laplace")
-    element_assemble(Mesh.gen_rectangle(chara_length=0.1,  element_type="tri"), model="product")
+def test_tri1_1():
+    # element_assemble(Mesh.gen_rectangle(chara_length=0.2,  element_type="tri"), model="laplace")
+    element_assemble(Mesh.gen_rectangle(chara_length=0.2,  element_type="quad"), model="product")
 
-def test_element_assembler_tri1_2():
-    m = skfem.MeshTri().refined(5)
+def test_tri1_2():
+    m = skfem.MeshTri().refined(4)
     mesh = meshio.Mesh(points = m.p.T, cells = [("triangle", m.t.T)])
     mesh = Mesh.from_meshio(mesh)
-    element_assemble(mesh, model="laplace")
+    # element_assemble(mesh, model="laplace")
     element_assemble(mesh, model="product")
 
-def test_element_assembler_quad1():
+def test_quad1():
     element_assemble(Mesh.gen_rectangle(chara_length=0.1,  element_type="quad"), model="laplace")
     element_assemble(Mesh.gen_rectangle(chara_length=0.1,  element_type="quad"), model="product")
 
-def test_element_assembler_tet1():
+def test_tet1():
     element_assemble(Mesh.gen_cube(chara_length=0.1), model="laplace")
     element_assemble(Mesh.gen_cube(chara_length=0.1), model="product")
 

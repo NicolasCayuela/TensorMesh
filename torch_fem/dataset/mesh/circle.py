@@ -71,6 +71,10 @@ def gen_circle(chara_length=0.1,
 
         gmsh.model.mesh.setSize(gmsh.model.getEntities(0), chara_length)
 
+        boundary_lines = gmsh.model.getBoundary([(2, circle)], oriented=False)
+        line_group = gmsh.model.addPhysicalGroup(1, [line[1] for line in boundary_lines])
+        gmsh.model.setPhysicalName(1, line_group, "boundary")
+
         gmsh.model.addPhysicalGroup(2, [circle])
         gmsh.model.setPhysicalName(2, 1, "domain")
 
@@ -162,6 +166,12 @@ def gen_hollow_circle(chara_length=0.1,
         gmsh.option.setNumber("Mesh.ElementOrder", order)
 
         gmsh.model.mesh.setSize(gmsh.model.getEntities(0), chara_length)
+
+        boundary_lines_outer = gmsh.model.getBoundary([(2, circle_outer)], oriented=False)
+        boundary_lines_inner = gmsh.model.getBoundary([(2, circle_inner)], oriented=False)
+        boundary_lines = boundary_lines_outer + boundary_lines_inner
+        line_group = gmsh.model.addPhysicalGroup(1, [line[1] for line in boundary_lines])
+        gmsh.model.setPhysicalName(1, line_group, "boundary")
 
         gmsh.model.addPhysicalGroup(2, [circle_inner])
         gmsh.model.setPhysicalName(2, 1, "domain")

@@ -5,10 +5,10 @@
 - [x] assemble
   - [x] elemenet
   - [x] node 
-- [ ] sparse
-  - [ ] solve
+- [x] sparse
+  - [x] solve
     - [x] scipy solve
-    - [ ] petsc solve
+    - [x] petsc solve
     - [x] cupy(cusolve) solve
   - [x] mm
 - [x] adjacency
@@ -17,14 +17,14 @@
 
 
 ## benchmark
-- [ ] assemble speed / memory
-- [ ] pipeline speed / memory
+- [x] assemble speed / memory
+- [x] pipeline speed / memory
 
 
 ## Example
-- [ ] poisson
+- [x] poisson
   - [x] naive
-  - [ ] adaptive mesh
+  - [x] adaptive mesh
 - [ ] heat
   - [x] naive
   - [ ] pinn
@@ -63,7 +63,7 @@
   - [ ] wedge
     - [ ] 2 order of shape fn and shape grad 
     - [ ] infinite order of shape fn and shape grad
-- [ ] mesh 
+- [x] mesh 
   - [x] adjacency(for gnn)
     - [x] node adjacency 
     - [x] edge adjacency 
@@ -72,7 +72,9 @@
   - [x] element assembler 
   - [x] node assembler
 - [ ] gnn 
-- [ ] ODE
+- [x] ODE
+  - [ ] explicit runge-kutta
+  - [ ] implicit linear runge-kutta
 - [ ] dataset
   - [ ] mesh 
     - [ ] generator

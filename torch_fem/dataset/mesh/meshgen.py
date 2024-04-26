@@ -1,7 +1,7 @@
 import gmsh 
 import os
 from ...mesh import Mesh
-from ...shape import element_type2dimension, element_type2order
+from ...element import element_type2dimension, element_type2order
 
 
 class MeshGen:

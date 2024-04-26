@@ -1,7 +1,7 @@
 from .element_assembler import ElementAssembler
 from .node_assembler import NodeAssembler
 
-from ..functional import dot, mul, sym, ddot, eye, trace
+from ..functional import dot, mul, sym, ddot, eye
 
 
 class LaplaceElementAssembler(ElementAssembler):
@@ -28,7 +28,7 @@ class MassElementAssembler(ElementAssembler):
         K = mul(u, v)
         return K
     
-def const_node_assembler(c=1):
+def const_node_assembler(c = 1):
     class ConstNodeAssembler(NodeAssembler):
         r"""The const node assembler
         
@@ -59,6 +59,8 @@ def func_node_assembler(f=lambda x: x):
             f = self.f(x) * v
             return f
     return FuncNodeAssembler
+
+
 
 # class ConstNodeAssembler(NodeAssembler):
 #     r"""The const node assembler

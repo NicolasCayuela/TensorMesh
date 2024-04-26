@@ -87,6 +87,12 @@ def gen_L(chara_length=0.1,
 
         gmsh.model.mesh.setSize(gmsh.model.getEntities(0), chara_length)
 
+        boundary_lines_outer = gmsh.model.getBoundary([(2, rectangle_outer)], oriented=False)
+        boundary_lines_inner = gmsh.model.getBoundary([(2, rectangle_inner)], oriented=False)
+        boundary_lines = boundary_lines_outer + boundary_lines_inner
+        line_group = gmsh.model.addPhysicalGroup(1, [line[1] for line in boundary_lines])
+        gmsh.model.setPhysicalName(1, line_group, "boundary")
+
         gmsh.model.addPhysicalGroup(2, [rectangle_outer])
         gmsh.model.setPhysicalName(2, 1, "domain")
 

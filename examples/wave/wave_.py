@@ -100,7 +100,7 @@ def wave_skfem(dt=0.001, c=4.0, n=100):
 
     basis = skfem.InteriorBasis(mesh_skfem, skfem.ElementTriP1())
 
-    dataset = WaveMultiSinCos(K=4, c=c)
+    dataset = WaveMultiFrequency(K=4, c=c)
 
     u0 = dataset.initial_condition(mesh.points.detach())
     u0 = u0.numpy()

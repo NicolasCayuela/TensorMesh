@@ -179,7 +179,7 @@ def benchmark_fem(data, element_type, chara_length, pbar, ntimes=5, target="torc
     data["GPU mean mem in MB"].extend(gpu_mean_mems.tolist())
     data["time in s"].extend(times.tolist())
     data["chara length"].extend([chara_length]*valid_mask.sum())
-    data["degree of freedom"].extend([mesh.n_point]*valid_mask.sum())
+    data["degree of freedom"].extend([mesh.n_points]*valid_mask.sum())
     data["backend"].extend([target]*valid_mask.sum())
 
 
@@ -201,9 +201,10 @@ def draw_error_bar(data, x,  y, hue, ax):
                     color=_colors[i], marker=_markers[i], linestyle=_line_styles[i], 
                     capsize=4.0, 
                     alpha=0.5,
-                    markersize=0.5,
+                    # markersize=0.5,
                     label=_hue)
     ax.set_xscale("log")
+    ax.set_yscale("log")
     ax.set_xlabel(x)
     ax.set_ylabel(y)
     ax.set_xlim(left=np.array(xs).min()/2, right=np.array(xs).max()*2)

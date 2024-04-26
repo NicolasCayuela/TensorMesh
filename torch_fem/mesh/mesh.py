@@ -1,4 +1,7 @@
+from fileinput import filename
 import os
+from typing import Optional, Union, Sequence
+from attr import dataclass
 import numpy as np
 import torch 
 import torch.nn as nn
@@ -13,13 +16,15 @@ from itertools import chain
 from functools  import reduce
 from operator import eq
 from collections import defaultdict
-from typing import Iterable
+from typing import Iterable, Dict, Optional,List
 
+from torch_fem.visualization import draw_facet
 
-from ..shape import get_basis, get_boundary, element_type2dimension as topological_dimension
+from .adjacency import node_adjacency, element_adjacency
+from ..element import element_type2dimension as topological_dimension
 from ..sparse import SparseMatrix
 from ..nn import BufferDict
-
+from ..visualization import draw_mesh_2d_stream,draw_mesh_2d_static,draw_facet_2d
 
 
 
@@ -62,7 +67,17 @@ class Mesh(nn.Module):
 
     """
 
-    def __init__(self, mesh):
+    cells:BufferDict # str->torch.Tensor[n_element,n_basis]
+    point_data:BufferDict # str->torch.Tensor[n_point,...]
+    cell_data:nn.ModuleDict # str->Dict[str,torch.Tensor[n_element,...]]
+    field_data:BufferDict # str->torch.Tensor[n_field,...]
+    cell_sets:Dict
+    points:torch.Tensor # [n_point, n_dim]
+    dim2eletyp:Dict[int, List[str]] 
+    default_eletyp:str|List[str]
+
+    def __init__(self, mesh:meshio.Mesh):
+    
         super().__init__()
         # turn is_... or ..._mask to bool
         for key in list(mesh.point_data.keys()):
@@ -83,7 +98,7 @@ class Mesh(nn.Module):
         self.point_data = BufferDict({k:torch.from_numpy(v) for k,v in mesh.point_data.items()})
 
         # cell data
-        self.cell_data  = BufferDict({
+        self.cell_data  = nn.ModuleDict({
             k:BufferDict({i:torch.from_numpy(_v) for i,_v in v.items()}) for k,v in mesh.cell_data_dict.items()
         })
    
@@ -107,7 +122,7 @@ class Mesh(nn.Module):
             torch.from_numpy(mesh.points[:, :dimension])
         )
 
-    def register_point_data(self, key, value):
+    def register_point_data(self, key:str, value:torch.Tensor):
         """Add key-value pair to :attr:`point_data` buffer,
         since the :attr:`point_data` is a :class:`torch_fem.nn.BufferDict`, you are recommended to use this method instead of :obj:`__setitem__`
         
@@ -129,6 +144,23 @@ class Mesh(nn.Module):
 
         return self
       
+    def register_element_data(self, key:str, value:torch.Tensor):
+        """Add key-value pair to :attr:`cell_data`
+        """
+        if isinstance(value, torch.Tensor):
+            assert isinstance(self.elements(), torch.Tensor), f"Only for homogenous elements, value can be passed as torch.Tensor, else it should be Dict[element_type,torch.Tensor]"
+            assert value.shape[0] == self.elements().shape[0], f"the first dimension of value should be {self.elements().shape[0]}, but got {value.shape[0]}"
+            self.cell_data[self.default_element_type][key] =  value    
+        else:
+            assert isinstance(value, dict), f"The value should be either torch.Tensor or Dict[element_type, torch.Tensor]"
+            assert len(set(self.default_element_type).difference(value.keys())) == 0, f"The keys of value should be exactly the same as default_element_type, but got {value.keys()}"
+
+            for element_type, _value in value.items():
+                assert _value.shape[0] == self.elements(element_type).shape[0], f"the first dimension of value should be {self.elements(element_type).shape[0]}, but got {_value.shape[0]}"
+                self.cell_data[element_type][key] = _value  
+
+        return self
+
     def __str__(self):
         return self.__repr__()
         # return f"Mesh(n_points={self.points.shape[0]}, cells=({','.join(f'{k}:{v.shape}' for k,v in self.cells.items())}))"
@@ -144,7 +176,7 @@ class Mesh(nn.Module):
             f")"
         )
 
-    def to_meshio(self):
+    def to_meshio(self)->meshio.Mesh:
         """
         Returns
         -------
@@ -162,7 +194,10 @@ class Mesh(nn.Module):
         )  
         return mesh
 
-    def save(self, file_name:str, file_format:str=None):
+    def dim(self)->int:
+        return self.points.shape[1]
+
+    def save(self, file_name:str, file_format:Optional[str]=None):
         """
         Parameters
         ----------
@@ -208,7 +243,7 @@ class Mesh(nn.Module):
         meshio.write(file_name, mesh, file_format)
         return self
 
-    def to_file(self, file_name:str, file_format:str=None):
+    def to_file(self, file_name:str, file_format:Optional[str]=None):
         """
         Parameters
         ----------
@@ -224,7 +259,7 @@ class Mesh(nn.Module):
         """
         return self.save(file_name, file_format)
     
-    def node_adjacency(self, element_type=None):
+    def node_adjacency(self, element_type:Optional[str|Iterable[str]]=None)->SparseMatrix:
         """get the node adjacency matrix, inside each element, the nodes are considered fully connected
 
         Parameters
@@ -240,21 +275,25 @@ class Mesh(nn.Module):
             the adjacency matrix of nodes :math:`[|\\mathcal V|,|\\mathcal V|]`, where :math:`|\\mathcal V|` is the number of nodes
         """
         elements = self.elements(element_type)
-        if isinstance(elements, torch.Tensor):
-            edges = torch.vmap(lambda x:torch.stack(torch.meshgrid(x,x),-1))(elements).reshape(-1,2).T
-        elif isinstance(elements, dict):
-            edges = []
-            for k,v in elements.items():
-                edges.append(torch.vmap(lambda x:torch.stack(torch.meshgrid(x,x),-1))(v).reshape(-1,2).T)
-            edges = torch.cat(edges, -1)
+        if isinstance(elements, dict):
+            elements = elements.values()
+        return node_adjacency(elements, self.n_points) # type:ignore
+        # elements = self.elements(element_type)
+        # if isinstance(elements, torch.Tensor):
+        #     edges = torch.vmap(lambda x:torch.stack(torch.meshgrid(x,x),-1))(elements).reshape(-1,2).T
+        # elif isinstance(elements, dict):
+        #     edges = []
+        #     for k,v in elements.items():
+        #         edges.append(torch.vmap(lambda x:torch.stack(torch.meshgrid(x,x),-1))(v).reshape(-1,2).T)
+        #     edges = torch.cat(edges, -1)
       
-        connections = torch.sparse_coo_tensor(
-            edges, torch.ones(edges.shape[1]), size=(self.n_point, self.n_point)
-        ).coalesce()
-        edges = connections.indices()
-        return SparseMatrix(torch.ones(edges.shape[1]), edges[0], edges[1], (self.n_point, self.n_point))
+        # connections = torch.sparse_coo_tensor(
+        #     edges, torch.ones(edges.shape[1]), size=(self.n_point, self.)
+        # ).coalesce()
+        # edges = connections.indices()
+        # return SparseMatrix(torch.ones(edges.shape[1]), edges[0], edges[1], (self.n_point, self.n_point))
 
-    def element_adjacency(self, element_type=None):
+    def element_adjacency(self, element_type:Optional[str]=None)->SparseMatrix:
         """get the element adjacency matrix, the element are considered connected only if they share a boundary/facet
         
         Parameters
@@ -269,102 +308,105 @@ class Mesh(nn.Module):
         SparseMatrix 
             the adjacency matrix of elements :math:`[|\\mathcal C|,|\\mathcal C|]`, where :math:`|\\mathcal C|` is the number of elements
         """
-
-        def get_element_adjacency(ele_ids, boundaries):
-            """
-                Parameters:
-                -----------
-                    ele_ids: torch.Tensor [\int n_element*n_boundary_per_element]
-                    boundaries: torch.Tensor [\int n_element*n_boundary_per_element, n_boundary_basis]
-            """
-            assert ele_ids.dim() ==  1, f"ele_ids should be 1d, but got {ele_ids.dim()}"	
-            assert boundaries.dim() == 2, f"boundaries should be 2d, but got {boundaries.dim()}"
-            assert boundaries.shape[0] == ele_ids.shape[0], f"the first dimension of boundaries should be {ele_ids.shape[0]}, but got {boundaries.shape[0]}"
-            boundaries= boundaries.reshape(-1, boundaries.shape[-1]) # [n_element * n_boundary_per_element, n_boundary_basis]
-            # make sure the index is ascending, so it's unique
-            boundaries= boundaries.sort(dim=-1).values # [n_element * n_boundary_per_element, n_boundary_basis] 
-            # the count = 2 means the boundary is shared by two elements, otherwise the boundary is on the boundary of the domain
-            unique_boundaries, inverse_indices, counts = boundaries.unique(dim=0, return_counts=True,  return_inverse=True) # [n_boundary_element, n_boundary_basis]
-            assert counts.max() == 2, f"the maximum number of elements sharing a boundary is 2, but got {counts.max()}"
-            valid_mask = counts == 2 # [n_boundary_element]
-            # for the each element, which boundary is shared by two elements
-            valid_mask = valid_mask[inverse_indices] # [n_element * n_boundary_per_element]
-            ele_ids_bd = ele_ids    # [n_element * n_boundary_per_element]
-            # only keep the shared boundary elements, but now it's shuffled
-            ele_ids_bd = ele_ids_bd[valid_mask] # [n_shared_boundary * 2]
-            # by sorting the inverse_indices, we can get the order like [0,0,1,1,2,2,3,3,...]
-            sort_index=torch.argsort(inverse_indices[valid_mask]) # [n_shared_boundary * 2]
-            # and then we can get the shared boundary elements in order 
-            ele_ids_bd = ele_ids_bd[sort_index] # [n_shared_boundary * 2]
-            edges     = ele_ids_bd.reshape(-1, 2).T # [2, n_shared_boundary]
-            # add the reverse direction
-            edges = torch.cat([edges, torch.stack([edges[1], edges[0]])], -1)
-          
-            return edges
-
         elements = self.elements(element_type)
         if isinstance(elements, torch.Tensor):
-            n_element = elements.shape[0]
-            boundaries= get_boundary(self.default_eletyp) # [n_boundary_per_element, n_boundary_basis]
-            
-            if isinstance(boundaries, torch.Tensor):
-                boundaries= elements[:, boundaries] # [n_element, n_boundary_per_element, n_boundary_basis]
-                n_boundary_per_element = boundaries.shape[1]
-                n_boundary_basis = boundaries.shape[-1]
-                edges = get_element_adjacency(torch.arange(n_element).repeat_interleave(n_boundary_per_element), boundaries.reshape(-1, n_boundary_basis))
-            elif isinstance(boundaries, dict):
-                edges = []
-                for k,v in boundaries.items():
-                    n_boundary_per_element = v.shape[1]
-                    n_boundary_basis = v.shape[-1]
-                    edges.append(get_element_adjacency(torch.arange(n_element).repeat_interleave(n_boundary_per_element), v.reshape(-1, n_boundary_basis)))
-                edges = torch.cat(edges, -1)
-            return SparseMatrix(torch.ones(edges.shape[1]), edges[0], edges[1], (n_element, n_element))
-            
-            
-        else: # mix of different element types
-            assert reduce(eq, [topological_dimension[k] for k in elements.keys()]), f"all elements should be of same dimension, but got {elements.keys()}"
-            n_element = sum([v.shape[0] for v in elements.values()])
-            ele_ids   = torch.arange(n_element)
-            boundaries = {}
-            ele_ids    = {}
-            ele_ptr    = 0
-            for element_type, element in elements.items():
-                # breakpoint()
-                partial_boundaries = get_boundary(element_type) 
-                partial_boundaries = element[:, partial_boundaries] # [n_element, n_boundary_per_element, n_boundary_basis]
-                partial_ele_ids = torch.arange(ele_ptr, ele_ptr + element.shape[0])
-                if isinstance(partial_boundaries, torch.Tensor):
-                    n_boundary_per_element = partial_boundaries.shape[1]
-                    n_boundary_basis = partial_boundaries.shape[-1]
-                    if n_boundary_basis in boundaries:
-                        boundaries[n_boundary_basis].append(partial_boundaries)
-                        ele_ids[n_boundary_basis].append(partial_ele_ids.repeat_interleave(n_boundary_per_element))
-                    else:
-                        boundaries[n_boundary_basis] = [partial_boundaries]
-                        ele_ids[n_boundary_basis] = [partial_ele_ids.repeat_interleave(n_boundary_per_element)]
-                elif isinstance(partial_boundaries, dict):
-                    for k,v in partial_boundaries.items():
-                        n_boundary_per_element = v.shape[1]
-                        n_boundary_basis = v.shape[-1]
-                        if n_boundary_basis in boundaries:
-                            boundaries[n_boundary_basis].append(v)
-                            ele_ids[n_boundary_basis].append(partial_ele_ids.repeat_interleave(n_boundary_per_element))
-                        else:
-                            boundaries[n_boundary_basis] = [v]
-                            ele_ids[n_boundary_basis] = [partial_ele_ids.repeat_interleave(n_boundary_per_element)]
-                ele_ptr += element.shape[0]
-           
-            for k, v in boundaries.items():
-                boundaries[k] = torch.cat([i.reshape(-1,i.shape[-1]) for i in v], 0)
-                ele_ids[k]    = torch.cat(ele_ids[k], 0)
-            edges = []
-            for k in boundaries.keys():
-                edges.append(get_element_adjacency(ele_ids[k], boundaries[k]))
-            edges = torch.cat(edges, -1)
-            return SparseMatrix(torch.ones(edges.shape[1]), edges[0], edges[1], (n_element, n_element))
+            elements = {self.default_element_type:elements}
+        return element_adjacency(elements) # type:ignore
+        # def get_element_adjacency(ele_ids, boundaries):
+        #     """
+        #         Parameters:
+        #         -----------
+        #             ele_ids: torch.Tensor [\int n_element*n_boundary_per_element]
+        #             boundaries: torch.Tensor [\int n_element*n_boundary_per_element, n_boundary_basis]
+        #     """
+        #     assert ele_ids.dim() ==  1, f"ele_ids should be 1d, but got {ele_ids.dim()}"	
+        #     assert boundaries.dim() == 2, f"boundaries should be 2d, but got {boundaries.dim()}"
+        #     assert boundaries.shape[0] == ele_ids.shape[0], f"the first dimension of boundaries should be {ele_ids.shape[0]}, but got {boundaries.shape[0]}"
+        #     boundaries= boundaries.reshape(-1, boundaries.shape[-1]) # [n_element * n_boundary_per_element, n_boundary_basis]
+        #     # make sure the index is ascending, so it's unique
+        #     boundaries= boundaries.sort(dim=-1).values # [n_element * n_boundary_per_element, n_boundary_basis] 
+        #     # the count = 2 means the boundary is shared by two elements, otherwise the boundary is on the boundary of the domain
+        #     unique_boundaries, inverse_indices, counts = boundaries.unique(dim=0, return_counts=True,  return_inverse=True) # [n_boundary_element, n_boundary_basis]
+        #     assert counts.max() == 2, f"the maximum number of elements sharing a boundary is 2, but got {counts.max()}"
+        #     valid_mask = counts == 2 # [n_boundary_element]
+        #     # for the each element, which boundary is shared by two elements
+        #     valid_mask = valid_mask[inverse_indices] # [n_element * n_boundary_per_element]
+        #     ele_ids_bd = ele_ids    # [n_element * n_boundary_per_element]
+        #     # only keep the shared boundary elements, but now it's shuffled
+        #     ele_ids_bd = ele_ids_bd[valid_mask] # [n_shared_boundary * 2]
+        #     # by sorting the inverse_indices, we can get the order like [0,0,1,1,2,2,3,3,...]
+        #     sort_index=torch.argsort(inverse_indices[valid_mask]) # [n_shared_boundary * 2]
+        #     # and then we can get the shared boundary elements in order 
+        #     ele_ids_bd = ele_ids_bd[sort_index] # [n_shared_boundary * 2]
+        #     edges     = ele_ids_bd.reshape(-1, 2).T # [2, n_shared_boundary]
+        #     # add the reverse direction
+        #     edges = torch.cat([edges, torch.stack([edges[1], edges[0]])], -1)
+          
+        #     return edges
 
-    def elements(self, element_type=None):
+        # elements = self.elements(element_type)
+        # if isinstance(elements, torch.Tensor):
+        #     n_element = elements.shape[0]
+        #     boundaries= get_boundary(self.default_eletyp) # [n_boundary_per_element, n_boundary_basis]
+            
+        #     if isinstance(boundaries, torch.Tensor):
+        #         boundaries= elements[:, boundaries] # [n_element, n_boundary_per_element, n_boundary_basis]
+        #         n_boundary_per_element = boundaries.shape[1]
+        #         n_boundary_basis = boundaries.shape[-1]
+        #         edges = get_element_adjacency(torch.arange(n_element).repeat_interleave(n_boundary_per_element), boundaries.reshape(-1, n_boundary_basis))
+        #     elif isinstance(boundaries, dict):
+        #         edges = []
+        #         for k,v in boundaries.items():
+        #             n_boundary_per_element = v.shape[1]
+        #             n_boundary_basis = v.shape[-1]
+        #             edges.append(get_element_adjacency(torch.arange(n_element).repeat_interleave(n_boundary_per_element), v.reshape(-1, n_boundary_basis)))
+        #         edges = torch.cat(edges, -1)
+        #     return SparseMatrix(torch.ones(edges.shape[1]), edges[0], edges[1], (n_element, n_element))
+            
+            
+        # else: # mix of different element types
+        #     assert reduce(eq, [topological_dimension[k] for k in elements.keys()]), f"all elements should be of same dimension, but got {elements.keys()}"
+        #     n_element = sum([v.shape[0] for v in elements.values()])
+        #     ele_ids   = torch.arange(n_element)
+        #     boundaries = {}
+        #     ele_ids    = {}
+        #     ele_ptr    = 0
+        #     for element_type, element in elements.items():
+        #         # breakpoint()
+        #         partial_boundaries = get_boundary(element_type) 
+        #         partial_boundaries = element[:, partial_boundaries] # [n_element, n_boundary_per_element, n_boundary_basis]
+        #         partial_ele_ids = torch.arange(ele_ptr, ele_ptr + element.shape[0])
+        #         if isinstance(partial_boundaries, torch.Tensor):
+        #             n_boundary_per_element = partial_boundaries.shape[1]
+        #             n_boundary_basis = partial_boundaries.shape[-1]
+        #             if n_boundary_basis in boundaries:
+        #                 boundaries[n_boundary_basis].append(partial_boundaries)
+        #                 ele_ids[n_boundary_basis].append(partial_ele_ids.repeat_interleave(n_boundary_per_element))
+        #             else:
+        #                 boundaries[n_boundary_basis] = [partial_boundaries]
+        #                 ele_ids[n_boundary_basis] = [partial_ele_ids.repeat_interleave(n_boundary_per_element)]
+        #         elif isinstance(partial_boundaries, dict):
+        #             for k,v in partial_boundaries.items():
+        #                 n_boundary_per_element = v.shape[1]
+        #                 n_boundary_basis = v.shape[-1]
+        #                 if n_boundary_basis in boundaries:
+        #                     boundaries[n_boundary_basis].append(v)
+        #                     ele_ids[n_boundary_basis].append(partial_ele_ids.repeat_interleave(n_boundary_per_element))
+        #                 else:
+        #                     boundaries[n_boundary_basis] = [v]
+        #                     ele_ids[n_boundary_basis] = [partial_ele_ids.repeat_interleave(n_boundary_per_element)]
+        #         ele_ptr += element.shape[0]
+           
+        #     for k, v in boundaries.items():
+        #         boundaries[k] = torch.cat([i.reshape(-1,i.shape[-1]) for i in v], 0)
+        #         ele_ids[k]    = torch.cat(ele_ids[k], 0)
+        #     edges = []
+        #     for k in boundaries.keys():
+        #         edges.append(get_element_adjacency(ele_ids[k], boundaries[k]))
+        #     edges = torch.cat(edges, -1)
+        #     return SparseMatrix(torch.ones(edges.shape[1]), edges[0], edges[1], (n_element, n_element))
+
+    def elements(self, element_type:Optional[str|Iterable[str]]=None)->torch.Tensor|Dict[str,torch.Tensor]:
         """
         Parameters
         ----------
@@ -388,7 +430,7 @@ class Mesh(nn.Module):
         else:
             raise Exception(f"element_type must be str or Iterable[str], but got {element_type}")
     
-    def clone(self):
+    def clone(self)->'Mesh':
         """The gradient will vanish if you use :obj:`torch.Tensor.clone` to clone the mesh, so we provide this method to clone the mesh
         Returns
         -------
@@ -397,7 +439,13 @@ class Mesh(nn.Module):
         """
         return Mesh(self.to_meshio())
 
-    def plot(self, values= None, save_path=None, backend="matplotlib", dt=None, show_mesh=False, fix_clim=False):
+    def plot(self, values:Optional[Dict[str,torch.Tensor] | Dict[str,Iterable[torch.Tensor]]]= None, 
+                   save_path:Optional[str] = None, 
+                   backend:str = "matplotlib", 
+                   dt:Optional[float] = None, 
+                   show_mesh:bool = False, 
+                   fix_clim:bool =False,
+                   **kwargs):
         """
             Parameters
             ----------
@@ -421,6 +469,54 @@ class Mesh(nn.Module):
                     default: False
                     
         """
+        points:torch.Tensor = self.points # type:ignore
+        elements = self.elements()
+        if isinstance(elements,torch.Tensor):
+            elements = {self.default_element_type:elements}
+        assert isinstance(elements, dict)
+
+        if values is None:
+            ax = draw_facet_2d(points, elements, draw_basis=True, **kwargs)
+            save_path = "tmp.jpg" if save_path is None else save_path
+            plt.savefig(save_path)
+
+        elif isinstance(values, (tuple,list,torch.Tensor,np.ndarray)):
+            if isinstance(values,(tuple,list)) or (isinstance(values, (torch.Tensor,np.ndarray))  and len(values.shape) == 2):
+                save_path = "tmp.mp4"  if save_path is None else save_path 
+                draw_mesh_2d_stream(points, elements, values, dt,  # type:ignore
+                                    fix_colorbar=fix_clim,
+                                    show_mesh   =show_mesh,
+                                    filename =  save_path,
+                                    **kwargs)
+            elif len(values.shape) == 1:
+                save_path = "tmp.jpg" if save_path is None else save_path
+                draw_mesh_2d_static(points, elements, values, # type:ignore
+                                    show_mesh = show_mesh,
+                                    filename=save_path,
+                                    **kwargs)
+            else:
+                raise NotImplementedError(f"{type(values)} is not implemented for plot")
+        
+        elif isinstance(values,dict):
+            v = next(iter(values.values()))
+            if isinstance(v,(tuple,list)) or (isinstance(v, (torch.Tensor,np.ndarray))  and len(v.shape) == 2):
+                save_path = "tmp.mp4"  if save_path is None else save_path 
+                draw_mesh_2d_stream(points, elements, values, dt,  # type:ignore
+                                    fix_colorbar=fix_clim,
+                                    show_mesh   =show_mesh,
+                                    filename =  save_path,
+                                    **kwargs)
+            elif isinstance(v, (torch.Tensor|np.ndarray)) and len(v.shape) == 1:
+                save_path = "tmp.jpg" if save_path is None else save_path
+                draw_mesh_2d_static(points, elements, values, # type:ignore
+                                    show_mesh = show_mesh,
+                                    filename=save_path,
+                                    **kwargs)
+            else:
+                raise NotImplementedError(f"{type(values)} is not implemented for plot")
+        else:   
+            raise NotImplementedError(f"{type(values)} is not implemented for plot")
+        
         # from ..visualization import plot_value_matplotlib, plot_pyvista
 
         # plot_fns = {
@@ -431,15 +527,15 @@ class Mesh(nn.Module):
 
         # return plot_fns[backend](kwargs, self,  save_path, dt, show_mesh)
              
-        from ..visualization import plot_value_matplotlib, plot_mesh_matplotlib
+        # from ..visualization import plot_value_matplotlib, plot_mesh_matplotlib
 
-        if values is None:
-            return plot_mesh_matplotlib(self, save_path)
-        else:
-            return plot_value_matplotlib(values, self, save_path, dt, show_mesh, fix_clim)
+        # if values is None:
+        #     return plot_mesh_matplotlib(self, save_path)
+        # else:
+        #     return plot_value_matplotlib(values, self, save_path, dt, show_mesh, fix_clim)
 
     @property
-    def n_point(self):
+    def n_points(self)->int:
         """
         Returns
         -------
@@ -448,8 +544,21 @@ class Mesh(nn.Module):
         """
         return self.points.shape[0]
 
+    @property 
+    def n_elements(self)->int:
+        """
+        Returns
+        -------
+        int
+            the number of elements :math:`|\\mathcal C|`
+        """
+        if isinstance(self.default_element_type, str):
+            return self.cells[self.default_element_type].shape[0]
+        else:
+            return sum([self.cells[k].shape[0] for k in self.default_element_type])
+
     @property
-    def boundary_mask(self):
+    def boundary_mask(self)->torch.Tensor:
         """
         Returns
         -------
@@ -465,7 +574,7 @@ class Mesh(nn.Module):
             raise Exception("'boundary_mask' or 'is_boundary' is not found in point_data")
 
     @property
-    def default_element_type(self):
+    def default_element_type(self)->str:
         """
         Returns
         -------
@@ -476,7 +585,7 @@ class Mesh(nn.Module):
         return self.default_eletyp
 
     @property
-    def dtype(self):
+    def dtype(self)->torch.dtype:
         """
         Returns
         -------
@@ -486,7 +595,7 @@ class Mesh(nn.Module):
         return self.points.dtype
     
     @property 
-    def device(self):
+    def device(self)->torch.device:
         """
         Returns
         -------
@@ -496,7 +605,7 @@ class Mesh(nn.Module):
         return self.points.device
 
     @classmethod
-    def from_meshio(cls,mesh):
+    def from_meshio(cls,mesh:meshio.Mesh):
         """
         Parameters
         ----------
@@ -510,7 +619,7 @@ class Mesh(nn.Module):
         return cls(mesh)
     
     @classmethod
-    def read(cls, file_name:str, file_format:str=None):
+    def read(cls, file_name:str, file_format:Optional[str] = None):
         """
         Parameters
         ----------
@@ -527,7 +636,7 @@ class Mesh(nn.Module):
         return cls(meshio.read(file_name, file_format))
     
     @classmethod
-    def from_file(cls, file_name:str, file_format:str=None):
+    def from_file(cls, file_name:str, file_format:Optional[str] = None):
         """
         Parameters
         ----------
@@ -544,12 +653,14 @@ class Mesh(nn.Module):
         return cls.read(file_name, file_format)
 
     @staticmethod
-    def gen_rectangle(chara_length=0.1,
-             order=1,
-             element_type="tri",
-             left=0.0, right=1.0, bottom=0.0, top=1.0,
-             visualize=False,
-             cache_path=None):
+    def gen_rectangle(
+             chara_length:float=0.1,
+             order:int         = 1,
+             element_type:str  ="tri",
+             left:float        = 0.0, right:float  =  1.0, 
+             bottom:float      = 0.0, top:float    =  1.0,
+             visualize:bool=False,
+             cache_path:Optional[str]=None)->'Mesh':
         """
         Parameters
         ----------

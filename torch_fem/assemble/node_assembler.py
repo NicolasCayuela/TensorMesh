@@ -1,16 +1,18 @@
 
 from abc import abstractmethod
+from pyvista import PointSet
 import torch 
 import torch.nn as nn
 import numpy as np
 import scipy.sparse
 from functools import reduce, partial
 import inspect
+from typing import Dict, Optional, Callable, Self
 
 from .projector import Projector
-from ..quadrature import get_quadrature
-from ..shape import get_shape_val, get_shape_grad, element_type2order, element_type2dimension
+from ..element import Transformation, element_type2dimension
 from ..nn import BufferDict
+from ..mesh import Mesh
 
 class NodeAssembler(nn.Module):
     r"""The NodeAssembler is used to assemble the operator on the nodes of the mesh
@@ -57,6 +59,15 @@ class NodeAssembler(nn.Module):
         element types, e.g. :obj:`["triangle6", "quad9"]`
 
     """
+
+    projector: nn.ModuleDict # Dict[str, Projector]
+    transformation: nn.ModuleDict # Dict[str, Transformation]
+    elements: BufferDict # Dict[str, torch.Tensor]
+
+    dimension: int
+    element_types: list[str]
+    n_points: int
+
     __autodoc__ = [
         '__call__',
         'forward',
@@ -65,28 +76,24 @@ class NodeAssembler(nn.Module):
         'from_mesh',
     ]
     def __init__(self, 
-                    quadrature_weights,
-                   quadrature_points,
-                   shape_val,
-                   projector, 
-                   elements,
-                   n_points):
+                   projector:nn.ModuleDict, 
+                   transformation:nn.ModuleDict,
+                   elements:BufferDict,
+                   *args, **kwargs):
         super().__init__()
 
-        element_types = list(quadrature_weights.keys())
+        element_types = list(projector.keys())
         dimension     = element_type2dimension[element_types[0]]
 
-        self.quadrature_weights = quadrature_weights
-        self.quadrature_points  = quadrature_points
-        self.shape_val          = shape_val
         self.projector          = projector
+        self.transformation     = transformation
         self.elements           = elements
         
         self.dimension          = dimension
         self.element_types      = element_types
-        self.n_points           = n_points
+        self.n_points           = next(iter(elements.values())).shape[0]
 
-        self.__post_init__()
+        self.__post_init__(*args, **kwargs)
         
     def _integrate(self, batch_integral, jxw, n_element, n_basis, use_element_parallel):
         if not use_element_parallel:
@@ -102,9 +109,6 @@ class NodeAssembler(nn.Module):
             batch_integral = torch.einsum("eqb...,eq->eb...", batch_integral, jxw) # [n_element, n_basis, ...]
         return batch_integral
     
-    def _build_output(self, integral):
-        return integral.flatten()
-    
     @property
     def device(self):
         return self.quadrature_weights.device
@@ -113,7 +117,7 @@ class NodeAssembler(nn.Module):
     def dtype(self):
         return self.quadrature_weights.dtype
 
-    def type(self,  dtype):
+    def type(self,  dtype:torch.dtype)->Self:
         super().__doc__
         if dtype == torch.float64:
             self.double()
@@ -123,7 +127,11 @@ class NodeAssembler(nn.Module):
             raise Exception(f"the dtype {dtype} is not supported")
         return self
     
-    def __call__(self, points, func=None,point_data=None, batch_size=1):
+    def __call__(self, 
+                 points:Optional[torch.Tensor] = None, 
+                 func:Optional[Callable] = None,
+                 point_data:Optional[Dict[str, torch.Tensor]]=None, 
+                 batch_size:int=1)->torch.Tensor:
         r"""
         Parameters
         ----------
@@ -150,37 +158,70 @@ class NodeAssembler(nn.Module):
         """
         if point_data is None:
             point_data = {}
-        point_data["x"] = points
 
-        self = self.type(points.dtype).to(points.device)
+        if points is None:
+            points = next(iter(self.transformation.values())).points # type:ignore [n_point, n_dim]
+        else:
+            for element_type in self.element_types:
+                assert points.shape[1] == self.transformation[element_type].dimension, f"the dimension of the points should be {self.transformation[element_type].dimension}, but got {points.shape[1]}"
+                trans:Transformation   = self.transformation[element_type] # type:ignore
+                trans.update_points(points) # type:ignore
+
+        point_data["x"] = points # type:ignore
+
+        self = self.type(points.dtype).to(points.device) # type:ignore
 
         for key, value in point_data.items():
             assert value.shape[0] == points.shape[0], f"the shape of {key} should be [n_point, ...], but got {value.shape}"
  
+        fn = self.forward if func is None else func
 
-        signature = inspect.signature(self.forward)
+        signature = inspect.signature(fn)
 
-        fn = None
+        element_dims    = []
+        quadrature_dims = []
+        for key in signature.parameters:
+            if key in ["u", "v"]:
+                element_dims.append(None)
+                quadrature_dims.append(0)
+            else:
+                element_dims.append(0)
+                quadrature_dims.append(0)
         
-        use_element_parallel = None
+        element_dims    = tuple(element_dims)
+        quadrature_dims = tuple(quadrature_dims)
+        
+        if all([x is None for x in element_dims]):
+            # if all is shape_val
+            parallel_fn = torch.vmap(fn, in_dims=quadrature_dims)
+            use_element_parallel = False
+        else:
+            parallel_fn = torch.vmap(
+                torch.vmap(
+                    fn,
+                    in_dims = quadrature_dims
+                ),
+                in_dims = element_dims
+            )
+            use_element_parallel = True
 
-        integral = None
+
+        integral:Optional[torch.Tensor] = None # [n_points, ...]
       
         for element_type in self.element_types:
-            element_integral = None
-            n_quadrature = self.quadrature_weights[element_type].shape[0]
-            n_batch      = n_quadrature // batch_size if batch_size is not None else 1
-            n_batch_size = batch_size if batch_size is not None else n_quadrature
-            n_basis      = self.shape_val[element_type].shape[1]
-            n_element    = self.elements[element_type].shape[0]
+            trans:Transformation = self.transformation[element_type] # type:ignore
+            proj:Projector       = self.projector[element_type]      # type:ignore
+            element_integral:Optional[torch.Tensor] = None           # [n_element, n_basis, ...]
+            n_batch      = trans.n_quadrature // batch_size if batch_size is not None else 1
+            n_batch_size = batch_size if batch_size is not None else trans.n_quadrature
             ele_point_data = {k:v[self.elements[element_type]] for k,v in point_data.items()}
-            ele_coords   = points[self.elements[element_type]] # [n_element, n_basis, n_dim]
+
             for i in range(n_batch):
-                shape_val = self.shape_val[element_type][i * n_batch_size: (i+1) * n_batch_size] # [batch_size, n_basis]
-                w         = self.quadrature_weights[element_type][i * n_batch_size: (i+1) * n_batch_size] # [batch_size]
-                quadrature_points = self.quadrature_points[element_type][i * n_batch_size: (i+1) * n_batch_size] # [batch_size, n_dim]
-                shape_grad, jxw = get_shape_grad(element_type, w, quadrature_points, ele_coords) # [n_element, batch_size, n_basis, n_dim], [n_element, n_batch]
-                
+                shape_val       = trans.batch_shape_val(i*n_batch_size, n_batch_size)
+                shape_grad, jxw = trans.batch_shape_grad_jxw(
+                                    quadrature_start = i*n_batch_size, 
+                                    quadrature_batch = n_batch_size) 
+
                 # prepare arguments
                 args = []
                 for key in signature.parameters:
@@ -195,57 +236,21 @@ class NodeAssembler(nn.Module):
                     else:
                         raise NotImplementedError(f"key {key} is not implemented")
 
-
-
                 # parallel dispatch 
-
-                if fn is None:
-                    element_dims = []
-                    quadrature_dims = []
-                    for key in signature.parameters:
-                        if key in ["u", "v"]:
-                            element_dims.append(None)
-                            quadrature_dims.append(0)
-                        else:
-                            element_dims.append(0)
-                            quadrature_dims.append(0)
-                    
-                    element_dims = tuple(element_dims)
-                    quadrature_dims = tuple(quadrature_dims)
-
-                    fn = self.forward if func is None else func
-                   
-                    if all([x is None for x in element_dims]):
-                        # if all is shape_val
-                        fn = torch.vmap(fn, in_dims=quadrature_dims)
-                        use_element_parallel = False
-                    else:
-                        fn = torch.vmap(
-                            torch.vmap(
-                                fn,
-                                in_dims = quadrature_dims
-                            ),
-                            in_dims=element_dims
-                        )
-                        use_element_parallel = True
      
-                batch_integral = fn(*args) # [n_element, batch_size, n_basis, ...] or [batch_size,  n_basis, ...]
+                batch_integral = parallel_fn(*args) # [n_element, batch_size, n_basis, ...] or [batch_size,  n_basis, ...]
 
-                batch_integral = self._integrate(batch_integral, jxw, n_element, n_basis, use_element_parallel)
+                batch_integral = self._integrate(batch_integral, jxw, trans.n_element, trans.n_basis, use_element_parallel)
 
-                if element_integral is None:
-                    element_integral = batch_integral
-                else:
-                    element_integral += batch_integral
+                element_integral = batch_integral if element_integral is None else element_integral + batch_integral
+
+            assert element_integral is not None
+            integral = proj(element_integral) if integral is None else integral + proj(element_integral)
     
-            if integral is None:
-                integral = self.projector[element_type](element_integral) # [n_edge, ...]
-            else:
-                integral += self.projector[element_type](element_integral) # [n_edge, ...]
+        assert integral is not None
+        return integral.flatten() # [n_points * n_dim]
 
-        return self._build_output(integral)
-
-    def __post_init__(self):
+    def __post_init__(self, *args, **kwargs):
         r"""Override this function to precompute some data after the initialization
         """
         pass
@@ -301,7 +306,7 @@ class NodeAssembler(nn.Module):
         raise NotImplementedError(f"forward is not implemented")
     
     @classmethod
-    def from_assembler(cls, obj):
+    def from_assembler(cls, obj, *args,**kwargs):
         r"""Build an NodeAssembler from another :meth:`torch_fem.assemble.NodeAssembler` or :meth:`torch_fem.assemble.ElementAssembler`.
         It's much faster than :meth:`torch_fem.assemble.NodeAssembler.from_mesh`.
         When you already have an NodeAssembler or ElementAssembler, you can use this function to build another NodeAssembler sharig the same mesh
@@ -319,72 +324,82 @@ class NodeAssembler(nn.Module):
         err_msg = f"the object {obj} should inheritate from NodeAssembler"
         assert isinstance(obj, NodeAssembler), err_msg
         return cls(
-                obj.quadrature_weights,
-                obj.quadrature_points,
-                obj.shape_val,
                 obj.projector, 
+                obj.transformation,
                 obj.elements,
-                obj.n_points
-        )
+                *args, **kwargs
+                )
 
     @classmethod 
-    def from_elements(cls, elements, n_points, quadrature_order=None, device="cpu", dtype=torch.float32):
+    def from_elements(cls, 
+                      points:torch.Tensor,
+                      elements:Dict[str, torch.Tensor], 
+                      quadrature_order:int = 2, 
+                      device:torch.device|str="cpu", 
+                      dtype:torch.dtype=torch.float32,
+                      *args,**kwargs):
         r"""Build an :meth:`torch_fem.assemble.NodeAssembler` from element connectivity.
         It's slower than :meth:`torch_fem.assemble.NodeAssembler.from_assembler`.
 
         Parameters
         ----------
+        points:torch.Tensor
+            2D tensor of shape :math:`[|\mathcal V|, D]`, where :math:`\mathcal V` is the set of nodes/vertices/points, :math:`D` is the dimension of the domain
         elements: Dict[str, torch.Tensor] or torch.Tensor
             the element connectivity, the key is the element type, the value is the element connectivity
             e.g. {"tri3": torch.tensor([[0, 1, 2], [1, 2, 3]])}
-        n_points: int
-            the number of points
-        quadrature_order: int or None
-            the order should be poisitive integer,
-            if :obj:`None`, the quadrature order will be determined by the :meth:`torch_fem.quadrature.get_quadrature`
+        quadrature_order: int 
+            the order should be poisitive integer, default is :obj:`2`
+        device: torch.device or str
+            the device of the assembler, default is :obj:`"cpu"`
+        dtype: torch.dtype
+            the data type of the assembler, default is :obj:`torch.float32`
         
         Returns
         -------
         torch_fem.assemble.NodeAssembler
             the new node assembler use the topology of the mesh
         """
-        quadrature_weights = {}
-        quadrature_points  = {}
-        shape_val          = {}
         projector          = {}
+        tranformation      = {}
         
+        n_points = points.shape[0]
+
         for element_type, value in elements.items():
             n_element, n_basis = value.shape
-            quadrature_weights[element_type], quadrature_points[element_type] =\
-            get_quadrature(element_type, quadrature_order) # [n_quadrature], [n_quadrature, n_dim]
-            shape_val[element_type] = get_shape_val(element_type, quadrature_points[element_type]) # [n_quadrature, n_basis]
+            # quadrature_weights[element_type], quadrature_points[element_type] =\
+            # get_quadrature(element_type, quadrature_order) # [n_quadrature], [n_quadrature, n_dim]
+            # shape_val[element_type] = get_shape_val(element_type, quadrature_points[element_type]) # [n_quadrature, n_basis]
             projector[element_type] = Projector(
                 from_ = torch.arange(n_element * n_basis).to(value.device),
                 to_   = value.flatten(),
                 from_shape = (n_element, n_basis),
                 to_shape   = (n_points,)
             )
+            tranformation[element_type] = Transformation(
+                points, 
+                value,
+                element_type,
+                quadrature_order
+            )
 
-        quadrature_weights = BufferDict(quadrature_weights)
-        quadrature_points  = BufferDict(quadrature_points)
-        shape_val          = BufferDict(shape_val)
-        projector          = BufferDict(projector)
-        elements           = BufferDict(elements)
+        projector          = nn.ModuleDict(projector)
+        transformation     = nn.ModuleDict(tranformation)
+        elements           = BufferDict(elements) # type:ignore
 
-        assembler = cls(quadrature_weights,
-                   quadrature_points,
-                   shape_val,
+        assembler = cls(
                    projector, 
-                   elements,
-                   n_points)
+                   transformation,
+                   elements,*args, **kwargs) # type:ignore
 
         
         assembler = assembler.type(dtype).to(device)
         return assembler
 
-
     @classmethod
-    def from_mesh(cls, mesh,  quadrature_order=None):
+    def from_mesh(cls, mesh:Mesh,  
+                  quadrature_order:int = 2, 
+                  *args, **kwargs):
         r"""Build an :meth:`torch_fem.assemble.NodeAssembler` from a mesh :meth:`torch_fem.mesh.Mesh`.
         It's slower than :meth:`torch_fem.assemble.NodeAssembler.from_assembler`.
         Because it will precompute the projection matrix $\mathcal P_{\mathcal V}$
@@ -394,20 +409,25 @@ class NodeAssembler(nn.Module):
         mesh: torch_fem.mesh.mesh.Mesh
             a meth:`torch_fem.mesh.Mesh` object
         quadrature_order: int or None
-            the order should be poisitive integer,
-            if :obj:`None`, the quadrature order will be determined by the :meth:`torch_fem.quadrature.get_quadrature`
+            the order should be poisitive integer, default is :obj:`2`
         
         Returns
         -------
         torch_fem.assemble.NodeAssembler
             the new node assembler use the topology of the mesh
         """
-        elements = mesh.elements()
-        n_points = mesh.points.shape[0]
+        elements            = mesh.elements()
+        assert isinstance(mesh.points, torch.Tensor)
+        points              = mesh.points
         if isinstance(elements, torch.Tensor):
             elements = {mesh.default_element_type: elements}
 
-        return cls.from_elements(elements, n_points, quadrature_order, device=mesh.device, dtype=mesh.dtype)
+        return cls.from_elements(points, 
+                                 elements, 
+                                 quadrature_order, 
+                                 mesh.device, 
+                                 mesh.dtype,
+                                 *args, **kwargs)
       
 
 NodeAssembler.type.__doc__ = nn.Module.type.__doc__

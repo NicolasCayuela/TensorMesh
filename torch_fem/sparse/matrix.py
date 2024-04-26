@@ -4,6 +4,7 @@ import torch.nn as nn
 import scipy.sparse
 import hashlib
 import inspect
+from typing import Callable, Optional, Self, Tuple, Union
 from .mm import spmm 
 from .solve import spsolve
 
@@ -43,20 +44,33 @@ class SparseMatrix(nn.Module):
         the hash of the layout of the sparse matrix
     
     """
-    def __init__(self, edata,  row, col, shape):
+
+    edata: torch.Tensor # [nnz]
+    row: torch.Tensor   # [nnz]
+    col: torch.Tensor   # [nnz]
+    shape: Tuple[int, int]
+    layout_hash: str
+
+    def __init__(self, edata:torch.Tensor,  
+                        row:torch.Tensor, 
+                        col:torch.Tensor, 
+                        shape:Tuple[int,int]):
         super().__init__()
         assert edata.shape[0] == row.shape[0] == col.shape[0], f"the first dim of edata, row, col should be the same, but got {edata.shape[0]}, {row.shape[0]}, {col.shape[0]}"
         assert edata.device == row.device == col.device, f"edata, row, col should be on the same device, but got {edata.device}, {row.device}, {col.device}"
+        
+        # TODO the sparse matrix is not efficient for comparison
+
         self.register_buffer("edata", edata)
         self.register_buffer("row", row.long())
         self.register_buffer("col", col.long())
       
         self.shape = shape
 
-        self.layout_hash = hashlib.sha256(self.row.cpu().numpy().tobytes() + self.col.cpu().numpy().tobytes()).hexdigest()
+        self.layout_hash = hashlib.sha256(self.row.detach().cpu().numpy().tobytes() + self.col.detach().cpu().numpy().tobytes()).hexdigest()
 
     @property
-    def edges(self):
+    def edges(self)->torch.Tensor:
         """
         Returns
         -------
@@ -65,7 +79,9 @@ class SparseMatrix(nn.Module):
         """
         return torch.stack([self.row, self.col], dim=0)
 
-    def elementwise_operation(self, func, obj):
+    def elementwise_operation(self, 
+                              func:Callable, 
+                              obj:Union['SparseMatrix',torch.Tensor,int,float])->'SparseMatrix':
         """Elementwise operation with another sparse matrix or a tensor or a scalar
         If the object is a sparse matrix, the :attr:`edges` of the two sparse matrices should be the same
 
@@ -131,7 +147,9 @@ class SparseMatrix(nn.Module):
     def __neg__(self):
         return SparseMatrix(-self.edata, self.row, self.col, self.shape)
 
-    def solve(self, x, backend=None):
+    def solve(self, x:torch.Tensor, 
+                    backend:Optional[str]=None
+                    )->torch.Tensor:
         """
         Parameters
         ----------
@@ -150,7 +168,7 @@ class SparseMatrix(nn.Module):
         assert x.device == self.edata.device, f"the device of x should be the same as the device of the sparse matrix, but got {x.device}, {self.edata.device}"
         return spsolve(self.edata, self.row, self.col, self.shape, x, backend=backend)
 
-    def requires_grad_(self, requires_grad: bool = True):
+    def requires_grad_(self, requires_grad: bool = True)->Self:
         """
         Parameters
         ----------
@@ -266,15 +284,6 @@ class SparseMatrix(nn.Module):
         """
         return SparseMatrix(self.edata.clone(), self.row.clone(), self.col.clone(), self.shape)
     
-    def detach(self):
-        """The detached sparse matrix will not share gradient with the original sparse matrix
-        Returns
-        -------
-        torch_fem.sparse.SparseMatrix
-            the detached sparse matrix
-        """
-        return SparseMatrix(self.edata.detach(), self.row, self.col, self.shape)
-
     def __str__(self):
         return (
             f"SparseMatrix(\n"
@@ -379,14 +388,14 @@ class SparseMatrix(nn.Module):
         mask[self.row, self.col] = 1
         return mask
 
-    def type(self, dtype):
+    def type(self, dtype:torch.dtype)->Self:
         """
         Returns
         -------
         torch_fem.sparse.SparseMatrix
             the sparse matrix with dtype set to dtype
         """
-        self.edata.to_(dtype)
+        self.edata = self.edata.type(dtype)
         return self
 
     def detach(self):
@@ -398,7 +407,7 @@ class SparseMatrix(nn.Module):
         """
         return SparseMatrix(self.edata.detach(), self.row, self.col, self.shape).requires_grad_(False)
 
-    def to_scipy_coo(self):
+    def to_scipy_coo(self)->scipy.sparse.coo_matrix:
         """
         Returns
         -------
@@ -412,7 +421,7 @@ class SparseMatrix(nn.Module):
                 self.col.detach().cpu().numpy()
             )), shape=self.shape)
     
-    def to_sparse_coo(self):
+    def to_sparse_coo(self)->torch.Tensor:
         """Turn the sparse matrix into a torch.sparse_coo_tensor, the gradient will be lost
         Returns
         -------
@@ -425,7 +434,7 @@ class SparseMatrix(nn.Module):
             self.shape
         )
 
-    def to_dense(self):
+    def to_dense(self)->torch.Tensor:
         """Turn the sparse matrix into a dense matrix, the gradient will be maintained
         Returns
         -------
@@ -436,7 +445,7 @@ class SparseMatrix(nn.Module):
         matrix[self.row, self.col] += self.edata
         return matrix
 
-    def has_same_layout(self, obj):
+    def has_same_layout(self, obj:Union[str,'SparseMatrix'])->bool:
         """
         Parameters
         ----------
@@ -452,6 +461,7 @@ class SparseMatrix(nn.Module):
         if  isinstance(obj, str):
             return self.layout_hash == obj
         else:
+            self.to_sparse_coo().to_sparse_csr()
             return self.layout_hash == obj.layout_hash
 
     @staticmethod
@@ -526,7 +536,7 @@ class SparseMatrix(nn.Module):
         return SparseMatrix(edata, row, col, shape)
 
     @staticmethod 
-    def from_dense(tensor):
+    def from_dense(tensor:torch.Tensor)->'SparseMatrix':
         """
         Parameters
         ----------

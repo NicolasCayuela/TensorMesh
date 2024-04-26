@@ -1,6 +1,6 @@
 import torch 
 from ..sparse import SparseMatrix
-
+from typing import Optional, Tuple
 # TODO: add dirichlet_value option for condense_rhs and __call__
 
 class Condenser:
@@ -27,6 +27,17 @@ class Condenser:
         the value of the dirichlet boundary condition
 
     """
+    dirichlet_mask:torch.Tensor # mask of the dirichlet boundary condition
+    dirichlet_value:torch.Tensor # value of the dirichlet boundary condition
+    inner_row:Optional[torch.Tensor] # row index for A_ii
+    inner_col:Optional[torch.Tensor] # col index for A_ii
+    ou2in_row:Optional[torch.Tensor] # row index for A_io
+    ou2in_col:Optional[torch.Tensor] # col index for A_io
+    is_inner_edge:Optional[torch.Tensor] # mask for inner edge [n_edge]
+    is_ou2in_edge:Optional[torch.Tensor] # mask for ou2in edge [n_edge]
+    layout_hash:Optional[int] # layout hash of the matrix
+    K_ou2in:Optional[SparseMatrix] # the condensed matrix
+
     def __init__(self, dirichlet_mask:torch.Tensor, dirichlet_value:torch.Tensor = None):
         assert dirichlet_mask.dtype == torch.bool, "the dtype of dirichlet_mask must be torch.bool"
         assert dirichlet_mask.ndim == 1, "tDirichlet_mask must be 1D tensor"
@@ -92,7 +103,9 @@ class Condenser:
         self.is_inner_dof = is_inner_dof
         self.is_outer_dof = is_outer_dof
 
-    def __call__(self, matrix:SparseMatrix, rhs:torch.Tensor = None):
+    def __call__(self, matrix:SparseMatrix, 
+                 rhs:Optional[torch.Tensor] = None
+                 )->Tuple[SparseMatrix, torch.Tensor]:
         """
         Parameters:
         -----------
@@ -134,7 +147,7 @@ class Condenser:
        
         return K_inner, rhs[self.is_inner_dof] - K_ou2in @ self.dirichlet_value
 
-    def condense_rhs(self, rhs):
+    def condense_rhs(self, rhs:torch.Tensor)->torch.Tensor:
         """only condense the right hand side
         
         .. math::
@@ -160,7 +173,7 @@ class Condenser:
 
         return rhs[self.is_inner_dof] - self.K_ou2in @ self.dirichlet_value
        
-    def recover(self, u:torch.Tensor):
+    def recover(self, u:torch.Tensor)->torch.Tensor:
         """recovert the solution
 
         Parameters

@@ -2,6 +2,12 @@ import torch
 import torch.nn as nn
 import numpy as np 
 
+from typing import Tuple, Union, Sequence,Self
+
+Tensor = Union[torch.Tensor, np.ndarray]
+Shape  = Union[Sequence[int], int, np.ndarray, torch.Size]
+
+
 class Projector(nn.Module):
     """
     
@@ -16,7 +22,14 @@ class Projector(nn.Module):
     
     
     """
-    def __init__(self, from_, to_, from_shape, to_shape, dtype = None):
+    projection:torch.sparse_csr_tensor
+    from_shape:Shape
+    to_shape:Shape
+
+    def __init__(self, from_:Tensor, 
+                        to_:Tensor, 
+                        from_shape:Shape, 
+                        to_shape:Shape, dtype = None):
         """
         Parameters
         ----------
@@ -62,7 +75,7 @@ class Projector(nn.Module):
         self.from_shape = from_shape
         self.to_shape   = to_shape
 
-    def type(self, dtype):
+    def type(self, dtype:torch.dtype)->Self:
         if dtype != self.dtype:
             self.projection = self.projection.type(dtype)
         return self
@@ -75,7 +88,7 @@ class Projector(nn.Module):
     def dtype(self):
         return self.projection.dtype
 
-    def __call__(self, x):
+    def __call__(self, x:torch.Tensor)->torch.Tensor:
         """
         Parameters
         ----------

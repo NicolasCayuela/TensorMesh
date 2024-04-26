@@ -35,7 +35,7 @@ class MAssembler(ElementAssembler):
 if __name__ == '__main__':
 
     dt = 0.001 
-    c  = 4.0
+    c  = 2.0
     n  = 100
     torch.random.manual_seed(123456)
     
@@ -48,8 +48,8 @@ if __name__ == '__main__':
     M_asm = MAssembler.from_mesh(mesh, quadrature_order=2)
     A_asm = AAssembler.from_mesh(mesh, quadrature_order=2)
     
-    M = M_asm(mesh.points)
-    A = A_asm(mesh.points)
+    M = M_asm()
+    A = A_asm()
     condenser = Condenser(mesh.boundary_mask)
 
     Us  = [u0] 
@@ -76,6 +76,14 @@ if __name__ == '__main__':
         Us.append(U)
 
     Us_gt = [dataset.solution(mesh.points, dt*i) for i in range(n)]
-
-    mesh.plot({"prediction":Us, "ground truth":Us_gt},save_path="wave.mp4", backend="matplotlib", dt=dt, show_mesh=True )
+    
+    mesh.plot({
+        "prediction":Us, 
+        "ground truth":Us_gt},
+        save_path="wave.mp4", 
+        backend="matplotlib", 
+        dt=dt, 
+        show_mesh=True, 
+        linewidth=0.1, 
+        linecolor='black')
     

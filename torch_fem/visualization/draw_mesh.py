@@ -4,8 +4,9 @@ import matplotlib.pyplot as plt
 from matplotlib import patches
 from matplotlib.collections import PatchCollection, LineCollection
 
+
 def draw_mesh(mesh, edgecolor="blue", linewidth=3, alpha=0.3, ax=None):
-    """
+    r"""
     Parameters
     ----------
     mesh: torch_fem.mesh.Mesh
@@ -24,8 +25,11 @@ def draw_mesh(mesh, edgecolor="blue", linewidth=3, alpha=0.3, ax=None):
     ax: matplotlib.axes.Axes
         the axis
     """
+    assert mesh.points.shape[1] == 2, "only 2D mesh is currently supported"
+
     if isinstance(pos, torch.Tensor):
-        pos = mesh.vertices().numpy()
+        pos = mesh.points.numpy()
+    
     for value in mesh.elements().values():
         edgecolor = 'blue'
         linewidth = 3

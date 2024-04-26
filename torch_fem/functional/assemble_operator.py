@@ -1,8 +1,15 @@
 import torch
+from typing import Sequence
 
+#################
+# Basi Operation
+#################
+"""
+Since the tensor operation is inside the torch.vmap
+some tensor operation cannot be used directly, we strong suggest to use the einsum operation
+"""
 
-
-def trace(x):
+def trace(x:torch.Tensor)->torch.Tensor:
     """
 
     .. math::
@@ -21,7 +28,7 @@ def trace(x):
     """
     return torch.einsum(f"...ii->...", x)
 
-def dot(a, b, reduce_dim=-1):
+def dot(a:torch.Tensor, b:torch.Tensor, reduce_dim:int=-1)->torch.Tensor:
     """
 
     .. math::
@@ -46,7 +53,7 @@ def dot(a, b, reduce_dim=-1):
     else:
         raise ValueError(f"reduce_dim must be -1 or -2, but got {reduce_dim}")
     
-def ddot(a, b):
+def ddot(a:torch.Tensor, b:torch.Tensor, is_basis_different:bool=True)->torch.Tensor:
     """
 
     .. math::
@@ -59,15 +66,21 @@ def ddot(a, b):
         :math:`[..., B, D, D]`, where :math:`B` is the number of basis, :math:`D` is the dimension of the matrix
     b : torch.Tensor   
         :math:`[..., B, D, D]`, where :math:`B` is the number of basis, :math:`D` is the dimension of the matrix     
-
+    is_basis_different : bool
+        whether the basis is different, default is True
     Returns
     --------
     torch.Tensor
         :math:`[..., B, B]`, where :math:`B` is the number of basis
+        or 
+        :math:`[...]` if is_basis_different = False
     """
-    return torch.einsum("...imn,...jmn->...ij", a, b)
-
-def mul(a, b):
+    if is_basis_different:
+        return torch.einsum("...aij,...bij->...ab", a, b)
+    else:
+        return torch.einsum("...ij,...ij->...", a, b)
+  
+def mul(a:torch.Tensor, b:torch.Tensor, is_basis_different:bool=True)->torch.Tensor:
     """
 
     .. math::
@@ -83,11 +96,15 @@ def mul(a, b):
     Returns
     -------
     torch.Tensor
-        [..., n_basis, n_basis]
+        [..., B, B] if is_basis_different = True
+        [..., B] if is_basis_different = False
     """
-    return torch.einsum("...i,...j->...ij", a, b)
+    if is_basis_different:  
+        return torch.einsum("...i,...j->...ij", a, b)
+    else:
+        return a * b
 
-def eye(value, dim):
+def eye(value:torch.Tensor, dim:int)->torch.Tensor:
     """
 
     .. math::
@@ -106,13 +123,34 @@ def eye(value, dim):
     torch.Tensor
         :math:`[..., D, D]`
     """
-    dims = value.shape
-    zeros = torch.zeros_like(value)
-    result = torch.stack([torch.stack([zeros if j != i else value for j in range(dim)],-1) for i in range(dim)], -2)
-   
-    return result
+    indices = torch.arange(dim)
+    mask    = indices.unsqueeze(0) == indices.unsqueeze(1)
+    mask    = mask.type(value.dtype).to(value.device)
+    return torch.einsum('...,ij->...ij', value, mask)
 
-def sym(a):
+def full(value:torch.Tensor, dim:int)->torch.Tensor:
+    """
+
+    .. math::
+
+        \\text{full}(v, n)_{\\cdots ij} = v_{\\cdots}
+
+    Parameters
+    ----------
+    value : torch.Tensor
+        :math:`[...]`, the filled value of the eye
+    dim : int
+        :math:`D`, the dimension of the eye
+
+    Returns 
+    -------
+    torch.Tensor
+        :math:`[..., D, D]`
+    """
+    ones = torch.ones((dim,dim), device=value.device, dtype=value.dtype)
+    return torch.einsum("...,ij->...ij", value, ones)
+
+def sym(a:torch.Tensor)->torch.Tensor:
     """
 
     .. math::
@@ -126,11 +164,11 @@ def sym(a):
     Returns
     -------
     torch.Tensor
-        :math:`[..., D]`, where :math:`D` is the dimension of the matrix
+        :math:`[..., D, D]`, where :math:`D` is the dimension of the matrix
     """
     return 0.5 * (a[..., None] + a[..., None, :])
 
-def vector(x):
+def vector(x:Sequence[torch.Tensor])->torch.Tensor:
     """
 
     .. math::
@@ -146,9 +184,11 @@ def vector(x):
     torch.Tensor
         :math:`[..., n_{\\text{row}}]`
     """
+    for i in range(1,len(x)):
+        assert x[i].shape == x[0].shape
     return torch.stack(x, -1)
 
-def matrix(x):
+def matrix(x:Sequence[Sequence[torch.Tensor]])->torch.Tensor:
     """
 
     .. math::
@@ -170,9 +210,12 @@ def matrix(x):
     torch.Tensor
             :math:`[..., n_{\\text{col}}, n_{\\text{row}}]`
     """
+    for i in range(1, len(x)):
+        for j in range(1, len(x[i])):
+            assert x[i][j].shape == x[0][0].shape
     return torch.stack([torch.stack(row, -1) for row in x], -2)
 
-def transpose(x):
+def transpose(x:torch.Tensor)->torch.Tensor:
     """
 
     .. math::
@@ -191,7 +234,7 @@ def transpose(x):
     """
     return torch.einsum("...ij->...ji", x)
 
-def matmul(a,  b):
+def matmul(a:torch.Tensor,  b:torch.Tensor)->torch.Tensor:
     """
 
     .. math::
@@ -211,4 +254,77 @@ def matmul(a,  b):
     """
     return torch.einsum("...ij,...jk->...ik", a, b)
 
+def diagonal(x:torch.Tensor)->torch.Tensor:
+    """
 
+    .. math::
+        
+                \\text{diagonal}(A)_{\\cdots i} = A_{\\cdots ii}    
+
+    Parameters
+    ----------
+    x:torch.Tensor
+        ND Tensor of shape [..., D]
+    Returns
+    -------
+    torch.Tensor
+        ND Tensor of shape [..., D, D]
+    """
+    mask = torch.eye(x.shape[-1], device=x.device, dtype=x.dtype)
+    return torch.einsum("...i,ij->...ij",x,mask)
+
+def coupled_tri_diagonal(x:torch.Tensor)->torch.Tensor:
+    r"""
+    
+    .. math::
+        \begin{bmatrix}a\\b\\c\end{bmatrix} = \begin{bmatrix}b&a&0\\c&0&a\\0&c&b\end{bmatrix}
+    
+    Parameters
+    ----------
+    x:torch.Tensor
+        ND Tensor of shape [..., D] D = 3
+    Returns
+    -------
+    torch.Tensor
+        ND Tensor of shape [..., D, D]
+    """
+    assert x.shape[-1] == 3
+    y = torch.zeros(*x.shape,3, device=x.device, dtype=x.dtype)
+    y[..., [1,1],[0,2]] = x[...,0]
+    y[..., [0,2],[0,2]] = x[...,1]
+    y[..., [0,2],[1,1]] = x[...,2]
+    return y
+
+
+#################
+# Clamp Min Operation
+#################
+
+def sqrt(x:torch.Tensor)->torch.Tensor:  
+    """it will return 0 if x < 0
+    Parameters
+    ----------
+    x : torch.Tensor
+        :math:`[...]`
+    Returns
+    -------
+    torch.Tensor
+        :math:`[...]`
+    """
+    x = torch.clamp_min(x, 0.)
+    return torch.sqrt(x)
+
+def divide(x:torch.Tensor, y:torch.Tensor)->torch.Tensor:
+    """it will return 0 if y = 0
+    Parameters
+    ----------
+    x : torch.Tensor
+        :math:`[...]`
+    y : torch.Tensor
+        :math:`[...]`
+    Returns
+    -------
+    torch.Tensor
+        :math:`[...]`
+    """
+    return torch.where(y == 0., 0., x/y)

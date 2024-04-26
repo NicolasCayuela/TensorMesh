@@ -2,6 +2,12 @@ import os
 import toml
 import torch
 import scipy.spatial
+from .line import basis_p1 as line2_basis_p1
+from .line import basis_p2 as line3_basis_p2
+from .line import shape_val_p1 as line2_shape_val
+from .line import shape_grad_p1 as line2_shape_grad
+from .line import shape_val_p2 as line3_shape_val
+from .line import shape_grad_p2 as line3_shape_grad
 from .tri import basis_p1 as tri3_basis_p1
 from .tri import basis_p2 as tri6_basis_p2
 from .tri import shape_val_p1 as tri3_shape_val 
@@ -43,6 +49,9 @@ def get_basis(element_type):
         the basis of the element
     """
     find_basis = {
+        "line":line2_basis_p1,
+        "line2":line2_basis_p1,
+        "line3":line3_basis_p2,
         "triangle":tri3_basis_p1,
         "triangle6":tri6_basis_p2,
         "tri3":tri3_basis_p1,
@@ -104,6 +113,9 @@ def get_shape_val(element_type, quadrature_points):
         the base function value at the quadrature points
     """
     find_shape_val = {
+        "line":line2_shape_val,
+        "line2":line2_shape_val,
+        "line3":line3_shape_val,
         "triangle":tri3_shape_val,
         "triangle6":tri6_shape_val,
         "tri3":tri3_shape_val,
@@ -150,6 +162,9 @@ def get_shape_grad(element_type, quadrature_weights, quadrature_points, element_
         the jacobian of the base functions multiplied by the quadrature weights
     """
     find_shape_grad = {
+        "line":line2_shape_grad,
+        "line2":line2_shape_grad,
+        "line3":line3_shape_grad,
         "triangle":tri3_shape_grad,
         "triangle6":tri6_shape_grad, 
         "tri3":tri3_shape_grad,

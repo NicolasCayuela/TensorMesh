@@ -46,7 +46,7 @@ if __name__ == "__main__":
         with cuda_profiler.scope("solve"):
             th_fem()
     cuda_profiler.plot("cuda_mem.png")
-    print(f"dofs:{mesh.n_point}")
+    print(f"dofs:{mesh.n_points}")
     print(f"Max GPU memory usage: {cuda_profiler.max()} MB")
 
     with TimeProfiler() as time_profiler:
