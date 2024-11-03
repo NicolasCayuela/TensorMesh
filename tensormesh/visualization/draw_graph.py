@@ -11,7 +11,7 @@ from ..sparse import SparseMatrix
 from .utils import ScipySparseMatrix, as_ndarray, as_sparse_matrix, dim
 
 def draw_graph(sparse_matrix:Union[SparseMatrix,ScipySparseMatrix],
-                  points:torch.Union[torch.Tensor,np.ndarray], 
+                  points:Union[torch.Tensor,np.ndarray], 
                   draw_points:bool = True, 
                   point_color:str  = 'orange',
                   color:str = "blue",

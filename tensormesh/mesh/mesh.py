@@ -238,25 +238,14 @@ def pyr_reorder(elements:torch.Tensor)->torch.Tensor:
         return index_0d
         
     # Edges are reordered
-    edges = elements[..., np.arange(4, 4 + 6*(n-1))]
+    edges = elements[..., np.arange(4, 4 + 8*(n-1))]
     edge_12, edge_14, edge_15, edge_23, edge_25, edge_34, edge_35, edge_45 = np.array_split(edges, 8, -1)
-    
-    index_1d = np.concatenate([edge_12, edge_13], -1)
+    # edge_12 # [N, n-1]
+
 
     if n <= 2: # order = 2
-        return np.concatenate([index_0d, index_1d], -1)
+        return np.concatenate([index_0d, edges], -1)
         
-    # Faces are handled recursively
-    faces = elements[..., 4 + 6*(n-1):]
-
-    face_123, face_124, face_134, face_234 = np.array_split(faces, 4, -1)
-
-    index_2d = np.concatenate([face_234, face_134, face_124, face_123], -1)
-    
-    if n<= 3: # order = 3
-        return np.concatenate([index_0d, index_1d, index_2d], -1)
-
-    assert n <= 3, f"Order {n} is not supported, must be <= 3"
 
 
 def pri_reorder(elements:torch.Tensor)->torch.Tensor:
