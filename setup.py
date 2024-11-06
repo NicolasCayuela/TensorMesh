@@ -7,7 +7,7 @@ import subprocess
 def build_submodule(submodule_path):
     subprocess.check_call(['python', 'setup.py', 'build_ext', '--inplace'], cwd=submodule_path)
 
-build_submodule('torch_fem/cpp/spsolve')
+build_submodule('tensormesh/cpp/spsolve')
 
 
 def read_version():
