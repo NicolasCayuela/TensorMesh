@@ -98,7 +98,7 @@ def gen_cube(chara_length=0.1,
         # Finalize Gmsh
         gmsh.finalize()
 
-    mesh = Mesh.from_file(cache_path, reorder_quad=True)
+    mesh = Mesh.from_file(cache_path, reorder=True)
 
     is_left_boundary  = mesh.points[:, 0] == left
     is_right_boundary = mesh.points[:, 0] == right
@@ -231,7 +231,7 @@ def gen_hollow_cube(chara_length=0.1,
         # Finalize Gmsh
         gmsh.finalize()
 
-    mesh = Mesh.from_file(cache_path, reorder_quad=True)
+    mesh = Mesh.from_file(cache_path, reorder=True)
 
     is_outer_left_boundary  = mesh.points[:, 0] == outer_left
     is_outer_right_boundary = mesh.points[:, 0] == outer_right

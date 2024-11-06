@@ -98,7 +98,7 @@ def gen_circle(chara_length=0.1,
         # Finalize Gmsh
         gmsh.finalize()
 
-    mesh = Mesh.from_file(cache_path, reorder_quad=True)
+    mesh = Mesh.from_file(cache_path, reorder=True)
 
     radius = torch.sqrt((mesh.points[:, 0] - cx)**2 + (mesh.points[:, 1] - cy)**2)
     is_boundary = radius == r
@@ -207,7 +207,7 @@ def gen_hollow_circle(chara_length=0.1,
         # Finalize Gmsh
         gmsh.finalize()
 
-    mesh = Mesh.from_file(cache_path, reorder_quad=True)
+    mesh = Mesh.from_file(cache_path, reorder=True)
 
     radius = torch.sqrt((mesh.points[:, 0] - cx)**2 + (mesh.points[:, 1] - cy)**2)
     is_inner_boundary = torch.isclose(radius, torch.ones_like(radius) * r_inner)
