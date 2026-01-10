@@ -98,12 +98,15 @@ def cg_py(indices, values, m, n, b, x0=None, atol=1e-5, max_iter=10000):
 
 def bicgstab_py(indices, values, m, n, b, x0=None, atol=1e-5, max_iter=10000):
     """
-    Solves Ax = b using the Bi-Conjugate Gradient Stabilized method.
+    Solves Ax = b using the Preconditioned Bi-Conjugate Gradient Stabilized method.
+    Uses Jacobi (diagonal) preconditioning.
 
     Args:
-        A: The matrix A in Ax = b.
+        indices, values: COO representation of A
+        m, n: Shape of A
         b: The right-hand side vector.
-        x0: Initial guess for the solution.p  x0        tol: Tolerance for convergence.
+        x0: Initial guess for the solution.
+        atol: Tolerance for convergence.
         max_iter: Maximum number of iterations.
 
     Returns:
@@ -113,87 +116,101 @@ def bicgstab_py(indices, values, m, n, b, x0=None, atol=1e-5, max_iter=10000):
     assert b.shape[0] == m, f"Shape mismatch. A is {m}x{n}, b is {b.shape}"
     assert b.dim() == 1, f"b should be a 1D tensor. b is {b.dim()}D"
     assert b.dtype == values.dtype, f"b.dtype {b.dtype} does not match values.dtype {values.dtype}"
-    A = torch.sparse_coo_tensor(indices, values, (m, n), is_coalesced =True)
+    
+    # Construct A for matrix multiplication
+    A_coo = torch.sparse_coo_tensor(indices, values, (m, n), is_coalesced=True)
+    A = A_coo.to_sparse_csr()
 
-    precond = jacobi_precond
-    # precond = identity_precond  
+    # Construct Jacobi Preconditioner (Inverse Diagonal)
+    # Extract diagonal from indices/values
+    # Assuming indices are [2, NNZ]
+    row_idx, col_idx = indices
+    diag_mask = (row_idx == col_idx)
+    diag_indices = row_idx[diag_mask]
+    diag_values = values[diag_mask]
+    
+    # Initialize diagonal with ones
+    M_diag = torch.ones(m, device=values.device, dtype=values.dtype)
+    M_diag.index_put_((diag_indices,), diag_values)
+    
+    # Avoid division by zero
+    M_diag = torch.where(M_diag.abs() < 1e-12, torch.tensor(1.0, device=values.device, dtype=values.dtype), M_diag)
+    M_inv = 1.0 / M_diag
+
+    def apply_precond(v):
+        return v * M_inv
+
+
 
     if x0 is None:
-        # jacobi preconditioner
-        x0 = precond(A)
-        # x0 = torch.zeros_like(b)
+        x0 = torch.zeros_like(b)
     
-    A = A.to_sparse_csr()
-
+    # Initial residual
     r = b - A @ x0
     r0_hat = r.clone()
-    v = r.clone()
-    p = r.clone()
+    
     rho = alpha = omega = 1.0
-    x = x0.clone()
-
-    # while (torch.dot(r,r) > atol) and (k <  max_iter) and (k >= 0):
-    #     # breakpoint()
-    #     rho_new = torch.dot(r0_hat, r)
-    #     beta    = rho_new / rho * alpha / omega
-    #     p       = r + beta * (p - omega * v)
-    #     phat    = precond(A, p)
-    #     v       = A @ phat
-    #     alpha   = rho_new /  torch.dot(r0_hat, v)
-    #     s       = r - alpha * v
-    #     shat    = precond(A, s)
-    #     t       = A @ shat 
-    #     omega   = torch.dot(t, s) / torch.dot(t, t)
-    #     if torch.dot(s, s) < atol:
-    #         x = x + alpha * phat 
-    #         r = s
-    #     else:
-    #         x = x + alpha * phat + omega *  shat 
-    #         r = s  - omega * t 
-    #     k       = -11 if (omega==0) or (alpha==0) else k+1
-    #     k       = -10 if (rho==0) else k
-    #     rho     = rho_new
-    #     iteration += 1
-        
+    v = p = torch.zeros_like(b)
+    
+    rho = torch.dot(r0_hat, r)
+    
+    # Reuse p for the first iteration logic to match standard algo structure
+    p = r.clone()
 
     for i in range(max_iter):
-
-        v = A @ p
-        alpha = rho / torch.dot(r0_hat, v)
-        h = x + alpha * p
-        s = r - alpha * v
-
-        if torch.norm(s) < atol:
-            x = h 
+        if torch.norm(r) < atol:
             break
-
-        t = A @ s 
-        omega = torch.dot(t,s)/torch.dot(t,t)
-        x = h + omega * s
-
-        r = s - omega * t
-
-        if torch.norm(r) < atol:           
-            break
+            
+        p_hat = apply_precond(p)
+        v = A @ p_hat
         
+        denom = torch.dot(r0_hat, v)
+        if denom.abs() < 1e-12:
+            break # Breakdown
+            
+        alpha = rho / denom
+        s = r - alpha * v
+        
+        if torch.norm(s) < atol:
+            x0 = x0 + alpha * p_hat
+            break
+            
+        s_hat = apply_precond(s)
+        t = A @ s_hat
+        
+        t_norm2 = torch.dot(t, t)
+        if t_norm2.abs() < 1e-12:
+            omega = 0.0
+        else:
+            omega = torch.dot(t, s) / t_norm2
+            
+        x0 = x0 + alpha * p_hat + omega * s_hat
+        r = s - omega * t
+        
+        if torch.norm(r) < atol:
+            break
+            
         rho_new = torch.dot(r0_hat, r)
+        if omega == 0:
+            break
+            
         beta = (rho_new / rho) * (alpha / omega)
         rho = rho_new
-
         p = r + beta * (p - omega * v)
 
-    if torch.norm(A @ x - b) > math.sqrt(atol):
-        warnings.warn(f"bicgstab did not converge after {max_iter} iterations. with residual {torch.norm(A.mv(x) - b)}")
+    if torch.norm(A @ x0 - b) > math.sqrt(atol):
+        warnings.warn(f"bicgstab did not converge after {max_iter} iterations. with residual {torch.norm(A @ x0 - b)}")
 
-    # print(f"bicgstab converged after {i} iterations")
-    return x.view(-1)
+    return x0.view(-1)
 
 if is_cpp_backend_available and (not "TORCH_FEM_USE_CPP" in os.environ or os.environ["TORCH_FEM_USE_CPP"] == "true"):
-    def bicgstab_cpp(indices, values, m, n, b, atol=1e-5, max_iter=10000):
+    def bicgstab_cpp(indices, values, m, n, b, x0=None, atol=1e-5, max_iter=10000):
         indices = indices.long()
+        # TODO: pass x0 to cpp solver if supported
         return spsolve_cpp.bicgstab(indices, values, m, n, b, atol, max_iter)
-    def cg_cpp(indices, values, m, n, b, atol=1e-5, max_iter=10000):
+    def cg_cpp(indices, values, m, n, b, x0=None, atol=1e-5, max_iter=10000):
         indices = indices.long()
+        # TODO: pass x0 to cpp solver if supported
         return spsolve_cpp.cg(indices, values, m, n, b, atol, max_iter)
     lse_solver = bicgstab_cpp
 else:
@@ -201,19 +218,24 @@ else:
 
 class SparseSolveTorch(Function):
     @staticmethod
-    def forward(ctx, edata, row, col, shape, b):
-        u = lse_solver(torch.stack([row, col],0), edata, shape[0], shape[1], b)
+    def forward(ctx, edata, row, col, shape, b, x0=None, tol=1e-5, max_iter=10000):
+        u = lse_solver(torch.stack([row, col],0), edata, shape[0], shape[1], b, x0=x0, atol=tol, max_iter=max_iter)
         ctx.save_for_backward(edata, row, col, u)
         ctx.A_shape = shape
+        ctx.tol = tol
+        ctx.max_iter = max_iter
         return u
     
     @staticmethod
     def backward(ctx, grad_output):
         edata, row, col, u = ctx.saved_tensors
         shape_T = shapeT(ctx.A_shape)
-        b_grad = lse_solver(torch.stack([col, row],0), edata, shape_T[0], shape_T[1], grad_output)
+        # Gradient for b: solve A^T * grad_b = grad_output
+        # We can also use 'u' (if symmetric) or previous solution as guess? 
+        # But backward solve is a new system. x0=None is safe.
+        b_grad = lse_solver(torch.stack([col, row],0), edata, shape_T[0], shape_T[1], grad_output, atol=ctx.tol, max_iter=ctx.max_iter)
         edata_grad      = - b_grad[row] * u[col]
 
-        return edata_grad, None, None, None, b_grad
+        return edata_grad, None, None, None, b_grad, None, None, None
     
 

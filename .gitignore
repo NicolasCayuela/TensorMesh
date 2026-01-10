@@ -2,7 +2,36 @@
 .pytest_cache
 **/.gmsh_cache
 **/.DS_Store
-docs/build
+**/*.vtk
+**/*.vtu
+**/*.vtp
+**/*.vts
+**/*.vtr
+**/*.vts
+examples/**/*.txt
+examples/**/*.jpg 
+examples/**/*.md
+examples/**/*.stats
+# Documentation build artifacts
+docs/build/
+docs/html/
+docs/_build/
+docs/_static/
+docs/_images/
+docs/_sources/
+# Keep custom static files if they exist in source/_static, but ignore generated ones in docs/
+# Actually, standard sphinx puts build in docs/build or docs/html.
+# If your Makefile moves them to docs/, we should ignore them.
+docs/*.html
+docs/*.js
+docs/*.inv
+docs/objects.inv
+docs/searchindex.js
+!docs/README.md
+!docs/Makefile
+!docs/make.bat
+!docs/requirements.txt
+
 **/.ipynb_checkpoints
 **/output/
 # Ignore specific file types globally
@@ -28,6 +57,8 @@ benchmark/**/!(*.py|*.ipynb)
 examples/**/*.mp4
 examples/**/*.png
 !examples/**/eth.png
+examples/**/*.pdf
+examples/**/*.jpg
 
 *massif.*
 **/massif*

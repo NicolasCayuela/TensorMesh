@@ -3,13 +3,22 @@ import torch
 from torch.autograd import Function
 import scipy.sparse
 import warnings
-import importlib
-from ..utils import tensor2cupy, cupy2tensor, shapeT, is_petsc_available
+from ..utils import shapeT, is_petsc_available
 
+# Lazy import PETSc only when needed
+PETSc = None
 
-
-if is_petsc_available:
-    PETSc = importlib.import_module('petsc4py.PETSc')
+def _get_petsc():
+    global PETSc
+    if PETSc is None:
+        if not is_petsc_available:
+            raise ImportError(
+                "petsc4py is not available. Install it with: pip install petsc4py "
+                "or use a different backend (scipy, torch, cupy)"
+            )
+        from petsc4py import PETSc as _PETSc
+        PETSc = _PETSc
+    return PETSc
 def petscvec2tensor(petscvec):
         """turn PETSc vector to torch.Tensor
         
@@ -28,6 +37,7 @@ def petscvec2tensor(petscvec):
 class SparseSolvePETSc(Function):
     @staticmethod
     def forward(ctx, edata, row, col, shape, b) -> Any:
+        PETSc = _get_petsc()
         A_csr   = scipy.sparse.coo_matrix((edata.numpy(), (row.numpy(), col.numpy())), shape=shape).tocsr()
         A_petsc = PETSc.Mat().createAIJ(size=A_csr.shape, csr=(A_csr.indptr, A_csr.indices, A_csr.data))
         b_petsc = PETSc.Vec().createWithArray(b.numpy())
@@ -46,6 +56,7 @@ class SparseSolvePETSc(Function):
     
     @staticmethod
     def backward(ctx, grad_output):
+        PETSc = _get_petsc()
         edata, row, col, u = ctx.saved_tensors
         A_T_csr         = scipy.sparse.coo_matrix((edata.numpy(), (col.numpy(), row.numpy())), shape=shapeT(ctx.A_shape)).tocsr()
         A_T_petsc       = PETSc.Mat().createAIJ(size=A_T_csr.shape, csr=(A_T_csr.indptr, A_T_csr.indices, A_T_csr.data))
@@ -65,6 +76,7 @@ class SparseSolvePETSc(Function):
 class SparseLUSolvePETSc(Function):
     @staticmethod
     def forward(ctx, edata, row, col, shape, b) -> Any:
+        PETSc = _get_petsc()
         A_csc   = scipy.sparse.coo_matrix((edata.numpy(), (row.numpy(), col.numpy())), shape=shape).tocsc()
         A_petsc = PETSc.Mat().createAIJ(size=A_csc.shape, csr=(A_csc.indptr, A_csc.indices, A_csc.data))
         ksp = PETSc.KSP().create()
@@ -83,6 +95,7 @@ class SparseLUSolvePETSc(Function):
     
     @staticmethod
     def backward(ctx, grad_output):
+        PETSc = _get_petsc()
         edata, row, col, u = ctx.saved_tensors
         
         A_T_csc         = scipy.sparse.coo_matrix((edata.numpy(), (col.numpy(), row.numpy())), shape=shapeT(ctx.A_shape)).tocsc()

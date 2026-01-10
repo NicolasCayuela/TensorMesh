@@ -9,9 +9,17 @@ from ..utils import tensor2cupy, cupy2tensor, shapeT
 class SparseSolveScipy(Function):
     @staticmethod
     def forward(ctx, edata, row, col, shape, b) -> Any:
-        A_scipy = scipy.sparse.coo_matrix((edata.numpy(), (row.numpy(), col.numpy())), shape=shape).tocsr()
-        u = scipy.sparse.linalg.spsolve(A_scipy, b)
-        u = torch.tensor(u, dtype=b.dtype)
+        # Ensure inputs are on CPU and converted to numpy
+        edata_np = edata.detach().cpu().numpy()
+        row_np = row.detach().cpu().numpy()
+        col_np = col.detach().cpu().numpy()
+        b_np = b.detach().cpu().numpy()
+        
+        A_scipy = scipy.sparse.coo_matrix((edata_np, (row_np, col_np)), shape=shape).tocsr()
+        u = scipy.sparse.linalg.spsolve(A_scipy, b_np)
+        
+        # Output as tensor on original device
+        u = torch.tensor(u, dtype=b.dtype, device=b.device)
         ctx.save_for_backward(edata, row, col, u)
         ctx.A_shape = shape
 

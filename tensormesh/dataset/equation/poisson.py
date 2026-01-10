@@ -61,21 +61,50 @@ class PoissonMultiFrequency:
         if domain == "rectangle":
             assert ((points<=1) & (points>=0)).all(), f"the points must be in [0,1]^2, but got {points}"
 
+        # Memory-efficient implementation:
+        # Avoid materializing [batch, n_points, K, K] intermediates by using matmul:
+        #   f(p) = (pi/K^2) * sum_{i,j} B_ij * sin(i*pi*x_p) * sin(j*pi*y_p)
+        # where B = a * (i^2+j^2)^(-r)
+        #
+        # For each point p, this is: sinx_p^T * B * siny_p.
+        # Compute P = sinx @ B -> [n_points, K] (or [batch, n_points, K]) then dot with siny.
         K = self.K
-       
-        i, j = torch.meshgrid(torch.arange(1,K+1), torch.arange(1,K+1)) # (K, K)
-        i, j = i.type(points.dtype).to(points.device), j.type(points.dtype).to(points.device)
+
+        device = points.device
+        dtype = points.dtype
+        pi = torch.pi
+
+        k_idx = torch.arange(1, K + 1, device=device, dtype=dtype)
+        i, j = torch.meshgrid(k_idx, k_idx, indexing="ij")  # [K, K]
+        w = (i * i + j * j) ** (-self.r)  # [K, K]
+
+        x = points[:, 0]  # [n_points]
+        y = points[:, 1]  # [n_points]
+        sinx = torch.sin(pi * x[:, None] * k_idx[None, :])  # [n_points, K]
+        siny = torch.sin(pi * y[:, None] * k_idx[None, :])  # [n_points, K]
+
         if len(self.a.shape) == 2:
-            a  = self.a[None, :, :] # (1, K, K)
-            i,j = i[None, :, :], j[None, :, :] # (1, K, K)
-            x,y = points[:, 0][:, None, None], points[:, 1][:, None, None] # (n_points, 1, 1)
+            B = self.a.to(device=device, dtype=dtype) * w  # [K, K]
+            P = sinx @ B  # [n_points, K]
+            f = (P * siny).sum(dim=-1)  # [n_points]
         else:
-            a  = self.a[:, None, :, :] # (N, 1, K, K)
-            i,j = i[None, None, :, :], j[None, None, :, :] # (1, 1, K, K)
-            x,y = points[:, 0][None, :, None, None], points[:, 1][None, :, None, None] # (1, n_points, 1, 1)
-        a = a.type(points.dtype).to(points.device)
-        f = torch.pi /K/K * (a * (i*i+j*j)**(-self.r) * torch.sin(torch.pi * i * x) * torch.sin(torch.pi * j * y)).sum((-2,  -1))
-    
+            # Batched case: avoid allocating huge [N, n_points, K] tensors by chunking over batch dimension.
+            B = self.a.to(device=device, dtype=dtype) * w  # [N, K, K]
+            N = B.shape[0]
+            # Target ~512MB temporary for P: chunk * n_points * K * sizeof(dtype)
+            bytes_per = torch.finfo(dtype).bits // 8
+            denom = int(sinx.shape[0] * K * bytes_per)
+            target_bytes = 512 * 1024 * 1024
+            chunk = max(1, target_bytes // max(1, denom))
+            out = []
+            for s in range(0, N, chunk):
+                Be = B[s : s + chunk]  # [c, K, K]
+                # (sinx @ Be) -> [c, n_points, K] (broadcasted matmul)
+                P = torch.matmul(sinx, Be)  # [c, n_points, K]
+                out.append((P * siny[None, :, :]).sum(dim=-1))  # [c, n_points]
+            f = torch.cat(out, dim=0)  # [N, n_points]
+
+        f = (pi / (K * K)) * f
         return f
 
     def solution(self, points):
@@ -97,16 +126,38 @@ class PoissonMultiFrequency:
                 1D tenor of shape :math:`[|\\mathcal V|]` or :math:`[N, |\\mathcal V|]`, where :math:`N` is the number of samples, :math:`|\\mathcal V|` is the number of vertices
         """
         K = self.K
-        i,j  = torch.meshgrid(torch.arange(1, K+1), torch.arange(1,K+1)) # (K, K)
-        i, j = i.type(points.dtype).to(points.device), j.type(points.dtype).to(points.device)
+
+        device = points.device
+        dtype = points.dtype
+        pi = torch.pi
+
+        k_idx = torch.arange(1, K + 1, device=device, dtype=dtype)
+        i, j = torch.meshgrid(k_idx, k_idx, indexing="ij")  # [K, K]
+        w = (i * i + j * j) ** (-self.r - 1)  # [K, K]
+
+        x = points[:, 0]  # [n_points]
+        y = points[:, 1]  # [n_points]
+        sinx = torch.sin(pi * x[:, None] * k_idx[None, :])  # [n_points, K]
+        siny = torch.sin(pi * y[:, None] * k_idx[None, :])  # [n_points, K]
+
         if len(self.a.shape) == 2:
-            a  = self.a[None, :, :] # (1, K, K)
-            i,j = i[None, :, :], j[None, :, :] # (1, K, K)
-            x,y = points[:, 0][:, None, None], points[:, 1][:, None, None] # (n_points, 1)
+            B = self.a.to(device=device, dtype=dtype) * w  # [K, K]
+            P = sinx @ B  # [n_points, K]
+            u = (P * siny).sum(dim=-1)  # [n_points]
         else:
-            a  = self.a[:, None, :, :] # (N, 1, K, K)
-            i,j = i[None, None, :, :], j[None, None, :, :] # (1, 1, K, K)
-            x,y = points[:, 0][None, :, None, None], points[:, 1][None, :, None, None] # (1, n_points, 1, 1)
-        a = a.type(points.dtype).to(points.device)
-        u = 1/ torch.pi /K/K * (a * (i*i+j*j)**(-self.r-1) * torch.sin(torch.pi * i * x) * torch.sin(torch.pi * j * y) ).sum((-2,  -1))
+            # Batched case: chunk over batch dimension to keep memory bounded.
+            B = self.a.to(device=device, dtype=dtype) * w  # [N, K, K]
+            N = B.shape[0]
+            bytes_per = torch.finfo(dtype).bits // 8
+            denom = int(sinx.shape[0] * K * bytes_per)
+            target_bytes = 512 * 1024 * 1024
+            chunk = max(1, target_bytes // max(1, denom))
+            out = []
+            for s in range(0, N, chunk):
+                Be = B[s : s + chunk]
+                P = torch.matmul(sinx, Be)  # [c, n_points, K]
+                out.append((P * siny[None, :, :]).sum(dim=-1))  # [c, n_points]
+            u = torch.cat(out, dim=0)  # [N, n_points]
+
+        u = (1.0 / (pi * (K * K))) * u
         return u

@@ -74,6 +74,15 @@ def draw_element_value_2d_tri(
 
     # draw the triangles
     triangles = tri.Triangulation(points[:, 0], points[:, 1], elements)
+
+    # Workaround for matplotlib tripcolor bug with tuple edgecolor
+    if 'edgecolor' in kwargs:
+        kwargs['edgecolors'] = kwargs.pop('edgecolor')
+    
+    # Avoid tripcolor crash when edgecolors is a tuple (bypass ec.lower() check)
+    if 'edgecolors' in kwargs and 'antialiaseds' not in kwargs:
+        kwargs['antialiaseds'] = True
+
     if color is None: # use cmap
         img = ax.tripcolor(triangles, values, cmap=cmap, alpha=alpha, **kwargs)
     else: # use color
@@ -88,6 +97,7 @@ def draw_element_value_2d( points:Union[torch.Tensor,np.ndarray],
                         cmap:str='viridis',
                         color:Optional[str]=None,
                         ax:Optional[Axes]=None,
+                        **kwargs
                         )->Tuple[Dict[str,PolyCollection], Axes]:
     """
     Parameters
@@ -150,7 +160,7 @@ def draw_element_value_2d( points:Union[torch.Tensor,np.ndarray],
         order   = element_type2order[key]
       
         if element is Triangle:
-            img, ax = draw_element_value_2d_tri(points, elements[key], values[key], alpha[key], cmap, color, ax)
+            img, ax = draw_element_value_2d_tri(points, elements[key], values[key], alpha[key], cmap, color, ax, **kwargs)
             collections[key] = img
             continue
 
@@ -158,8 +168,8 @@ def draw_element_value_2d( points:Union[torch.Tensor,np.ndarray],
         contour = elements[key][:, contour] # [n_elements, n_contour]
         contour = points[contour] # [n_elements, n_contour, 2]
 
-        polygons= [Polygon(x,closed=True) for x in contour]
-        collection = PolyCollection(polygons, cmap=cmap)
+        # polygons= [Polygon(x,closed=True) for x in contour]
+        collection = PolyCollection(contour, cmap=cmap, **kwargs)
         
         if color is None: # use cmap 
             collection.set_facecolor(plt.cm.get_cmap(cmap)(values[key]))

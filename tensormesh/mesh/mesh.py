@@ -10,258 +10,65 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 from typing import Iterable, Dict, Optional,List
 from .adjacency import node_adjacency, element_adjacency
+from .coloring import graph_coloring
+from .partition import graph_partition
 from .. import element as E
 from .. import sparse
 from ..nn import BufferDict
 from .. import visualization as V
 
 
-def tri_reorder(elements:torch.Tensor)->torch.Tensor:
-    """Turn elements from gmsh order to fenics order
-
-    Parameters
-    ----------
-    elements: torch.Tensor
-        2D Tensor of shape [N, (n+1)(n+2)/2], 
-        where N is the number of elements,
-        n is the order
-
-    Returns
-    -------
-    elements: torch.Tensor
-        2D Tensor of shape [N, (n+1)(n+2)/2],
-        where N is the number of elements,
-        n is the order
+def tri_reorder(elements: torch.Tensor) -> torch.Tensor:
     """
-    n = int((-3 + np.sqrt(9 + 8*elements.shape[-1]))/2)
-    assert elements.shape[-1] == (n+1)*(n+2)//2, f"Number of nodes {elements.shape[-1]} must be triangular number, got {n}*{n+1}/2!={elements.shape[-1]}"
-    
-    # Vertices always map directly
-    index_0d = elements[..., [0,1,2]]
-    
-    if n <= 1: # order = 1
-        return index_0d
-        
-    # Edge nodes need to be reversed for some edges
-    edges = elements[..., np.arange(3, 3 + 3 * (n-1))]
-    edge_12, edge_23, edge_31 = np.array_split(edges, 3, -1)
-    
-    edge_13 = np.flip(edge_31, -1)
-    
-    index_1d = np.concatenate([edge_23, edge_13, edge_12], -1)
-    
-    if n <= 2: # order = 2
-        return np.concatenate([index_0d, index_1d], -1)
-        
-    # Interior nodes are handled recursively
-    index_2d = tri_reorder(elements[..., 3 + 3 * (n-1):])
-    
-    return np.concatenate([index_0d, index_1d, index_2d], -1)
+    (Deprecated) Reorder triangle connectivity from Gmsh/VTK ordering to TensorMesh internal ordering.
 
-def quad_reorder(elements:torch.Tensor)->torch.Tensor:
-    """Turn elements from gmsh order to fenics order
-
-    Parameters
-    ----------
-    elements: torch.Tensor
-        2D Tensor of shape [N, (n+1)^2], 
-        where $N$ is the number of elements, 
-        n is the order 
-
-    Returns
-    -------
-    elements: torch.Tensor
-        2D Tensor of shape [N, (n+1)^2], 
-        where $N$ is the number of elements, 
-        n is the order 
+    This is kept for backward compatibility. The canonical implementation lives in
+    :meth:`tensormesh.element.Element.reorder`.
     """
-    
-    n = int(np.sqrt(elements.shape[-1]))
-    assert elements.shape[-1] == n * n, f"Number of nodes {elements.shape[-1]} must be a perfect square, got {n}*{n}!={elements.shape[-1]}"
-    
-    
-    index_0d = elements[..., [0,1,3,2]]
-    
-    if n <= 2: # order = 1
-        return index_0d 
-    
-    edges   = elements[..., np.arange(4, 4 + 4 * (n-2))]
+    return E.Triangle.reorder(elements, to_gmsh=False)
 
-    edge_12, edge_23, edge_34, edge_41 = np.array_split(edges, 4, -1)
-
-    edge_14 = np.flip(edge_41, -1)
-    edge_43 = np.flip(edge_34, -1)
-
-    index_1d = np.concatenate([edge_12, edge_14, edge_23, edge_43], -1) # [N, 4*(n-2)]
-   
-    if n <= 3: # order = 2
-        return np.concatenate([index_0d, index_1d, elements[..., -1:]], -1)
-    
-    index_2d = quad_reorder(elements[..., 4 + 4 * (n-2):])
-
-    return np.concatenate([index_0d, index_1d, index_2d], -1)
-    
-
-def tet_reorder(elements:torch.Tensor)->torch.Tensor:
-    """Turn elements from gmsh order to fenics order
-
-    Parameters
-    ----------
-    elements: torch.Tensor
-        2D Tensor of shape [N, (n+1)(n+2)(n+3)/6], 
-        where N is the number of elements,
-        n is the order
-
-    Returns
-    -------
-    elements: torch.Tensor
-        2D Tensor of shape [N, (n+1)(n+2)(n+3)/6],
-        where N is the number of elements,
-        n is the order
+def quad_reorder(elements: torch.Tensor) -> torch.Tensor:
     """
-    # Get order from number of nodes
-    n = {
-        4:1,
-        10:2,
-        20:3
-    }[elements.shape[-1]]
+    (Deprecated) Reorder quadrilateral connectivity from Gmsh/VTK ordering to TensorMesh internal ordering.
+
+    This is kept for backward compatibility. The canonical implementation lives in
+    :meth:`tensormesh.element.Element.reorder`.
+    """
+    return E.Quadrilateral.reorder(elements, to_gmsh=False)
     
-    # Vertices are reordered
-    index_0d = elements[..., [0,1,2,3]]
-    
-    if n <= 1: # order = 1
-        return index_0d
-        
-    # Edges are reordered
-    edges = elements[..., np.arange(4, 4 + 6*(n-1))]
-    edge_12, edge_23, edge_31, edge_41, edge_43, edge_42 = np.array_split(edges, 6, -1)
-    
-    edge_13 = np.flip(edge_31, -1)
-    edge_14 = np.flip(edge_41, -1)
-    edge_24 = np.flip(edge_42, -1)
-    edge_34 = np.flip(edge_43, -1)
-    
-    if n == 2:
-    
-        index_1d = np.concatenate([edge_24, edge_34, edge_23, edge_14, edge_13, edge_12], -1)
 
-    elif n == 3:
+def tet_reorder(elements: torch.Tensor) -> torch.Tensor:
+    """
+    (Deprecated) Reorder tetrahedron connectivity from Gmsh/VTK ordering to TensorMesh internal ordering.
 
-        index_1d = np.concatenate([edge_34, edge_24, edge_23, edge_14, edge_13, edge_12], -1)
-
-
-    if n <= 2: # order = 2
-        return np.concatenate([index_0d, index_1d], -1)
-        
-    # Faces are handled recursively
-    faces = elements[..., 4 + 6*(n-1):]
-
-    face_123, face_124, face_134, face_234 = np.array_split(faces, 4, -1)
-
-    index_2d = np.concatenate([face_234, face_134, face_124, face_123], -1)
-    
-    if n<= 3: # order = 3
-        return np.concatenate([index_0d, index_1d, index_2d], -1)
-
-    assert n <= 3, f"Order {n} is not supported, must be <= 3"
+    This is kept for backward compatibility. The canonical implementation lives in
+    :meth:`tensormesh.element.Element.reorder`.
+    """
+    return E.Tetrahedron.reorder(elements, to_gmsh=False)
     
 def hex_reorder(elements: torch.Tensor) -> torch.Tensor:
-    """Reorder hexahedral elements to match gmsh ordering
-
-    Parameters
-    ----------
-    elements: torch.Tensor
-        2D Tensor of shape [N, (n+1)(n+2)(n+3)/6], 
-        where N is the number of elements,
-        n is the order
-
-    Returns
-    -------
-    elements: torch.Tensor
-        2D Tensor of shape [N, (n+1)(n+2)(n+3)/6],
-        where N is the number of elements,
-        n is the order
     """
-    # Get order from number of nodes
-    n = {
-        4:1,
-        10:2,
-        20:3
-    }[elements.shape[-1]]
+    (Deprecated) Reorder hexahedron connectivity from Gmsh/VTK ordering to TensorMesh internal ordering.
 
-    breakpoint()
-    expected_nodes = (n+1)*(n+2)*(n+3)//6
-    assert elements.shape[-1] == expected_nodes, f"Number of nodes {elements.shape[-1]} must be (n+1)(n+2)(n+3)/6 for some n, got {expected_nodes}!={elements.shape[-1]}"
-
-    # Vertices are reordered
-    index_0d = elements[..., [0,1,2,3,4,5,6,7]]
-    
-    if n <= 1: # order = 1
-        return index_0d
-        
-    # Edges are reordered
-    edges = elements[..., np.arange(8, 8 + 12*(n-1))]
-    edge_12, edge_23, edge_34, edge_41 = np.array_split(edges[:,:4*(n-1)], 4, -1)
-    edge_56, edge_67, edge_78, edge_85 = np.array_split(edges[:,4*(n-1):8*(n-1)], 4, -1)
-    edge_15, edge_26, edge_37, edge_48 = np.array_split(edges[:,8*(n-1):], 4, -1)
-    
-    index_1d = np.concatenate([
-        edge_12, edge_23, edge_34, edge_41,
-        edge_56, edge_67, edge_78, edge_85,
-        edge_15, edge_26, edge_37, edge_48
-    ], -1)
-
-    if n <= 2: # order = 2
-        return np.concatenate([index_0d, index_1d], -1)
-        
-    # Faces are handled recursively
-    faces = elements[..., 8 + 12*(n-1):]
-    face_1234, face_5678, face_1584, face_2376, face_1265, face_4378 = np.array_split(faces, 6, -1)
-
-    index_2d = np.concatenate([
-        face_1234, face_5678, face_1584, 
-        face_2376, face_1265, face_4378
-    ], -1)
-    
-    if n <= 3: # order = 3
-        return np.concatenate([index_0d, index_1d, index_2d], -1)
-
-    assert n <= 3, f"Order {n} is not supported, must be <= 3"
+    Note: Hexahedron gmsh permutation is currently identity unless implemented in
+    :class:`tensormesh.element.Hexahedron`. This wrapper removes the old breakpoint-based code.
+    """
+    return E.Hexahedron.reorder(elements, to_gmsh=False)
 
 
-def pyr_reorder(elements:torch.Tensor)->torch.Tensor:
-    
-    # Get order from number of nodes
-    n = {
-        5:1,
-        14:2,
-        30:3
-    }[elements.shape[-1]]
-    
-    # Vertices are reordered
-    index_0d = elements[..., [0,1,3,2,4]]
-    
-    if n <= 1: # order = 1
-        return index_0d
-        
-    # Edges are reordered
-    edges = elements[..., np.arange(5, 5 + 8*(n-1))]
-    edge_12, edge_14, edge_15, edge_23, edge_25, edge_34, edge_35, edge_45 = np.array_split(edges, 8, -1)
-    # edge_12 # [N, n-1]
-
-    index_1d = np.concatenate([edge_12, edge_14, edge_15, edge_23, edge_25, edge_34, edge_45, edge_35], -1)
-
-    inner = elements[..., 5 + 8*(n-1):]
-
-    if n <= 2: # order = 2
-        return np.concatenate([index_0d, index_1d, inner], -1)
-    
-    raise NotImplementedError("Higher Order (>2) for Pyramid transition from gmsh is not implemented")
+def pyr_reorder(elements: torch.Tensor) -> torch.Tensor:
+    """
+    (Deprecated) Reorder pyramid connectivity from Gmsh/VTK ordering to TensorMesh internal ordering.
+    """
+    return E.Pyramid.reorder(elements, to_gmsh=False)
         
 
 
 def pri_reorder(elements:torch.Tensor)->torch.Tensor:
-    raise NotImplementedError()
+    """
+    (Deprecated) Reorder prism connectivity from Gmsh/VTK ordering to TensorMesh internal ordering.
+    """
+    return E.Prism.reorder(elements, to_gmsh=False)
 
 
 class Mesh(nn.Module):
@@ -318,68 +125,13 @@ class Mesh(nn.Module):
         
     
         for i, cell in enumerate(mesh.cells):
-
             if reorder:
-              
-                if issubclass(E.element_type2element(cell.type), E.Triangle):
-                    cell.data = tri_reorder(cell.data)
-                elif issubclass(E.element_type2element(cell.type), E.Quadrilateral):
-                    cell.data = quad_reorder(cell.data)
-
-                elif issubclass(E.element_type2element(cell.type), E.Tetrahedron):
-                    
-
-                    cell.data = tet_reorder(cell.data)
-                    # Plot tetrahedron points if order is 3
-                    # if cell.data.shape[1] == 20: # Order 2 tetrahedron has 10 nodes
-                    #     import matplotlib.pyplot as plt
-                    #     from mpl_toolkits.mplot3d import Axes3D
-                    #     one_cell = (mesh.points[cell.data[0]] - mesh.points[cell.data[0]].min(0))[:,:3]
-                        
-                    #     # Create 3D scatter plot
-                    #     fig = plt.figure()
-                    #     ax = fig.add_subplot(111, projection='3d')
-                    #     ax.scatter(one_cell[:,0], one_cell[:,1], one_cell[:,2])
-                        
-                    #     # Add index labels to each point
-                    #     for idx, (x, y, z) in enumerate(zip(one_cell[:,0], one_cell[:,1], one_cell[:,2])):
-                    #         ax.text(x, y, z, str(idx+1))
-                        
-                    #     plt.title("Tetrahedron Points with Indices")
-                    #     ax.set_box_aspect([1,1,1])
-                    #     plt.show()
-
-                    
-
-                elif issubclass(E.element_type2element(cell.type), E.Hexahedron):
-                    
-                    one_cell = (mesh.points[cell.data[0]] - mesh.points[cell.data[0]].min(0))[:,:3]
-                    # one_cell [(n+1)^2 2]
-                    import matplotlib.pyplot as plt
-                    from mpl_toolkits.mplot3d import Axes3D
-                    
-                    # Create a 3D scatter plot of the points
-                    fig = plt.figure()
-                    ax = fig.add_subplot(111, projection='3d')
-                    ax.scatter(one_cell[:,0], one_cell[:,1], one_cell[:,2])
-                    
-                    # Add index labels to each point
-                    for idx, (x, y, z) in enumerate(zip(one_cell[:,0], one_cell[:,1], one_cell[:,2])):
-                        ax.text(x, y, z, str(idx+1))
-                    
-                    plt.title("Hexahedron Points with Indices")
-                    ax.set_box_aspect([1,1,1])
-                    plt.show()
-                    breakpoint()
-                    cell.data = hex_reorder(cell.data)
-                    
-                elif issubclass(E.element_type2element(cell.type), E.Pyramid):
-                    
-                    cell.data = pyr_reorder(cell.data)
-
-                elif issubclass(E.element_type2element(cell.type), E.Prism):
-                    breakpoint()
-                    pass
+                # Centralized reorder implementation lives in tensormesh.element.Element.reorder
+                # Convert from Gmsh/VTK ordering -> TensorMesh internal ordering.
+                elem_cls = E.element_type2element(cell.type)
+                data_t = torch.from_numpy(cell.data)
+                data_t = elem_cls.reorder(data_t, to_gmsh=False)
+                cell.data = data_t.numpy()
 
             
            
@@ -481,7 +233,7 @@ class Mesh(nn.Module):
             f")"
         )
 
-    def to_meshio(self)->meshio.Mesh:
+    def to_meshio(self, reorder: bool = False)->meshio.Mesh:
         """
         Returns
         -------
@@ -489,9 +241,18 @@ class Mesh(nn.Module):
             the meshio mesh object
         """
         
+        # Build cells (optionally reorder to Gmsh/VTK for export)
+        cells_out = {}
+        for k, v in self.cells.items():
+            conn = v.detach().cpu()
+            if reorder:
+                elem_cls = E.element_type2element(k)
+                conn = elem_cls.reorder(conn, to_gmsh=True)
+            cells_out[k] = conn.numpy()
+
         mesh = meshio.Mesh(
             points = self.points.detach().cpu().numpy(),
-            cells  = {k:v.detach().cpu().numpy() for k,v in self.cells.items()},
+            cells  = cells_out,
             point_data = {k:v.detach().cpu().numpy() for k,v in self.point_data.items()},
             cell_data  = {k:[_v.detach().cpu().numpy() for _v in v.values()] for k,v in self.cell_data.items()},
             field_data = {k:v.detach().cpu().numpy() for k,v in self.field_data.items()},
@@ -517,7 +278,8 @@ class Mesh(nn.Module):
         tensormesh.mesh.Mesh
             self will be returned
         """
-        mesh = self.to_meshio()
+        do_reorder = file_name.endswith((".vtk", ".vtu"))
+        mesh = self.to_meshio(reorder=do_reorder)
         # turn is_... or ..._mask to float
         for key in list(mesh.point_data.keys()):
             if key.startswith("is_") or key.endswith("_mask"):
@@ -542,7 +304,7 @@ class Mesh(nn.Module):
         if file_name.endswith(".vtk") or file_name.endswith(".vtu"):
             # if vtk/vtu turn 2d to 3d 
             if mesh.points.shape[1] == 2:
-                mesh.points = np.concatenate([mesh.points, torch.zeros(mesh.points.shape[0], 1)], -1)
+                mesh.points = np.concatenate([mesh.points, np.zeros((mesh.points.shape[0], 1))], -1)
             if "u" not in mesh.point_data.keys():
                 mesh.point_data["u"] = np.zeros((mesh.points.shape[0], )) 
 
@@ -594,6 +356,42 @@ class Mesh(nn.Module):
         if isinstance(elements, torch.Tensor):
             elements = {self.default_element_type:elements}
         return element_adjacency(elements) # type:ignore
+
+    def partition(self, n_parts:int, method:str="spectral", element_type:Optional[str]=None)->torch.Tensor:
+        """Partition the mesh into n_parts
+        
+        Parameters
+        ----------
+        n_parts : int
+            Number of partitions
+        method : str, optional
+            Partition method: 'spectral' or 'metis'. Default is 'spectral'.
+        element_type : str or Iterable[str] or None
+            the type of the elements to partition based on connectivity.
+            
+        Returns
+        -------
+        torch.Tensor
+            IntTensor of shape [n_elements] containing partition ID
+        """
+        adj = self.element_adjacency(element_type)
+        return graph_partition(adj, n_parts, method=method)
+
+    def color(self, element_type:Optional[str]=None)->torch.Tensor:
+        """Color the mesh elements such that no adjacent elements share the same color.
+        
+        Parameters
+        ----------
+        element_type : str or Iterable[str] or None
+            the type of the elements.
+            
+        Returns
+        -------
+        torch.Tensor
+            IntTensor of shape [n_elements] containing color ID
+        """
+        adj = self.element_adjacency(element_type)
+        return graph_coloring(adj)
 
     def elements(self, element_type:Optional[Union[int, str, Iterable[str]]]=None
                  )->Union[torch.Tensor,Dict[str,torch.Tensor]]:
@@ -1373,6 +1171,5 @@ class Mesh(nn.Module):
         """
         from ..dataset import gen_hollow_sphere
         return gen_hollow_sphere(chara_length, order, cx, cy, cz, r_inner, r_outer, visualize, cache_path)
-
 
 Mesh.__autodoc__ = [i for i in dir(Mesh) if not i.startswith("_")]

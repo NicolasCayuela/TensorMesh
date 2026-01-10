@@ -198,7 +198,7 @@ class ElementAssembler(nn.Module):
         torch.dtype
             the data type of the assembler, either :obj:`torch.float32` or :obj:`torch.float64`
         """
-        return next(iter(self.transformation.values())).device # type: ignore
+        return next(iter(self.transformation.values())).dtype # type: ignore
 
     def type(self, dtype:torch.dtype):
         if dtype == torch.float64:
@@ -290,7 +290,7 @@ class ElementAssembler(nn.Module):
         if element_data is None:
             element_data = {element_type:{} for element_type in self.element_types} # 
         else:
-            if not isinstance(next(iter(element_data.keys())), dict):
+            if not isinstance(next(iter(element_data.values())), dict):
                 assert len(self.element_types) == 1
                 element_type = self.element_types[0]
                 element_data = {key:{element_type:value} for key, value in element_data.items()} # type:ignore
@@ -453,6 +453,239 @@ class ElementAssembler(nn.Module):
             integral = proj(element_integral) if integral is None else integral + proj(element_integral) # type:ignore [n_edge, ...]
 
         return self._build_output(integral)
+
+    def energy(self, points:Optional[torch.Tensor] = None, 
+                       func:Optional[Callable] = None,
+                       point_data:Optional[Mapping[str, torch.Tensor]] = None, 
+                       element_data:Optional[Union[Mapping[str, Mapping[str,torch.Tensor]], Mapping[str,torch.Tensor]]] = None, 
+                       scalar_data:Optional[Mapping[str, torch.Tensor]] = None,
+                       batch_size:int = -1):
+        r"""
+        Calculates the total potential energy of the system by integrating the element energy density over the domain.
+
+        This method is designed for energy-based variational problems (e.g., hyperelasticity, phase field, optimization).
+        It computes the global integral:
+        
+        .. math::
+            E = \int_\Omega \psi(\mathbf{u}, \nabla \mathbf{u}, \dots) d\Omega
+
+        where :math:`\psi` is the energy density function (defined in :meth:`element_energy` or passed as `func`).
+        The method handles efficient parallel integration using quadrature rules and PyTorch's `vmap`.
+
+        **How it works (Simplified):**
+        
+        1. You provide nodal data (like displacement `u`) in `point_data`.
+        2. You define an `element_energy` function that takes arguments like `u` (value) or `graddisplacement` (gradient) and returns the scalar energy density for a **single quadrature point**.
+        3. This method automatically matches your arguments, broadcasts them over all elements and quadrature points, computes the gradients if requested, and performs the numerical integration.
+
+        Parameters
+        ----------
+        points : torch.Tensor, optional
+            The current positions of the nodes (shape: `[N_nodes, Dim]`). 
+            If not provided, uses the mesh's initial points.
+        func : Callable, optional
+            A function that computes energy density at a single quadrature point.
+            Signature: `func(arg1, arg2, ...) -> torch.Tensor (scalar)`.
+            If `None`, uses `self.element_energy`.
+            
+            **Supported Arguments for `func`:**
+            
+            *   **`u`**, **`v`**, ... : Values interpolated from `point_data` (e.g., passing `point_data={'u': ...}` allows requesting `u`).
+            *   **`gradu`**, **`gradv`**, ...: Gradients interpolated from `point_data` (e.g., passing `point_data={'u': ...}` allows requesting `gradu`).
+            *   **`key`** in `element_data`: Element-wise constant or quadrature-varying data.
+            *   **`key`** in `scalar_data`: Global scalar constants.
+
+        point_data : Dict[str, torch.Tensor], optional
+            Nodal fields (e.g., displacement, phase field).
+            Shape: `[N_nodes, ...]` or `[N_nodes, Dim]`.
+        
+        element_data : Dict[str, Tensor] or Dict[str, Dict[str, Tensor]], optional
+            Data defined on elements.
+            Can be:
+            
+            *   **Constant per element**: Shape `[N_elements, ...]`.
+            *   **Varying per quadrature point** (e.g., history variables): Shape `[N_elements, N_quad, ...]`.
+            
+        scalar_data : Dict[str, Tensor], optional
+            Global constants (e.g., time step `dt`).
+        
+        batch_size : int, optional
+            Batch size for processing quadrature points to save memory. Default is -1 (process all at once).
+
+        Returns
+        -------
+        torch.Tensor
+            The total scalar energy (shape: `[]`). 
+            Since this operation is differentiable, you can call `.backward()` on it to compute forces (gradients w.r.t `points` or `point_data`).
+
+        Examples
+        --------
+        
+        **1. Hyperelasticity (Neo-Hookean Energy)**
+        
+        .. code-block:: python
+        
+            class NeoHookean(ElementAssembler):
+                def element_energy(self, graddisplacement):
+                    # graddisplacement is [Dim, Dim] tensor at one quad point
+                    F = torch.eye(3) + graddisplacement
+                    J = torch.det(F)
+                    # ... compute psi ...
+                    return psi
+
+            model = NeoHookean.from_mesh(mesh)
+            
+            # Compute energy
+            # Auto-differentiable w.r.t u
+            u = torch.zeros_like(mesh.points, requires_grad=True)
+            E = model.energy(point_data={"displacement": u})
+            
+            # Compute Forces (Internal Force Vector)
+            E.backward()
+            F_int = u.grad
+            
+        """
+        assert isinstance(point_data, dict) or point_data is None, f"point_data should be a dict"
+        if point_data is None: point_data = {}
+        if element_data is None: element_data = {element_type:{} for element_type in self.element_types}
+        else:
+            if not isinstance(next(iter(element_data.values())), dict):
+                assert len(self.element_types) == 1
+                element_type = self.element_types[0]
+                element_data = {key:{element_type:value} for key, value in element_data.items()}
+                for key in element_data:
+                    for element_type in self.element_types:
+                        assert element_data[key][element_type].shape[0] == self.elements[element_type].shape[0]
+            else:
+                for key, value in element_data.items():
+                    for element_type in self.element_types:
+                        assert element_data[key][element_type].shape[0] == self.elements[element_type].shape[0]
+        
+        if scalar_data is None: scalar_data = {}
+        else: scalar_data = {k:torch.tensor(v) for k,v in scalar_data.items()}
+
+        if points is None:
+            points = next(iter(self.transformation.values())).points
+        else:
+            for element_type in self.element_types:
+                self.transformation[element_type].update_points(points)
+        
+        point_data["x"] = points
+        self = self.type(points.dtype).to(points.device)
+
+        fn = self.element_energy if func is None else func
+        signature = inspect.signature(fn)
+
+        # Broadcasting rules are inferred from argument names.
+        # For element_data we support both:
+        # - per-element constant: [n_elem, ...]
+        # - per-(element,quadrature): [n_elem, n_quad, ...] (e.g. history variables)
+        broadcast_fns = [
+            (lambda x: x in element_data.keys(), InputBroadcast(True, False, False, False)),
+            (lambda x: x in scalar_data.keys(), InputBroadcast(True, True, True, True)),
+            (lambda x: x in point_data.keys(), InputBroadcast(True, True, False, False)),
+            (lambda x: x in {"grad" + key for key in point_data.keys()}, InputBroadcast(True, True, False, False)),
+        ]
+
+        element_dims = []
+        quadrature_dims = []
+        
+        for key in signature.parameters:
+            # Special-case element_data: auto-detect whether it varies per quadrature
+            if key in element_data:
+                is_quad = False
+                for etype in self.element_types:
+                    n_quad = self.transformation[etype].n_quadrature
+                    data = element_data[key][etype]
+                    if data.dim() >= 2 and data.shape[1] == n_quad:
+                        is_quad = True
+                    else:
+                        is_quad = False
+                        break
+                element_dims.append(0)
+                quadrature_dims.append(0 if is_quad else None)
+                continue
+
+            is_match = False
+            for condition, broadcast in broadcast_fns[1:]:
+                if condition(key):
+                    element_dims.append(broadcast.element)
+                    quadrature_dims.append(broadcast.quadrature)
+                    is_match = True
+                    break
+            if not is_match:
+                raise ValueError(f"{key} is not supported for energy calculation.")
+
+        element_dims = tuple(element_dims)
+        quadrature_dims = tuple(quadrature_dims)
+        
+        parallel_fn = vmap(
+            vmap(fn, in_dims=quadrature_dims),
+            in_dims=element_dims
+        )
+
+        total_energy = 0.0
+        
+        for element_type in self.element_types:
+            trans = self.transformation[element_type]
+            n_quadrature = trans.n_quadrature
+            n_batch = n_quadrature // batch_size if batch_size != -1 else 1
+            n_batch_size = batch_size if batch_size != -1 else n_quadrature
+            elements = self.elements[element_type]
+            ele_point_data = {k:v[elements] for k,v in point_data.items()}
+
+            for i in range(n_batch):
+                q_start = i * n_batch_size
+                q_end = q_start + n_batch_size
+
+                # IMPORTANT: energy() needs element-wise shape gradients (include element dim).
+                # batch_shape_grad_jxw returns gradients without the element dimension for some elements,
+                # which breaks einsum broadcasting. Use full tensors and slice quadrature instead.
+                shape_val = trans.shape_val[q_start:q_end, :]                     # [q, b]
+                shape_grad = trans.shape_grad[:, q_start:q_end, :, :]            # [e, q, b, d]
+                jxw = trans.JxW[:, q_start:q_end]                                # [e, q]
+                
+                args = []
+                for key in signature.parameters:
+                    if key in ele_point_data:
+                        args.append(torch.einsum("eb...,qb->eq...", ele_point_data[key], shape_val))
+                    elif key.startswith("grad") and key[4:] in ele_point_data:
+                        args.append(torch.einsum("eb...,eqbd->eq...d", ele_point_data[key[4:]], shape_grad))
+                    elif key in element_data:
+                        args.append(element_data[key][element_type])
+                    elif key in scalar_data:
+                        args.append(scalar_data[key])
+                    else:
+                        raise NotImplementedError(f"key {key} not implemented")
+                
+                batch_energy_density = parallel_fn(*args) # [n_elem, n_quad]
+                batch_energy = (batch_energy_density * jxw).sum()
+                total_energy += batch_energy
+        
+        return total_energy
+
+    def element_energy(self, **kwargs):
+        r"""
+        Override this method to define the energy density at a single quadrature point.
+        
+        This method is called automatically by :meth:`energy` using `vmap` to parallelize over all quadrature points.
+        
+        Parameters
+        ----------
+        **kwargs : torch.Tensor
+            Arguments matching the variable names requested.
+            Common arguments:
+            
+            *   **u**, **v**: Value of field at quadrature point.
+            *   **gradu**, **gradv**: Gradient of field at quadrature point.
+            *   **element_data_key**: Value of element data (constant or interpolated).
+            
+        Returns
+        -------
+        torch.Tensor
+            Scalar energy density (:math:`\psi`) for this quadrature point.
+        """
+        raise NotImplementedError("element_energy is not implemented")
 
     @abstractmethod
     def forward(self, **kwargs):
@@ -648,6 +881,5 @@ class ElementAssembler(nn.Module):
                    *args,**kwargs)
         assembler = assembler.type(mesh.dtype).to(mesh.device)
         return assembler
-
       
 ElementAssembler.type.__doc__ = nn.Module.type.__doc__

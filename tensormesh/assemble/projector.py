@@ -66,6 +66,9 @@ class ReduceProjector(Projector):
         self.from_shape = from_shape
         self.to_shape   = to_shape
         self.use_fp64   = use_fp64
+        # Pre-compute for torch.compile compatibility
+        self._from_size = int(np.prod(from_shape))
+        self._to_size = int(np.prod(to_shape))
 
     @property
     def device(self):
@@ -86,8 +89,8 @@ class ReduceProjector(Projector):
         assert x.shape[:len(self.from_shape)] == self.from_shape, f"the shape of x must be [{self.from_shape}, ...], but got {x.shape}"
 
         dim_shape = x.shape[len(self.from_shape):]
-        x = x.reshape(np.prod(self.from_shape), *dim_shape)
-        o = torch.zeros(np.prod(self.to_shape), *dim_shape, device=x.device, dtype=x.dtype)
+        x = x.reshape(self._from_size, *dim_shape)
+        o = torch.zeros(self._to_size, *dim_shape, device=x.device, dtype=x.dtype)
         
         if self.use_fp64:
             dtype = x.dtype 

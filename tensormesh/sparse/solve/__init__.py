@@ -1,16 +1,28 @@
 import torch
 import warnings
 from .scipy_solve import SparseSolveScipy, SparseLUSolveScipy
-from .petsc_solve import SparseSolvePETSc, SparseLUSolvePETSc
 from .cupy_solve import SparseSolveCupy, SparseLUSolveCupy
 from .torch_solve import SparseSolveTorch, is_cpp_backend_available
 from ..utils import is_petsc_available, is_cupy_available
 
+# Lazy import PETSc solvers only when needed
+SparseSolvePETSc = None
+SparseLUSolvePETSc = None
+
+def _get_petsc_solvers():
+    global SparseSolvePETSc, SparseLUSolvePETSc
+    if SparseSolvePETSc is None:
+        from .petsc_solve import SparseSolvePETSc as _SparseSolvePETSc
+        from .petsc_solve import SparseLUSolvePETSc as _SparseLUSolvePETSc
+        SparseSolvePETSc = _SparseSolvePETSc
+        SparseLUSolvePETSc = _SparseLUSolvePETSc
+    return SparseSolvePETSc, SparseLUSolvePETSc
 
 
 
 
-def spsolve(edata, row, col, shape, b, backend=None, verbose=True):
+
+def spsolve(edata, row, col, shape, b, backend=None, verbose=True, x0=None, tol=1e-5, max_iter=10000):
     """solve the sparse linear system Ax = b
 
     if the b of shape [n_node, n_batch], then a superLU will be used 
@@ -35,12 +47,16 @@ def spsolve(edata, row, col, shape, b, backend=None, verbose=True):
     backend: str, optional
         the backend to use, by default None
         if None, 
-            if edata.device == "cuda", then it will use cupy backend
-            else if petsc is available, then it will use petsc backend
-            else it will use scipy backend
+            if edata.device == "cuda", then it will use torch backend (or cupy if available)
+            else it will use torch backend
         if "scipy", then it will use scipy backend
-        if "petsc", then it will use petsc backend
+        if "petsc", then it will use petsc backend (requires petsc4py)
         if "cupy", then it will use cupy backend
+        if "torch", then it will use torch backend
+    tol: float, optional
+        tolerance for iterative solvers
+    max_iter: int, optional
+        maximum number of iterations for iterative solvers
     Returns
     -------
     torch.Tensor 
@@ -57,17 +73,16 @@ def spsolve(edata, row, col, shape, b, backend=None, verbose=True):
             print(f"Use SuperLU to solve the batched linear system")
         if edata.device.type == "cpu":
             if backend is None:
-                if is_petsc_available:
-                    return SparseLUSolvePETSc.apply(edata, row, col, shape, b)
-                else:
-                    return SparseLUSolveScipy.apply(edata, row, col, shape, b)
+                # Default to scipy for batched solve on CPU (torch doesn't support batched yet)
+                return SparseLUSolveScipy.apply(edata, row, col, shape, b)
             elif backend == "scipy":
-                return SparseSolveScipy.apply(edata, row, col, shape, b)
+                return SparseLUSolveScipy.apply(edata, row, col, shape, b)
             elif backend == "petsc":
                 assert is_petsc_available, f"petsc is not available, please install petsc4py"
-                return SparseSolvePETSc.apply(edata, row, col, shape, b)
+                _SparseSolvePETSc, _SparseLUSolvePETSc = _get_petsc_solvers()
+                return _SparseLUSolvePETSc.apply(edata, row, col, shape, b)
             else:
-                raise NotImplementedError(f"backend {backend} not supported for CPU")
+                raise NotImplementedError(f"backend {backend} not supported for CPU batched solve")
         elif edata.device.type == "cuda":
             assert is_cupy_available, f"cupy is not available, please install cupy"
             return SparseLUSolveCupy.apply(edata, row, col, shape, b)
@@ -76,27 +91,24 @@ def spsolve(edata, row, col, shape, b, backend=None, verbose=True):
     else:
         if edata.device.type == "cpu":
             if backend is None:
-                if is_petsc_available:
-                    return SparseSolvePETSc.apply(edata, row, col, shape, b)
-                else:
-                    return SparseSolveScipy.apply(edata, row, col, shape, b)
+                # Default to torch backend
+                return SparseSolveTorch.apply(edata, row, col, shape, b, x0, tol, max_iter)
+            elif backend == "torch":
+                return SparseSolveTorch.apply(edata, row, col, shape, b, x0, tol, max_iter)
             elif backend == "scipy":
                 return SparseSolveScipy.apply(edata, row, col, shape, b)
             elif backend == "petsc":
                 assert is_petsc_available, f"petsc is not available, please install petsc4py"
-                return SparseSolvePETSc.apply(edata, row, col, shape, b)
-            elif backend == "torch":
-                return SparseSolveTorch.apply(edata, row, col, shape, b)
+                _SparseSolvePETSc, _ = _get_petsc_solvers()
+                return _SparseSolvePETSc.apply(edata, row, col, shape, b)
             else:
                 raise NotImplementedError(f"backend {backend} not supported for CPU")
         elif edata.device.type == "cuda":
             if backend is None:
-                if is_cupy_available:
-                    return SparseSolveCupy.apply(edata, row, col, shape, b)
-                else:
-                    return SparseSolveTorch.apply(edata, row, col, shape, b)
+                # Default to torch backend on CUDA
+                return SparseSolveTorch.apply(edata, row, col, shape, b, x0, tol, max_iter)
             elif backend == "torch":
-                return SparseSolveTorch.apply(edata, row, col, shape, b)
+                return SparseSolveTorch.apply(edata, row, col, shape, b, x0, tol, max_iter)
             elif backend == "cupy":
                 assert is_cupy_available, f"cupy is not available, please install cupy"
                 return SparseSolveCupy.apply(edata, row, col, shape, b)

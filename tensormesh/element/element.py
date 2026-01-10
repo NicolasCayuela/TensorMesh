@@ -2,6 +2,7 @@
 from functools import lru_cache, reduce
 from logging import warning
 import torch
+import math
 from functools import wraps
 from typing import List, Tuple, Optional, Type, Sequence, Union
 from .polynomial import Polynomial, \
@@ -87,6 +88,54 @@ class Element:
     False indicates uniform facets (e.g. all triangles or all quads).
     True indicates mixed facets (e.g. prism or pyramid).
     """
+
+    @classmethod
+    def reorder(cls, elements: torch.Tensor, to_gmsh: bool = True) -> torch.Tensor:
+        r"""
+        Reorder element connectivity between **TensorMesh internal ordering** and **Gmsh/VTK ordering**.
+
+        TensorMesh stores connectivity for some tensor-product elements (e.g. Quad, Hex) in a
+        **lexicographic** node order that matches the basis / tensor-product polynomial layout.
+        However, file formats like **VTK/VTU** (and Gmsh conventions) expect a different ordering.
+
+        This helper provides a single, centralized conversion point so that:
+        - internal FEM kernels always see TensorMesh ordering
+        - IO / visualization (VTK/VTU) can export in Gmsh/VTK ordering
+
+        Parameters
+        ----------
+        elements:
+            Connectivity tensor of shape ``[..., n_nodes]`` (typically ``[n_elem, n_nodes]``).
+        to_gmsh:
+            - ``False``: convert **Gmsh/VTK -> TensorMesh** (used when reading meshes)
+            - ``True``:  convert **TensorMesh -> Gmsh/VTK** (used when writing VTK/VTU)
+
+        Returns
+        -------
+        torch.Tensor
+            Reordered connectivity tensor with the same shape/dtype/device as input.
+        """
+        perm = cls.get_gmsh_permutation(elements.shape[-1], device=elements.device)
+        if to_gmsh:
+            perm = torch.argsort(perm)
+        return elements.index_select(-1, perm)
+
+    @classmethod
+    def get_gmsh_permutation(cls, n_nodes: int, device: torch.device = torch.device("cpu")) -> torch.Tensor:
+        r"""
+        Return a permutation ``perm`` (shape ``[n_nodes]``) mapping **Gmsh/VTK -> TensorMesh**.
+
+        Given an input connectivity ``conn_gmsh[..., :]`` in Gmsh/VTK ordering, the internal ordering is:
+
+        ``conn_internal = conn_gmsh.index_select(-1, perm)``
+
+        Notes
+        -----
+        Subclasses should override this for element types where TensorMesh ordering differs from
+        the external Gmsh/VTK ordering. If not overridden, the default is identity.
+        """
+        # Default: identity (meaning Gmsh/VTK ordering == TensorMesh ordering)
+        return torch.arange(n_nodes, device=device, dtype=torch.long)
 
     # @abstractmethod
     @classmethod
@@ -1717,6 +1766,42 @@ class Triangle(Element):
         else:
             raise Exception(f"Invalid order {order}")
 
+    @classmethod
+    @lru_cache()
+    def get_gmsh_permutation(cls, n_nodes: int, device: torch.device = torch.device("cpu")) -> torch.Tensor:
+        """
+        Permutation mapping Gmsh/VTK ordering -> TensorMesh internal ordering for Triangle elements.
+        """
+        # n_nodes = (n+1)(n+2)/2  =>  n is polynomial order
+        disc = 9 + 8 * n_nodes
+        n = int((-3 + math.isqrt(disc)) // 2)
+        if (n + 1) * (n + 2) // 2 != n_nodes:
+            raise ValueError(f"Triangle.get_gmsh_permutation: invalid n_nodes={n_nodes}")
+
+        def _reorder_list(p: List[int], order: int) -> List[int]:
+            # Inner recursion terminator: order-0 triangle has exactly one node
+            if order == 0:
+                return p
+            idx0 = [p[0], p[1], p[2]]
+            if order <= 1:
+                return idx0
+            n_edge_nodes = order - 1
+            edges = p[3: 3 + 3 * n_edge_nodes]
+            e12 = edges[0:n_edge_nodes]
+            e23 = edges[n_edge_nodes:2 * n_edge_nodes]
+            e31 = edges[2 * n_edge_nodes:3 * n_edge_nodes]
+            e13 = list(reversed(e31))
+            idx1 = e23 + e13 + e12
+            if order <= 2:
+                return idx0 + idx1
+            inner = p[3 + 3 * n_edge_nodes:]
+            # For triangles, removing the boundary reduces the order by 3 (matches the legacy implementation)
+            idx2 = _reorder_list(inner, order - 3)
+            return idx0 + idx1 + idx2
+
+        perm = torch.tensor(_reorder_list(list(range(n_nodes)), n), dtype=torch.long, device=device)
+        return perm
+
 class Quadrilateral(Element):
     points = torch.tensor([[0.0, 0.0],[1.0, 0.0],[0.0, 1.0],[1.0, 1.0]]) # 4x2
     vertex = torch.tensor([[0], [1], [2], [3]]) # 4x1
@@ -1766,6 +1851,13 @@ class Quadrilateral(Element):
                        device:torch.device=torch.device('cpu')
                        )->Tensorx2:
         return quad_quadrature(order, dtype, device)
+
+    @classmethod
+    @lru_cache()
+    def get_contour(cls, order:int)->torch.Tensor:
+        # Returns indices for CCW contour: 0->1->3->2
+        # (0,0) -> (1,0) -> (1,1) -> (0,1)
+        return torch.tensor([0, 1, 3, 2])
        
     @classmethod
     @lru_cache()
@@ -1803,6 +1895,38 @@ class Quadrilateral(Element):
             ])
         else:
             raise Exception(f"Invalid order {order}")
+
+    @classmethod
+    @lru_cache()
+    def get_gmsh_permutation(cls, n_nodes: int, device: torch.device = torch.device("cpu")) -> torch.Tensor:
+        """
+        Permutation mapping Gmsh/VTK ordering -> TensorMesh internal ordering for Quadrilateral elements.
+        """
+        side = int(math.isqrt(n_nodes))
+        if side * side != n_nodes:
+            raise ValueError(f"Quadrilateral.get_gmsh_permutation: invalid n_nodes={n_nodes}")
+
+        def _reorder_list(p: List[int], side_n: int) -> List[int]:
+            idx0 = [p[0], p[1], p[3], p[2]]
+            if side_n <= 2:
+                return idx0
+            n_edge_nodes = side_n - 2
+            edges = p[4: 4 + 4 * n_edge_nodes]
+            e12 = edges[0:n_edge_nodes]
+            e23 = edges[n_edge_nodes:2 * n_edge_nodes]
+            e34 = edges[2 * n_edge_nodes:3 * n_edge_nodes]
+            e41 = edges[3 * n_edge_nodes:4 * n_edge_nodes]
+            e14 = list(reversed(e41))
+            e43 = list(reversed(e34))
+            idx1 = e12 + e14 + e23 + e43
+            if side_n <= 3:
+                return idx0 + idx1 + [p[-1]]
+            inner = p[4 + 4 * n_edge_nodes:]
+            idx2 = _reorder_list(inner, side_n - 2)
+            return idx0 + idx1 + idx2
+
+        perm = torch.tensor(_reorder_list(list(range(n_nodes)), side), dtype=torch.long, device=device)
+        return perm
 
 class Tetrahedron(Element):
     points = torch.tensor([[0.0, 0.0, 0.0],[1.0, 0.0, 0.0],[0.0, 1.0, 0.0],[0.0, 0.0, 1.0]]) # 4x3
@@ -1876,6 +2000,78 @@ class Tetrahedron(Element):
     def get_facet_type(cls)->Type['Element']:
         return Triangle
 
+    @classmethod
+    @lru_cache()
+    def get_gmsh_permutation(cls, n_nodes: int, device: torch.device = torch.device("cpu")) -> torch.Tensor:
+        """
+        Permutation mapping Gmsh/VTK ordering -> TensorMesh internal ordering for Tetrahedron elements.
+        """
+        # Supported node counts:
+        # - Tet4 (p1), Tet10 (p2), Tet20 (p3) via legacy implementation below
+        # - Tet35 (p4) via explicit permutation (legacy did not handle p4 reliably)
+        if n_nodes == 35:
+            return torch.tensor(
+                [
+                    0, 1, 2, 3, 19, 20, 21, 10, 11, 12,
+                    18, 17, 16, 13, 14, 15, 7, 8, 9, 4,
+                    5, 6, 28, 29, 30, 23, 24, 22, 25, 27,
+                    26, 31, 33, 32, 34,
+                ],
+                device=device,
+                dtype=torch.long,
+            )
+
+        if n_nodes not in (4, 10, 20):
+            # fall back to identity for unsupported higher orders
+            return torch.arange(n_nodes, device=device, dtype=torch.long)
+
+        # Infer order from node count
+        order_map = {4: 1, 10: 2, 20: 3}
+        n = order_map[n_nodes]
+
+        def _reorder_list(p: List[int], order: int) -> List[int]:
+            idx0 = [p[0], p[1], p[2], p[3]]
+            if order <= 1:
+                return idx0
+
+            n_edge_nodes = order - 1
+            edges = p[4: 4 + 6 * n_edge_nodes]
+            # legacy split order: 12, 23, 31, 41, 43, 42 (1-based labels)
+            e12 = edges[0:n_edge_nodes]
+            e23 = edges[n_edge_nodes:2 * n_edge_nodes]
+            e31 = edges[2 * n_edge_nodes:3 * n_edge_nodes]
+            e41 = edges[3 * n_edge_nodes:4 * n_edge_nodes]
+            e43 = edges[4 * n_edge_nodes:5 * n_edge_nodes]
+            e42 = edges[5 * n_edge_nodes:6 * n_edge_nodes]
+
+            e13 = list(reversed(e31))
+            e14 = list(reversed(e41))
+            e24 = list(reversed(e42))
+            e34 = list(reversed(e43))
+
+            if order == 2:
+                idx1 = e24 + e34 + e23 + e14 + e13 + e12
+            else:
+                # order == 3 in legacy implementation
+                idx1 = e34 + e24 + e23 + e14 + e13 + e12
+
+            if order <= 2:
+                return idx0 + idx1
+
+            # Faces are handled as a flat tail in legacy implementation (order 3 supported)
+            faces = p[4 + 6 * n_edge_nodes:]
+            # split into 4 faces equally
+            chunk = len(faces) // 4
+            f123 = faces[0:chunk]
+            f124 = faces[chunk:2 * chunk]
+            f134 = faces[2 * chunk:3 * chunk]
+            f234 = faces[3 * chunk:4 * chunk]
+            idx2 = f234 + f134 + f124 + f123
+            return idx0 + idx1 + idx2
+
+        perm = torch.tensor(_reorder_list(list(range(n_nodes)), n), dtype=torch.long, device=device)
+        return perm
+
 class Hexahedron(Element):
     points = torch.tensor([[0.0, 0.0, 0.0],[1.0, 0.0, 0.0],[0.0, 1.0, 0.0],[1.0, 1.0, 0.0],[0.0, 0.0, 1.0],[1.0, 0.0, 1.0],[0.0, 1.0, 1.0],[1.0, 1.0, 1.0]]) # 8x3
     vertex = torch.tensor([[0], [1], [2], [3], [4], [5], [6], [7]]) # 8x1
@@ -1945,6 +2141,61 @@ class Hexahedron(Element):
     @classmethod 
     def get_facet_type(cls)->Type['Element']:
         return Quadrilateral
+
+    @classmethod
+    @lru_cache()
+    def get_gmsh_permutation(cls, n_nodes: int, device: torch.device = torch.device("cpu")) -> torch.Tensor:
+        """
+        Permutation mapping Gmsh/VTK ordering -> TensorMesh internal ordering for Hexahedron elements.
+
+        Supports Hex8 (linear) and common Lagrange orders used in examples (p2/p3/p4).
+        For other high orders, falls back to identity.
+        """
+        if n_nodes == 27:  # p2
+            return torch.tensor(
+                [0, 1, 3, 2, 4, 5, 7, 6, 8, 11, 13, 9, 16, 18, 19, 17, 10, 12, 15, 14, 22, 23, 21, 24, 20, 25, 26],
+                device=device,
+                dtype=torch.long,
+            )
+        if n_nodes == 64:  # p3
+            return torch.tensor(
+                [
+                    0, 1, 3, 2, 4, 5, 7, 6, 8, 9, 14, 15, 18, 19, 10, 11,
+                    24, 25, 28, 29, 30, 31, 26, 27, 12, 13, 16, 17, 22, 23, 20, 21,
+                    40, 41, 42, 43, 44, 45, 46, 47, 36, 37, 38, 39, 48, 49, 50, 51,
+                    32, 33, 34, 35, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63,
+                ],
+                device=device,
+                dtype=torch.long,
+            )
+        if n_nodes == 125:  # p4
+            return torch.tensor(
+                [
+                    0, 1, 3, 2, 4, 5, 7, 6, 8, 9, 10, 17, 18, 19, 23, 24, 25,
+                    11, 12, 13, 32, 33, 34, 38, 39, 40, 41, 42, 43, 35, 36, 37,
+                    14, 15, 16, 20, 21, 22, 29, 30, 31, 26, 27, 28,
+                    62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
+                    53, 54, 55, 56, 57, 58, 59, 60, 61,
+                    80, 81, 82, 83, 84, 85, 86, 87, 88,
+                    44, 45, 46, 47, 48, 49, 50, 51, 52,
+                    89, 90, 91, 92, 93, 94, 95, 96, 97, 98,
+                    99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112,
+                    113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124,
+                ],
+                device=device,
+                dtype=torch.long,
+            )
+        if n_nodes != 8:
+            return torch.arange(n_nodes, device=device, dtype=torch.long)
+
+        # VTK Hex8 order (standard): bottom face CCW then top face CCW
+        # 0:(0,0,0) 1:(1,0,0) 2:(1,1,0) 3:(0,1,0) 4:(0,0,1) 5:(1,0,1) 6:(1,1,1) 7:(0,1,1)
+        #
+        # TensorMesh internal points for Hexahedron are lexicographic:
+        # 0:(0,0,0) 1:(1,0,0) 2:(0,1,0) 3:(1,1,0) 4:(0,0,1) 5:(1,0,1) 6:(0,1,1) 7:(1,1,1)
+        #
+        # So to convert VTK -> internal, we need: [0,1,3,2,4,5,7,6]
+        return torch.tensor([0, 1, 3, 2, 4, 5, 7, 6], device=device, dtype=torch.long)
 
 class Pyramid(Element):
     points = torch.tensor([[0.0, 0.0, 0.0],[1.0, 0.0, 0.0],[0.0, 1.0, 0.0],[1.0, 1.0, 0.0],[0.0, 0.0, 1.0]]) # 5x3
@@ -2024,6 +2275,24 @@ class Pyramid(Element):
     def get_facet_type(cls)->Tuple[Type['Element'],Type['Element']]:
         return Triangle, Quadrilateral
 
+    @classmethod
+    @lru_cache()
+    def get_gmsh_permutation(cls, n_nodes: int, device: torch.device = torch.device("cpu")) -> torch.Tensor:
+        """
+        Permutation mapping Gmsh/VTK ordering -> TensorMesh internal ordering for Pyramid elements.
+
+        Currently supports Pyramid5 (linear). Higher order pyramids fall back to identity.
+        """
+        if n_nodes != 5:
+            return torch.arange(n_nodes, device=device, dtype=torch.long)
+
+        # VTK Pyramid5 order: base quad around then apex
+        # base: 0:(0,0,0) 1:(1,0,0) 2:(1,1,0) 3:(0,1,0) apex:4
+        # TensorMesh Pyramid points are lexicographic on the base:
+        # 0:(0,0,0) 1:(1,0,0) 2:(0,1,0) 3:(1,1,0) apex:4
+        # VTK -> internal: [0,1,3,2,4]
+        return torch.tensor([0, 1, 3, 2, 4], device=device, dtype=torch.long)
+
 class Prism(Element):
     points = torch.tensor([[0.0, 0.0, 0.0],[1.0, 0.0, 0.0],[0.0, 1.0, 0.0],[0.0, 0.0, 1.0],[1.0, 0.0, 1.0],[0.0, 1.0, 1.0]]) # 5x3
     vertex = torch.tensor([[0], [1], [2], [3], [4], [5]]) # 6x1
@@ -2101,6 +2370,51 @@ class Prism(Element):
     @classmethod 
     def get_facet_type(cls)->Tuple[Type['Element'],Type['Element']]:
         return Triangle, Quadrilateral
+
+    @classmethod
+    @lru_cache()
+    def get_gmsh_permutation(cls, n_nodes: int, device: torch.device = torch.device("cpu")) -> torch.Tensor:
+        """
+        Permutation mapping Gmsh/VTK ordering -> TensorMesh internal ordering for Prism/Wedge elements.
+
+        Supports Prism6 (linear) and common Lagrange orders used in examples (p2/p3/p4).
+        For other high orders, falls back to identity.
+        """
+        if n_nodes == 18:  # p2
+            return torch.tensor(
+                [0, 1, 2, 3, 4, 5, 6, 9, 7, 12, 14, 13, 8, 10, 11, 15, 17, 16],
+                device=device,
+                dtype=torch.long,
+            )
+        if n_nodes == 40:  # p3
+            return torch.tensor(
+                [
+                    0, 1, 2, 3, 4, 5, 6, 7, 12, 13, 9, 8, 18, 19, 22, 23, 21, 20,
+                    10, 11, 14, 15, 16, 17, 24, 37, 25, 26, 27, 28, 33, 34, 35, 36,
+                    30, 29, 32, 31, 38, 39,
+                ],
+                device=device,
+                dtype=torch.long,
+            )
+        if n_nodes == 75:  # p4
+            return torch.tensor(
+                [
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 15, 16, 17, 11, 10, 9,
+                    24, 25, 26, 30, 31, 32, 29, 28, 27,
+                    12, 13, 14, 18, 19, 20, 21, 22, 23,
+                    33, 34, 35, 63, 64, 65, 36, 37, 38, 39, 40, 41, 42, 43, 44,
+                    54, 55, 56, 57, 58, 59, 60, 61, 62,
+                    47, 46, 45, 50, 49, 48, 53, 52, 51,
+                    66, 67, 68, 69, 70, 71, 72, 73, 74,
+                ],
+                device=device,
+                dtype=torch.long,
+            )
+        if n_nodes != 6:
+            return torch.arange(n_nodes, device=device, dtype=torch.long)
+        # For the linear wedge, TensorMesh reference vertex order matches VTK/Wedge6:
+        # bottom triangle (0,1,2) then top triangle (3,4,5).
+        return torch.arange(6, device=device, dtype=torch.long)
 
 
 

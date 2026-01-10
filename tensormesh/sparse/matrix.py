@@ -182,7 +182,10 @@ class SparseMatrix(nn.Module):
         return SparseMatrix(-self.edata, self.row, self.col, self.shape)
 
     def solve(self, x:torch.Tensor, 
-                    backend:Optional[str]=None
+                    backend:Optional[str]=None,
+                    x0:Optional[torch.Tensor]=None,
+                    tol:float=1e-5,
+                    max_iter:int=10000
                     )->torch.Tensor:
         """
         Parameters
@@ -192,6 +195,12 @@ class SparseMatrix(nn.Module):
         backend: str, optional
             the backend to solve the sparse matrix, can be :obj:`None`, :obj:`"torch"`, :obj:`"scipy"` 
             or :obj:`"torch_scipy"`, default :obj:`None`
+        x0: torch.Tensor, optional
+            initial guess for the iterative solver
+        tol: float, optional
+            tolerance for the iterative solver
+        max_iter: int, optional
+            maximum number of iterations for the iterative solver
         
         Returns
         -------
@@ -200,7 +209,7 @@ class SparseMatrix(nn.Module):
         """
         assert x.shape[0] == self.shape[1], f"the first dim of x should be the same as the second dim of the sparse matrix, but got {x.shape[0]}, {self.shape[1]}"
         assert x.device == self.edata.device, f"the device of x should be the same as the device of the sparse matrix, but got {x.device}, {self.edata.device}"
-        return spsolve(self.edata, self.row, self.col, self.shape, x, backend=backend)
+        return spsolve(self.edata, self.row, self.col, self.shape, x, backend=backend, x0=x0, tol=tol, max_iter=max_iter)
 
     def requires_grad_(self, requires_grad: bool = True):
         """

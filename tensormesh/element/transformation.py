@@ -365,7 +365,7 @@ class Transformation(nn.Module):
                 self.element_coords, q, self.basis_order, self.quadrature_order)
             self.register_buffer("_shape_grad", shape_grad)
             self.register_buffer("_jacobian", jacobian)
-        return shape_grad 
+        return self._shape_grad 
     
     @property
     def jacobian(self)->Tensorx1:

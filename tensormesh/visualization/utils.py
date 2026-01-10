@@ -2,10 +2,14 @@ from re import T
 from matplotlib.pyplot import isinteractive
 import torch 
 import numpy as np
+import pyvista as pv
+import meshio
+import os
 from functools import lru_cache
 from typing import Sequence, Union, TypeVar,Generic
 from scipy.sparse import coo_matrix, csr_matrix, csc_matrix, dia_matrix, dok_matrix, lil_matrix, issparse
 from ..sparse import SparseMatrix
+
 ScipySparseMatrix = Union[coo_matrix, csr_matrix, csc_matrix, dia_matrix, dok_matrix, lil_matrix]
 def as_sparse_matrix(x:Union[SparseMatrix,ScipySparseMatrix])->SparseMatrix:
     if issparse(x):
@@ -77,3 +81,119 @@ def grid(dim:int, min_vals:Sequence[float], max_vals:Sequence[float], density:in
         z = np.linspace(min_vals[2], max_vals[2], density)
         X, Y, Z = np.meshgrid(x, y, z)
         return np.column_stack((X.flatten(), Y.flatten(), Z.flatten()))
+
+def setup_headless():
+    """Start xvfb for headless rendering if needed."""
+    try:
+        pv.start_xvfb()
+    except Exception:
+        pass
+
+def mesh_to_pyvista(mesh, point_data=None, cell_data=None, linearize=False):
+    """
+    Convert TensorMesh to PyVista mesh via intermediate VTU file.
+    
+    Parameters
+    ----------
+    mesh : tensormesh.Mesh
+    point_data : dict, optional
+        Dict of {name: tensor/array} to add as point data.
+    cell_data : dict, optional
+        Dict of {name: tensor/array} to add as cell data.
+    linearize : bool, optional
+        If True, convert high-order elements to linear (e.g. tet10 -> tet4).
+        
+    Returns
+    -------
+    pyvista.DataSet
+    """
+    # 1. Get meshio object
+    # mesh_to_pyvista ultimately writes VTU, so we must export connectivity in Gmsh/VTK ordering
+    m_io = mesh.to_meshio(reorder=True)
+    
+    # 2. Add point data
+    if point_data:
+        for k, v in point_data.items():
+            if isinstance(v, torch.Tensor):
+                v = v.detach().cpu().numpy()
+            # Pad 2D vectors to 3D
+            if v.ndim == 2 and v.shape[1] == 2: 
+                v = np.concatenate([v, np.zeros((v.shape[0], 1))], axis=1)
+            m_io.point_data[k] = v
+
+    # 3. Add cell data
+    if cell_data:
+        # Check structure of m_io.cells
+        # Try to match data to cell blocks by length
+        for k, v in cell_data.items():
+            if isinstance(v, torch.Tensor):
+                v = v.detach().cpu().numpy()
+            
+            # If user passed a list of arrays, assume it matches blocks
+            if isinstance(v, list) and len(v) == len(m_io.cells):
+                m_io.cell_data[k] = v
+                continue
+                
+            # Otherwise, assume v is a single array for the main domain
+            # We try to find a block with matching length
+            matched = False
+            data_list = []
+            for cell_block in m_io.cells:
+                n_cells = len(cell_block.data)
+                if not matched and len(v) == n_cells:
+                    data_list.append(v)
+                    matched = True
+                else:
+                    # Fill with zeros
+                    data_list.append(np.zeros(n_cells, dtype=v.dtype))
+            
+            if matched:
+                m_io.cell_data[k] = data_list
+            else:
+                # Fallback: just wrap it and hope meshio handles it (likely fails if mismatch)
+                 m_io.cell_data[k] = [v]
+
+    # Fix boolean data types for VTU
+    for k, v in m_io.point_data.items():
+        if v.dtype == bool:
+            m_io.point_data[k] = v.astype(int)
+    
+    for k, v in m_io.cell_data.items():
+        m_io.cell_data[k] = [val.astype(int) if val.dtype == bool else val for val in v]
+            
+    # Clear cell_sets to avoid meshio write errors with VTU
+    m_io.cell_sets = {}
+
+    # 3. Linearize if requested
+    if linearize:
+        new_cells = []
+        for cell_block in m_io.cells:
+            if cell_block.type == 'tetra10':
+                # Take first 4 nodes
+                new_cells.append(meshio.CellBlock('tetra', cell_block.data[:, :4]))
+            elif cell_block.type in ['hexahedron20', 'hexahedron27']:
+                # Take first 8 nodes
+                new_cells.append(meshio.CellBlock('hexahedron', cell_block.data[:, :8]))
+            elif cell_block.type == 'triangle6':
+                new_cells.append(meshio.CellBlock('triangle', cell_block.data[:, :3]))
+            elif cell_block.type in ['quad9', 'quad8']:
+                new_cells.append(meshio.CellBlock('quad', cell_block.data[:, :4]))
+            else:
+                new_cells.append(cell_block)
+        m_io.cells = new_cells
+
+    # 4. Save and Read
+    tmp_filename = f".tmp_mesh_{os.getpid()}_{np.random.randint(0, 10000)}.vtu"
+    
+    try:
+        m_io.write(tmp_filename)
+        pv_mesh = pv.read(tmp_filename)
+    except Exception as e:
+        if os.path.exists(tmp_filename):
+            os.remove(tmp_filename)
+        raise e
+        
+    if os.path.exists(tmp_filename):
+        os.remove(tmp_filename)
+            
+    return pv_mesh

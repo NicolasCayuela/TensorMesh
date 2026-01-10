@@ -1,4 +1,4 @@
-![img](assets/tensormesh_logo.webp)
+![TensorMesh Logo](assets/logo.png)
 
 ```bash
 

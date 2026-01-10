@@ -138,6 +138,14 @@ class Condenser:
         self.is_inner_dof = is_inner_dof
         self.is_outer_dof = is_outer_dof
 
+    def update_dirichlet(self, dirichlet_value:torch.Tensor):
+        """Update the dirichlet value for time-dependent problems"""
+        if dirichlet_value.shape[0] == self.dirichlet_mask.shape[0]:
+            self.dirichlet_value = dirichlet_value[self.dirichlet_mask]
+        else:
+            assert dirichlet_value.shape[0] == self.dirichlet_mask.sum(), "the shape of dirichlet_value must be [n_dof] or [n_outer_dof]"
+            self.dirichlet_value = dirichlet_value
+            
     def __call__(self, matrix:SparseMatrix, 
                  rhs:Optional[torch.Tensor] = None
                  )->Tuple[SparseMatrix, torch.Tensor]:

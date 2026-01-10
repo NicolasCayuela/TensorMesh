@@ -1,0 +1,93 @@
+/* Custom CSS migrated from tensormesh_sphinx_theme */
+
+/* Titles with Gradient */
+h1 {
+  font-family: inherit;
+  display: inline-block;
+  max-width: 100%;
+  /* font-size: 38px; PyData theme handles size */
+  overflow-wrap: break-word;
+  background: linear-gradient(92deg,#ff8200 0%,#9b3794 32%,#512dab 52%,#1f87e6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text; /* Standard property */
+}
+
+h1 span.highlighted {
+  -webkit-text-fill-color: initial;
+}
+
+/* Attributes / Signatures */
+dt.sig-object {
+  background: -webkit-linear-gradient(left,#F09B59, #6ab0de,  #7E84F7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  border-top: 3px solid #732BF5;
+  padding-top: 5px;
+  display: inline-block; /* Ensure background clip works */
+}
+
+/* Function Parameters */
+em.sig-param span.n:first-child,
+em.sig-param span.n:nth-child(2) {
+  font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",Courier,monospace;
+  color: black;
+  font-style: normal;
+}
+
+/* Admonitions styling to match previous theme */
+div.admonition {
+    border-radius: 6px;
+    border: none !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+div.admonition.note {
+  background: linear-gradient(to bottom right, rgba(59,124,221,0.1), rgba(30,124,221,0.05));
+  border-left: 4px solid #3091d1 !important;
+}
+
+div.admonition.warning {
+  background: linear-gradient(to bottom right, rgba(255,185,47,0.1), rgba(255,142,38,0.05));
+  border-left: 4px solid #ff8e26 !important;
+}
+
+/* Buttons */
+a.tensormesh-button,
+a.btn-primary {
+  border: none;
+  box-shadow: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: white !important;
+  background: linear-gradient(to bottom right, rgb(59,124,221), rgb(30,124,221));
+  text-decoration: none;
+  display: inline-block;
+}
+
+a.tensormesh-button:hover,
+a.btn-primary:hover {
+  background: linear-gradient(to bottom right, rgb(30,124,221), rgb(23,90,180));
+  color: white !important;
+}
+
+/* Utility Colors */
+.mycolor-red { color: #d73a49; }
+.mycolor-orange { color: #e36209; }
+.mycolor-purple { color: #732BF5; }
+.mycolor-blue { color: #1f87e6; }
+.mycolor-green { color: #41b883; }
+.mycolor-grey { color: #6a737d; }
+
+/* Code Blocks specific to PyData Theme usually look good, but we can tweak */
+div.highlight {
+    border-radius: 6px;
+    background: #f8f9fa; /* Light grey */
+}
+
+/* Adjust logo size in PyData theme sidebar if needed */
+.navbar-brand img {
+    max-height: 45px; /* Adjust based on preference */
+}
+
