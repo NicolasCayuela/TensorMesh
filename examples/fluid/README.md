@@ -1,39 +1,70 @@
-# Fluid Dynamics Examples 🌊
+# Fluid Dynamics Examples
 
-This directory contains examples of fluid dynamics simulations using TensorMesh.
+This directory contains incompressible flow examples built with TensorMesh.
 
-## Examples
+## Main Example: Cylinder Wake and Karman Vortex Street
 
-### 1. Lid-Driven Cavity (`cavity.py`)
-The classic benchmark for incompressible Navier-Stokes solvers. A square cavity with a moving lid creates a large central vortex and smaller corner vortices.
-- **Physics**: Steady-state Incompressible Navier-Stokes.
-- **Technique**: Picard iteration with PSPG/SUPG stabilization for P1/P1 elements.
+### `cylinder_flow.py`
 
-### 2. Kármán Vortex Street (`vortex_street.py`)
-Simulation of flow past a circular cylinder. At Re=100, vortices are shed periodically, forming a beautiful pattern behind the cylinder.
-- **Physics**: Transient Incompressible Navier-Stokes.
-- **Technique**: Backward Euler time stepping, stabilized finite elements.
+This script solves transient 2D incompressible Navier-Stokes flow in a channel with a circular cylinder.
 
-### 3. Rayleigh-Bénard Convection (`rayleigh_benard.py`)
-A fluid layer heated from below. When the Rayleigh number exceeds a critical value, buoyancy overcomes diffusion, and convection cells form.
-- **Physics**: Boussinesq-coupled Navier-Stokes and Heat Equation.
-- **Technique**: Monolithic Picard iteration for velocity, pressure, and temperature.
+- Geometry (DFG-style): channel `[0, 2.2] x [0, 0.41]`, cylinder center `(0.2, 0.2)`, radius `0.05`
+- Reynolds number: default `Re=100`
+- Time discretization: implicit Euler
+- Nonlinearity: Picard linearization
+- Stabilization: SUPG/PSPG for equal-order velocity-pressure discretization (P1/P1)
+- Boundary conditions:
+  - Inlet: parabolic profile
+  - Top and bottom walls: no-slip
+  - Cylinder wall: no-slip
+  - Outlet: do-nothing for velocity, one pressure gauge point is pinned (`p=0`)
 
-### 4. Flow Past Multiple Obstacles (`flow_logo.py`)
-Demonstrates TensorMesh's ability to handle complex geometries by simulating flow through a channel with multiple circular obstacles.
-- **Physics**: Steady-state Navier-Stokes.
-- **Technique**: Non-linear solver on non-structured meshes generated via Gmsh.
+The script stores:
 
-## How to Run
+- `cylinder_flow.mp4`: time animation of vorticity/speed/pressure
+- `cylinder_flow_final.png`: final snapshot
 
-Navigate to this directory and run any script with Python:
+Run:
 
 ```bash
-python cavity.py
-python vortex_street.py
-python rayleigh_benard.py
-python flow_logo.py
+cd examples/fluid
+python cylinder_flow.py
 ```
 
-Results (images or MP4 videos) will be saved in the same directory.
+## Other Fluid Examples
+
+### `cavity.py`
+
+Lid-driven cavity benchmark for incompressible Navier-Stokes.
+
+### `rayleigh_benard.py`
+
+Boussinesq convection in a heated cavity.
+
+### `flow_obstacles.py`
+
+Steady flow through a channel with multiple circular obstacles.
+
+### `taylor_green.py`
+
+2D decaying Taylor-Green vortex with exact analytical solution. Runs a convergence study over multiple grid sizes and verifies O(h²) spatial convergence rate. Useful for validating the transient Navier-Stokes solver.
+
+### `cavity_3d.py`
+
+3D lid-driven cavity at Re=100 using tetrahedral elements. Demonstrates that the SUPG/PSPG stabilized Navier-Stokes assembler generalizes to 3D without modification. Exports results to VTU and renders mid-plane cross-sections via PyVista.
+
+
+## Notes on Stabilization
+
+For advection-dominated regimes, the standard Galerkin method with equal-order elements can become unstable.
+This folder uses SUPG/PSPG terms to improve robustness for transient Navier-Stokes:
+
+- SUPG improves stability in momentum equations for convection-dominated flow
+- PSPG stabilizes pressure for equal-order interpolation
+
+The stabilization parameter `tau` is updated using local velocity scale and mesh size:
+
+```python
+tau = h**2 / (4 * mu + 2 * rho * |u| * h)
+```
 

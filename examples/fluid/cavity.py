@@ -16,35 +16,23 @@ class NavierStokesAssembler(ElementAssembler):
         self.mu = mu
         self.tau = tau
 
-    def forward(self, u, v, gradu, gradv, w_prev, gradw_prev):
+    def forward(self, u, v, gradu, gradv, w_prev):
         """
         Weak form for Navier-Stokes using Picard iteration and PSPG/SUPG stabilization.
+        Convention: u=phi_i (test/row), v=phi_j (trial/col), gradu=grad phi_i, gradv=grad phi_j.
         """
         dim = gradu.shape[0]
-        
+
         # --- Standard Galerkin terms ---
         convection = self.rho * torch.dot(w_prev, gradv) * u
         diffusion = self.mu * torch.dot(gradu, gradv)
         k_diag = convection + diffusion
-        
+
         # --- Stabilization terms ---
-        # SUPG weight: tau * (w_prev . grad v)
+        # SUPG test: tau * (w_prev . grad phi_i)
         supg_weight = self.tau * torch.dot(w_prev, gradu)
-        # PSPG weight: tau * grad s
-        # Note: In ElementAssembler, gradu is grad of test function (v in weak form)
-        # and gradv is grad of trial function (u in weak form).
-        # Wait, usually gradu is grad phi_i (test), gradv is grad phi_j (trial).
-        
-        # Actually, let's be careful about i and j.
-        # ElementAssembler(points) computes \int f(phi_i, phi_j, grad phi_i, grad phi_j)
-        # So u=phi_i, v=phi_j, gradu=grad phi_i, gradv=grad phi_j.
-        
-        # Momentum residual Res = rho * (w_prev . grad) w + grad p - f
-        # SUPG: (rho * (w_prev . grad) w + grad p) . (tau * (w_prev . grad) phi_i)
+        # SUPG applied to convection residual: rho * (w . grad phi_j) * tau * (w . grad phi_i)
         supg_convection = self.rho * torch.dot(w_prev, gradv) * supg_weight
-        
-        # PSPG: (rho * (w_prev . grad) w + grad p) . (tau * grad phi_i)
-        # This is for the continuity equation (test function is pressure).
         
         # Build the matrix row by row to avoid in-place operations
         rows = []
