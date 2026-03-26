@@ -1,8 +1,94 @@
 import torch
 import numpy as np
 import meshio
-from typing import Optional, Dict, List, Any
+from typing import Optional, Dict, List, Any, Tuple
 from .. import sparse
+
+
+# ─── Fast coordinate-based partitioning ─────────────────────────────
+
+def _rcb_partition_elements(centroids: torch.Tensor, n_parts: int) -> torch.Tensor:
+    """Recursive Coordinate Bisection on element centroids.
+
+    Recursively splits elements along the longest bounding-box axis at
+    the median.  O(n log n) — orders of magnitude faster than spectral.
+
+    Parameters
+    ----------
+    centroids : torch.Tensor
+        Element centroids, shape ``[n_elements, dim]``.
+    n_parts : int
+        Number of partitions (best if power of 2).
+
+    Returns
+    -------
+    torch.Tensor
+        Integer labels ``[n_elements]`` in ``[0, n_parts-1]``.
+    """
+    n = centroids.shape[0]
+    labels = torch.zeros(n, dtype=torch.long)
+
+    # Stack: (indices_into_centroids, partition_offset)
+    stack: List[Tuple[torch.Tensor, int, int]] = [
+        (torch.arange(n), 0, n_parts)
+    ]
+
+    while stack:
+        indices, offset, parts_remaining = stack.pop()
+
+        if parts_remaining <= 1 or len(indices) == 0:
+            labels[indices] = offset
+            continue
+
+        # Pick longest axis of bounding box
+        pts = centroids[indices]
+        extent = pts.max(dim=0).values - pts.min(dim=0).values
+        axis = extent.argmax().item()
+
+        # Median split along that axis
+        vals = pts[:, axis]
+        median = vals.median()
+        left_mask = vals <= median
+
+        # Ensure both sides are non-empty
+        if left_mask.all():
+            left_mask[vals.argmax()] = False
+        elif not left_mask.any():
+            left_mask[vals.argmin()] = True
+
+        left_idx = indices[left_mask]
+        right_idx = indices[~left_mask]
+
+        left_parts = parts_remaining // 2
+        right_parts = parts_remaining - left_parts
+
+        stack.append((left_idx, offset, left_parts))
+        stack.append((right_idx, offset + left_parts, right_parts))
+
+    return labels
+
+
+def _compute_element_centroids(mesh) -> Tuple[torch.Tensor, List[str], List[int]]:
+    """Compute centroids for all top-dimension elements.
+
+    Returns (centroids, target_types, cell_counts).
+    """
+    dim_key = getattr(mesh, 'max_dim', mesh.dim)
+    target_types = mesh.dim2eletyp[dim_key]
+    if isinstance(target_types, str):
+        target_types = [target_types]
+
+    cell_counts = [mesh.cells[k].shape[0] for k in target_types]
+    points = mesh.points  # [n_points, dim]
+
+    centroid_list = []
+    for k in target_types:
+        cells = mesh.cells[k]  # [n_elem, n_basis]
+        elem_pts = points[cells]  # [n_elem, n_basis, dim]
+        centroid_list.append(elem_pts.mean(dim=1))  # [n_elem, dim]
+
+    centroids = torch.cat(centroid_list, dim=0)  # [total_elements, dim]
+    return centroids, target_types, cell_counts
 
 def _spectral_bisection_gpu(adjacency: sparse.SparseMatrix, indices: torch.Tensor) -> torch.Tensor:
     """
@@ -175,14 +261,14 @@ def graph_partition(adjacency: sparse.SparseMatrix, n_parts: int, method: str = 
     
     raise ValueError(f"Unknown method {method}")
 
-def partition_mesh(mesh, n_parts: int, method: str = 'spectral', ghost_nodes: bool = True) -> List[Any]:
+def partition_mesh(mesh, n_parts: int, method: str = 'coordinate', ghost_nodes: bool = True) -> List[Any]:
     """
     Partition a mesh into independent submeshes for parallel computation.
-    
-    This function performs element-based domain decomposition, creating 
-    ``n_parts`` submeshes that can be processed independently (with ghost 
+
+    This function performs element-based domain decomposition, creating
+    ``n_parts`` submeshes that can be processed independently (with ghost
     node communication for boundary data exchange).
-    
+
     Parameters
     ----------
     mesh : Mesh
@@ -191,37 +277,40 @@ def partition_mesh(mesh, n_parts: int, method: str = 'spectral', ghost_nodes: bo
         Number of partitions to create.
     method : str, optional
         Partitioning algorithm:
-        
-        - ``'spectral'``: Recursive Spectral Bisection (default, GPU-accelerated)
-        - ``'metis'``: Uses pymetis (requires installation)
+
+        - ``'coordinate'``: Recursive Coordinate Bisection on element
+          centroids.  Very fast — O(n log n).  Default.
+        - ``'spectral'``: Recursive Spectral Bisection using Fiedler vector.
+          Better partition quality but much slower.
+        - ``'metis'``: Uses pymetis (requires installation).
     ghost_nodes : bool, optional
         Whether to include ghost nodes (shared boundary nodes) in submeshes.
         Currently only ``True`` is supported for element-based partitioning.
         Default: ``True``.
-                     
+
     Returns
     -------
     List[Mesh]
-        A list of ``n_parts`` submeshes. Each submesh is a complete ``Mesh`` 
+        A list of ``n_parts`` submeshes. Each submesh is a complete ``Mesh``
         object containing:
-        
+
         - Local nodes and elements with renumbered indices
-        - ``point_data['orig_nid']``: Tensor mapping local node indices to 
+        - ``point_data['orig_nid']``: Tensor mapping local node indices to
           original global node indices (for data exchange between partitions)
-        
+
         Returns ``None`` for empty partitions.
-    
+
     Notes
     -----
-    Ghost nodes are nodes shared between partitions (on the interface). 
-    They are duplicated in each partition that uses them, enabling independent 
-    local computation. The ``orig_nid`` mapping allows reconstruction of 
+    Ghost nodes are nodes shared between partitions (on the interface).
+    They are duplicated in each partition that uses them, enabling independent
+    local computation. The ``orig_nid`` mapping allows reconstruction of
     global solutions and inter-partition communication.
-    
+
     Examples
     --------
     >>> from tensormesh.mesh.partition import partition_mesh
-    >>> submeshes = partition_mesh(mesh, n_parts=4, method='spectral')
+    >>> submeshes = partition_mesh(mesh, n_parts=4, method='coordinate')
     >>> for i, sub in enumerate(submeshes):
     ...     if sub is not None:
     ...         print(f"Part {i}: {sub.n_nodes} nodes, {sub.n_elements} elements")
@@ -232,25 +321,24 @@ def partition_mesh(mesh, n_parts: int, method: str = 'spectral', ghost_nodes: bo
         raise NotImplementedError("ghost_nodes=False is not yet supported. Element-based partitioning always implies ghost nodes.")
 
     # 1. Partition Elements
-    # This partitions the elements of the highest dimension
-    element_labels = mesh.partition(n_parts, method)
-    
+    if method == 'coordinate':
+        # Fast path: RCB on element centroids — no adjacency graph needed
+        centroids, target_types, cell_counts = _compute_element_centroids(mesh)
+        element_labels = _rcb_partition_elements(centroids, n_parts)
+    else:
+        # Slow path: spectral / metis (requires element adjacency)
+        element_labels = mesh.partition(n_parts, method)
+        dim_key = getattr(mesh, 'max_dim', mesh.dim)
+        target_types = mesh.dim2eletyp[dim_key]
+        if isinstance(target_types, str):
+            target_types = [target_types]
+        cell_counts = [mesh.cells[k].shape[0] for k in target_types]
+
     # 2. Iterate and split
     submeshes = []
-    
-    # Identify which types were partitioned
-    # mesh.partition calls element_adjacency which defaults to mesh.max_dim elements
-    dim_key = getattr(mesh, 'max_dim', mesh.dim)
-    target_types = mesh.dim2eletyp[dim_key]
-    
-    # Ensure target_types is a list
-    if isinstance(target_types, str):
-        target_types = [target_types]
-        
-    cell_counts = [mesh.cells[k].shape[0] for k in target_types]
-    
-    curr = 0
+
     labels_per_type = {}
+    curr = 0
     for k, count in zip(target_types, cell_counts):
         labels_per_type[k] = element_labels[curr:curr+count]
         curr += count

@@ -18,5 +18,11 @@ from .assemble import ElementAssembler, NodeAssembler, FacetAssembler
 from .assemble import LaplaceElementAssembler, MassElementAssembler, LinearElasticityElementAssembler, const_node_assembler, func_node_assembler
 from .functional import *
 from .dataset import MeshGen
+from .distributed import (
+    DistributedMesh,
+    distributed_element_assemble,
+    distributed_element_assemble_to_sparse,
+    distributed_node_assemble,
+)
 from ._version import __version__
 
