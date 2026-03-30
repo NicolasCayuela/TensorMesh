@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import imageio
 
 # Add project root to path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
 from tensormesh import Mesh
 from tensormesh.dataset.mesh import gen_cube

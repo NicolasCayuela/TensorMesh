@@ -27,7 +27,7 @@ import csv
 import math
 import torch
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
 from tensormesh import Mesh, Condenser
 from tensormesh.assemble import LinearElasticityElementAssembler

@@ -26,7 +26,7 @@ import math
 import torch
 import torch.optim as optim
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
 from tensormesh import Mesh, Condenser
 from tensormesh.assemble import ElementAssembler
