@@ -1,0 +1,336 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, TensorMesh Contributors
+# This file is distributed under the same license as the TensorMesh package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: TensorMesh 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-29 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/examples/solid_mechanics.rst:2 2bd4c3992c424cc0a651f6236d649e8b
+msgid "Solid Mechanics Examples"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:4 6cbb4fdf1a1341388b89ac8beb29186c
+msgid ""
+"This section demonstrates various solid mechanics problems solved using "
+"TensorMesh, including linear elasticity, hyperelasticity, plasticity, and"
+" contact mechanics."
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:9 511df536c6d64e9f8e8d41faf4a302ae
+msgid "Cantilever Beam Deformation (Linear Elasticity)"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:11
+#: 456359237fa0481ca0edfa4a3b16a759
+msgid "Cantilever Beam Deformation"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:16
+#: ../../source/examples/solid_mechanics.rst:56
+#: ../../source/examples/solid_mechanics.rst:105
+#: ../../source/examples/solid_mechanics.rst:145
+#: 23f2d8b37fc942eca9d87c4cf09e53ce 5b15530c30884dfb8a37fb762f75d66f
+#: 5f0b610e4f8b4dfb994de43864593e04 6cb1ac23b8804471bffe0f88884cd95b
+msgid "**Physics**"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:18
+#: 9795d2ceb3fb41d9afd64c5ede19b688
+msgid "Linear elasticity is governed by the balance of linear momentum:"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:20
+#: d2cdf6d1c9864140a8136a04bdd7badd
+#, python-brace-format
+msgid "\\nabla \\cdot \\boldsymbol{\\sigma} + \\mathbf{f} = \\mathbf{0}"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:24
+#: 3c7e87ac03ba48548f2c8e9e30fd9580
+#, python-brace-format
+msgid ""
+"where :math:`\\boldsymbol{\\sigma}` is the Cauchy stress tensor and "
+":math:`\\mathbf{f}` is the body force."
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:26
+#: 48beb6a2228040c78f83b30c5a92ff41
+msgid "The constitutive relation (Hooke's Law) is:"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:28
+#: 38302bb685c64e94b77aad89072a6fca
+#, python-brace-format
+msgid "\\boldsymbol{\\sigma} = \\mathbf{C} : \\boldsymbol{\\varepsilon}"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:32
+#: 38e34232a3584f91abc9e99bbd06569e
+#, python-brace-format
+msgid ""
+"where :math:`\\boldsymbol{\\varepsilon} = \\frac{1}{2}(\\nabla "
+"\\mathbf{u} + \\nabla \\mathbf{u}^T)` is the infinitesimal strain tensor."
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:34
+#: 735775eefd164f7f9e95e3c12d8d7be7
+msgid "For isotropic materials:"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:36
+#: 4554be7fbbb64ba69dbc29c4aaf425f3
+#, python-brace-format
+msgid ""
+"\\boldsymbol{\\sigma} = \\lambda \\, "
+"\\text{tr}(\\boldsymbol{\\varepsilon}) \\mathbf{I} + 2\\mu "
+"\\boldsymbol{\\varepsilon}"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:40
+#: 19b19119b5364952a225389b8195397d
+msgid ""
+"where :math:`\\lambda` and :math:`\\mu` are Lamé parameters related to "
+"Young's modulus :math:`E` and Poisson's ratio :math:`\\nu`."
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:42
+#: ../../source/examples/solid_mechanics.rst:85
+#: ../../source/examples/solid_mechanics.rst:131
+#: ../../source/examples/solid_mechanics.rst:165
+#: 049b4d16c98b4767958ec3f1ac4bd14b 1801ed40216d4ef2b8402ffecec9454a
+#: 3839ae036f21445cb30123949f79690c 895986709d3f4d5ca6a8f72da3de0999
+msgid "**Code**"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:49
+#: b5e32cd90e4940fab9786c5f0d539ef8
+msgid "Hyperelastic Beam (Neo-Hookean)"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:51
+#: da90229e20384ca696edf9b4ca802efb
+msgid "Hyperelastic Rubber Beam under Torsion"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:58
+#: 3d43a6a88d9342f3a920ad2fa7512c28
+msgid ""
+"Hyperelasticity models large deformations where the stress-strain "
+"relationship is nonlinear. The Neo-Hookean model is a fundamental "
+"hyperelastic constitutive law."
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:61
+#: 666ba677c049450ca7c10e25c22135fe
+msgid "The deformation gradient is defined as:"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:63
+#: fa5bc33156d840f5aebde6e520d8a805
+#, python-brace-format
+msgid "\\mathbf{F} = \\mathbf{I} + \\nabla \\mathbf{u}"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:67
+#: 72860610222b41e6bde5cd4e55d88d9b
+msgid ""
+"The strain energy density function for compressible Neo-Hookean material "
+"is:"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:69
+#: 77f214168b0c446bb533d854e121afe4
+#, python-brace-format
+msgid ""
+"\\Psi = \\frac{\\mu}{2}(I_1 - 3) - \\mu \\ln J + \\frac{\\lambda}{2}(\\ln"
+" J)^2"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:73
+#: ../../source/examples/solid_mechanics.rst:115
+#: de396908f9ca43458bc9e9578d215c87 e0dd1dad896e4483a3bb4065da43c997
+msgid "where:"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:75
+#: 3dc78a372b3549669d959b8aac597916
+#, python-brace-format
+msgid ""
+":math:`I_1 = \\text{tr}(\\mathbf{F}^T \\mathbf{F})` is the first "
+"invariant of the right Cauchy-Green tensor"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:76
+#: 9960b0304e894fe29617b4b852a78782
+#, python-brace-format
+msgid ":math:`J = \\det(\\mathbf{F})` is the Jacobian (volume ratio)"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:77
+#: f5f30477d2764d4ea512d037cff6c74d
+msgid ":math:`\\mu, \\lambda` are Lamé parameters"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:79
+#: 40825828b8c044888c675a1e1e5bb6e9
+msgid "The total potential energy is minimized:"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:81
+#: a3e1b0b7918b48f8a4efe0263119128f
+#, python-brace-format
+msgid ""
+"\\Pi(\\mathbf{u}) = \\int_\\Omega \\Psi(\\mathbf{F}) \\, dV - "
+"\\int_\\Omega \\mathbf{f} \\cdot \\mathbf{u} \\, dV"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:92
+#: 00be6f47ded849cd9afea081ebde4396
+msgid "3D Plasticity (J2 Flow Theory)"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:94
+#: c4041b309a09401f96d8f6f1f32325bf
+msgid "<div style=\"text-align: center;\">"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:103
+#: 48fef41d46434983a9cb65a8094ac616
+msgid "</div>"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:107
+#: 05c6caa3fa9a45f4a9d10534a72bce91
+msgid ""
+"J2 plasticity (von Mises plasticity) is the most common model for metal "
+"plasticity."
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:109
+#: 281f5d9fe6fd46c584876dab20607bab
+msgid "The yield function is:"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:111
+#: 5702e19ef49c46aea9efc9add651f12d
+msgid ""
+"f(\\boldsymbol{\\sigma}, \\alpha) = \\sqrt{\\frac{3}{2} \\mathbf{s} : "
+"\\mathbf{s}} - (\\sigma_y + H \\alpha) = 0"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:117
+#: 9f68014d4d354cd489e00ab7835581a7
+#, python-brace-format
+msgid ""
+":math:`\\mathbf{s} = \\boldsymbol{\\sigma} - "
+"\\frac{1}{3}\\text{tr}(\\boldsymbol{\\sigma})\\mathbf{I}` is the "
+"deviatoric stress"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:118
+#: ffaf42acb59148ecb5d4e41d112e33b3
+msgid ":math:`\\sigma_y` is the initial yield stress"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:119
+#: db9b3c1c9fad456f9456b947409184a0
+msgid ":math:`H` is the hardening modulus"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:120
+#: 4da3a64312c0449badc7c59dd9456cad
+msgid ":math:`\\alpha` is the equivalent plastic strain (internal variable)"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:122
+#: 46398e25788146448d3271c7f2a40753
+msgid "The plastic strain evolution follows the associative flow rule:"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:124
+#: ec51785748b74f968fc1335a08d07340
+msgid ""
+"\\dot{\\boldsymbol{\\varepsilon}}^p = \\dot{\\gamma} \\frac{\\partial "
+"f}{\\partial \\boldsymbol{\\sigma}} = \\dot{\\gamma} \\sqrt{\\frac{3}{2}}"
+" \\frac{\\mathbf{s}}{||\\mathbf{s}||}"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:128
+#: 87bbf71a943848c0a42ddf1d343d0777
+msgid ""
+"The simulation demonstrates loading and unloading cycles, showing the "
+"characteristic hysteresis loop of elasto-plastic materials."
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:138
+#: 982c8d9ac35543a18d94a78d011d8d0c
+msgid "Hertzian Contact (Circle on Block)"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:140
+#: bcb680167f334ead9374312bb8114e8b
+msgid "Hertzian Contact Stress Distribution"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:147
+#: 40d58742e5f5407ba6ae92ea2092e560
+msgid ""
+"The Hertzian contact stress problem describes the localized stresses that"
+" develop as two curved surfaces come in contact and deform slightly under"
+" the imposed loads. This example simulates a circular indenter (Slave) "
+"pressed against a flat rectangular block (Master)."
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:149
+#: 8516a721fe5c49a797606759051882f1
+#, python-brace-format
+msgid ""
+"The contact condition is enforced using the **Point-to-Segment** penalty "
+"method. For every slave node :math:`\\mathbf{x}_s` on the indenter "
+"surface, we find the closest point :math:`\\mathbf{x}_c` on the master "
+"surface segments."
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:151
+#: 7d3a097eed504dcea8905af0abcc15e4
+msgid "The gap function is defined as:"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:153
+#: 5d237f2290d04f89bb2f4cfa73de3b80
+#, python-brace-format
+msgid "g = (\\mathbf{x}_s - \\mathbf{x}_c) \\cdot \\mathbf{n}"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:157
+#: 2673be3722144e1ca9159c38844817ba
+#, python-brace-format
+msgid ""
+"where :math:`\\mathbf{n}` is the normal vector of the master segment. The"
+" penalty energy is:"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:159
+#: 9fed3ca7ed924a03b324732bfdca2f02
+msgid "E_{\\text{contact}} = \\frac{1}{2} k_p \\sum_{g < 0} g^2"
+msgstr ""
+
+#: ../../source/examples/solid_mechanics.rst:163
+#: add9390bcfa1419da131ef13b2cead07
+msgid "where :math:`k_p` is a large penalty parameter to enforce non-penetration."
+msgstr ""
+

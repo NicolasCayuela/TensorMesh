@@ -1,0 +1,223 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, TensorMesh Contributors
+# This file is distributed under the same license as the TensorMesh package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: TensorMesh 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-29 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/index.rst:4 817344acc97f42158e9ba3aabf7d3d54
+msgid "TensorMesh Documentation"
+msgstr ""
+
+#: ../../source/index.rst:17 0a2b815062ea4363a526008339f984ab
+msgid "TensorMesh: The Modern FEM Library 🚀"
+msgstr ""
+
+#: ../../source/index.rst:19 8a1cad6d8ba0457288bd9d66f766ce49
+msgid ""
+"A fast 🚀, differentiable 🎯, cross-platform 💻, JIT-free 📌, and debugging-"
+"friendly 🚨 finite element library that prioritizes user experience "
+"through clean, Pythonic APIs 🤗"
+msgstr ""
+
+#: ../../source/index.rst:21 7c15f18a9d1c41aead6ba87c7f9a6e9f
+msgid ""
+"TensorMesh is a modern finite element method (FEM) library built on "
+"PyTorch, designed to solve partial differential equations (PDEs) with "
+"elegance and efficiency. By seamlessly integrating with PyTorch's "
+"ecosystem, it provides automatic differentiation and GPU acceleration "
+"while maintaining an intuitive, Pythonic interface."
+msgstr ""
+
+#: ../../source/index.rst:25 166c37a7ea7c47389537d7291183e620
+msgid "Core Strengths"
+msgstr ""
+
+#: ../../source/index.rst:27 dd8aa1a1f2d34eaa9058f4069604e7dc
+msgid ""
+"**Easy to Use**: Clean, intuitive Pythonic APIs that make FEM accessible "
+"to both beginners and experts"
+msgstr ""
+
+#: ../../source/index.rst:28 bab65eb881e04572a3ed61c64d10086f
+msgid ""
+"**Easy to Debug**: Clear error messages and straightforward execution "
+"flow for painless debugging"
+msgstr ""
+
+#: ../../source/index.rst:29 7c9148e6a66e446fb284d778eac998ff
+msgid ""
+"**Cross Platform**: Works seamlessly across Windows, Linux, and macOS "
+"without complex dependencies"
+msgstr ""
+
+#: ../../source/index.rst:30 4c186f2b720349ffa68829cf2771517a
+msgid ""
+"**Seamless PyTorch Integration**: Leverage PyTorch's powerful automatic "
+"differentiation and GPU acceleration"
+msgstr ""
+
+#: ../../source/index.rst:31 87b8412a4d05408ba3907c26718ebae4
+msgid ""
+"**Comprehensive Element Support**: Work with a wide range of elements "
+"including triangular, tetrahedral, pyramid, and prismatic types"
+msgstr ""
+
+#: ../../source/index.rst:32 b8b6f50705b045f795d6a20a50dfa864
+msgid ""
+"**High-Performance Assembly**: Optimized element assembly operations for "
+"both CPU and GPU architectures"
+msgstr ""
+
+#: ../../source/index.rst:33 64322222200a43ac90d322375a09368b
+msgid ""
+"**Advanced Solvers**: Efficient sparse matrix solvers with flexible "
+"backend options (PETSc, PyTorch)"
+msgstr ""
+
+#: ../../source/index.rst:34 5d1a3361b9ac4404ad687eed9b6c4a49
+msgid ""
+"**Rich Visualization**: Integrated tools for mesh and solution "
+"visualization"
+msgstr ""
+
+#: ../../source/index.rst:35 c2a878619fff4670a828af47208eb35b
+msgid ""
+"**Smart Mesh Generation**: Automated mesh generation for common "
+"geometries with intelligent defaults"
+msgstr ""
+
+#: ../../source/index.rst:38 2c3d5c671c3b4314865130f65b76c28a
+msgid "Feature Comparison"
+msgstr ""
+
+#: ../../source/index.rst:44 17e3dee28d3e4f70bab67a591a14607d
+msgid "Feature"
+msgstr ""
+
+#: ../../source/index.rst:45 82e56fa9b5564370be77e7ab4c1b8a5e
+msgid "FEniCS"
+msgstr ""
+
+#: ../../source/index.rst:46 5f7a44be7134422797812a13bfd55d03
+msgid "scikit-fem"
+msgstr ""
+
+#: ../../source/index.rst:47 e8d2d01a44ad4c989eceb9e201c6c4c2
+msgid "JAX-FEM"
+msgstr ""
+
+#: ../../source/index.rst:48 16d1792eb162434db614084d4e8101aa
+msgid "TensorMesh"
+msgstr ""
+
+#: ../../source/index.rst:49 0025458733fd47a3825ad823490cb429
+msgid "Flexibility"
+msgstr ""
+
+#: ../../source/index.rst:50 ../../source/index.rst:52
+#: ../../source/index.rst:55 ../../source/index.rst:60
+#: ../../source/index.rst:62 ../../source/index.rst:65
+#: ../../source/index.rst:66 ../../source/index.rst:67
+#: ../../source/index.rst:72 ../../source/index.rst:76
+#: ../../source/index.rst:81 ../../source/index.rst:86
+#: ../../source/index.rst:90 ../../source/index.rst:91
+#: 0ccc8a4cf4df467383d8a7e244c22dfa 269bdcb2386d4e84800f8ee16a08c86a
+#: 2ccf3094d5404a38ae41028c83f69f9e 41571e48cb0d4a08b4db317089b03a5a
+#: 477d8cdd06f347df8a77449f23925bb8 4887fe340b58446f88e22209264f5ba4
+#: 69aece5ec1c449a4b524da743a5e4457 9a59b867d431482cabdbc46973c69e92
+#: a62d4010ac7d4469a0ed6a71d5370162 b03e6b64940344379f9877b5f3b495bd
+#: b114904510bb49a7adcfac8d0b35fdf8 c6b06952345d4325b2a27ddf8e51258e
+#: cb563a4973ca4c25a0751a7eeb6cb15a d0239edce885449a9dc0964458bf521c
+msgid "❌"
+msgstr ""
+
+#: ../../source/index.rst:51 ../../source/index.rst:53
+#: ../../source/index.rst:56 ../../source/index.rst:57
+#: ../../source/index.rst:58 ../../source/index.rst:61
+#: ../../source/index.rst:63 ../../source/index.rst:68
+#: ../../source/index.rst:70 ../../source/index.rst:71
+#: ../../source/index.rst:73 ../../source/index.rst:75
+#: ../../source/index.rst:77 ../../source/index.rst:78
+#: ../../source/index.rst:80 ../../source/index.rst:82
+#: ../../source/index.rst:83 ../../source/index.rst:85
+#: ../../source/index.rst:87 ../../source/index.rst:88
+#: ../../source/index.rst:92 ../../source/index.rst:93
+#: 0c6c9cae20694167b4ce57bdcd5fc3b2 0d7a80b2f6454937a3f054f878535a6f
+#: 1b689cb475d94432bae9c18d8d3b9818 27e9c0cb09d1456d8b07e61fb5c0201c
+#: 3241c67bc3244462b3b7183970ce38a6 378234e1408f45fabf9acc9bb2816c2c
+#: 4135ad16c4eb40ce8c4f80594f7c1917 4caab4b8747b4392961c7aff8e7793c8
+#: 4e5607f3ead645dcb91bbc2ff9804465 581e5d9aea7140a3814162bdfa8725c0
+#: 68f17fa9c9fd4d6bb584821e179208e1 6c4198e5966e4a799809597d66c48ab2
+#: 816827670213437692fb331b28694af0 ac796db4d9344fd08f03b3c686f69be9
+#: b30ecd69e8c347e1ba87a56846556dc7 c5af3042ea7a475281f22c103bedb90a
+#: ca3df123f4254e6ab46859b44384a3c5 d17064f1f3d84d6b9907e15b7c53c978
+#: d710cf5dd84040538b0a2f3159fa9554 e327f27c89e24b4d9b7e8d3e36cceb95
+#: ead20db1fc874d5abae29a0290e5f4cf f216503f14ee4b818104981750d87ca4
+msgid "✅"
+msgstr ""
+
+#: ../../source/index.rst:54 8cda8089211d4bfa86138d5885464101
+msgid "Easy Install"
+msgstr ""
+
+#: ../../source/index.rst:59 ef8af8436f8f4af5a4eca7eea255012a
+msgid "Easy Debug"
+msgstr ""
+
+#: ../../source/index.rst:64 88fd3a25f8af4e01afc7fbff29c8d214
+msgid "Easy IO"
+msgstr ""
+
+#: ../../source/index.rst:69 851134f06d5e4ae7968b6df70d9a6f36
+msgid "Large Mesh"
+msgstr ""
+
+#: ../../source/index.rst:74 a39a9e8bb5f442a485f10f8f349cff11
+msgid "GPU Support"
+msgstr ""
+
+#: ../../source/index.rst:79 f4345d3477914121b75756eb0d59f058
+msgid "Efficiency"
+msgstr ""
+
+#: ../../source/index.rst:84 370edaea576e416a91ebf488d7ddea34
+msgid "Auto-diff"
+msgstr ""
+
+#: ../../source/index.rst:89 1f544240d9a843c394a8f78187431fd6
+msgid "DL Integration"
+msgstr ""
+
+#: ../../source/index.rst:97 1e60f94592f04f3fb5c34fdae0e4d110
+msgid "Citation"
+msgstr ""
+
+#: ../../source/index.rst:99 db1792a3d2ce4daa8ee16664098fb6fa
+msgid "If you use TensorMesh in your research, please cite:"
+msgstr ""
+
+#: ../../source/index.rst:114 d773ff539e28454baf7a2e29abcb7008
+msgid "License"
+msgstr ""
+
+#: ../../source/index.rst:116 f497780fb2ee46439ae93b8a1d4d0340
+msgid ""
+"TensorMesh is released under the `GNU General Public License v3.0 "
+"<https://github.com/camlab-ethz/TensorMesh/blob/main/LICENSE>`_."
+msgstr ""
+

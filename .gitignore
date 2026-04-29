@@ -51,21 +51,19 @@ Thumbs.db
 *.h5
 
 # Documentation build artifacts
-docs/build/
-docs/html/
 docs/_build/
-docs/_static/
-docs/_images/
-docs/_sources/
-docs/*.html
-docs/*.js
-docs/*.inv
-docs/objects.inv
-docs/searchindex.js
-!docs/README.md
-!docs/Makefile
-!docs/make.bat
-!docs/requirements.txt
+
+# Translation compiled artifacts (sphinx-intl build → *.mo, derived from *.po)
+*.mo
+
+# LaTeX build artifacts (from root-level .tex sources)
+/*.aux
+/*.log
+/*.pdf
+/*.synctex.gz
+/*.out
+/*.fls
+/*.fdb_latexmk
 
 # Benchmark outputs
 benchmark/

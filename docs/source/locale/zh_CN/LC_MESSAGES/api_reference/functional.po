@@ -1,0 +1,843 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, TensorMesh Contributors
+# This file is distributed under the same license as the TensorMesh package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: TensorMesh 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-29 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/api_reference/functional.rst:2 99987560e9794ad7beb8e6c865c6449e
+msgid "tensormesh.functional"
+msgstr ""
+
+#: ../../source/api_reference/functional.rst:5 b0e8065df4d54898aa386c6437d5eaa7
+msgid "contents"
+msgstr ""
+
+#: ../../source/api_reference/functional.rst:8 66011c7918d6416a987aaed195027656
+msgid "ops"
+msgstr ""
+
+#: 3fdb304954fb4a429c8a7fd0d742beea of tensormesh.functional.ops.sym:1
+#, python-brace-format
+msgid "\\text{sym}(A)_{\\cdots ij} = \\frac{1}{2} (A_{\\cdots i} + A_{\\cdots j})"
+msgstr ""
+
+#: 7432bafebb114d0384479f9a86a2b039 890a580fbf5a4bdba79546d99be610bd
+#: a159c409746c48dc930b156e33ed444b d675911f47264bda983f660d761e913a of
+#: tensormesh.functional.ops.divide:14 tensormesh.functional.ops.skew:39
+#: tensormesh.functional.ops.sqrt:14 tensormesh.functional.ops.sym:6
+msgid "Examples"
+msgstr ""
+
+#: ../../source/api_reference/functional.rst 22adbff4a72447cbb59ecf424bf077ee
+#: 25dcdccca3654e9083b475c089af2db1 28be89a14a4247c78e8c028718c3e1f3
+#: 4b79095a1b164af2acfb3551c48e7a97 598a5ae3b26f441a857d5af0a9c9c137
+#: 766ed9f3e6c8492692da0fb1aa25ac37 8d42e5fe887a4cda8776ff73061cdc0b
+#: 9411bd4419964adda53f4399f010de8d 9e6a343a77b04abbb39bd08d95ee411c
+#: d331c74763d140ccb49c810ac119e804 d9bb1aab6b79459e916b32edf75182a9
+#: dbf5069b60fd47a6805a9df72347b16b e05b6a9245084728ae8ed47b4294a97b
+#: e3661e96c21546549481cf9046a78e71 f63d4d42ba1144b6a3383832542bca97
+msgid "Parameters"
+msgstr ""
+
+#: 163f4205587e40449c2b68d0626a5ad9 of tensormesh.functional.ops.sym:18
+msgid ":math:`[..., D]`, where :math:`D` is the dimension of the matrix"
+msgstr ""
+
+#: ../../source/api_reference/functional.rst 038944814ae54eb29cade7b931bea06a
+#: 329bb38cfe554f2ebbfbeb57c9326818 3408372d1daa4f0493875387427ab3d9
+#: 424934fa1e5341d5bc7c9ef9a533913c 63e5a178967a458a85c2c293083f432c
+#: 70584f13b2aa4599aa0b5bfd9eadb806 9af05347bd224c1a85f76d7f6bfd44b9
+#: a3c5f551059a4f2689931b2629932a40 a9175fc831e74ef99fda8b5110cfc635
+#: aeea46b334154eeb885430a6c429ba80 b8faba70eab648498338535a1d57e2a1
+#: d04e103cb1214384889ec1f8d3fb00bc dbbd10287e034176b082f199a1052946
+#: de6598f7fd5942648f79ee7c016cd830 e00c24c167c64373bcfb7a469f9c9bd0
+msgid "Returns"
+msgstr ""
+
+#: c6d660c5407f4e26a11d8afde9737a7b of tensormesh.functional.ops.sym:21
+msgid ":math:`[..., D, D]`, where :math:`D` is the dimension of the matrix"
+msgstr ""
+
+#: ../../source/api_reference/functional.rst 07afc7a0bdb5461284c55c5f570e2036
+#: 41faf066175b48b1b2ac0c91acd14521 43bb8dbd300b498596858209359d766d
+#: 4a5a38cd8072465da07f11ebd5912649 533146a9420c4290a1f8a35d3c47b06d
+#: 6335aace7e7c4216a7e84f0ac8cb094b 8412432b37c94549909a4e8558f5978f
+#: 863f5e6e0e9149ea93da5ac72deb1ff4 869a76d0417b451a94db68473547decb
+#: b03d7affe0944b5e8b44496cf7bca333 b6e221c6f0eb4b079fae77eb82b0f6c8
+#: eb1bd054f00c410793375e76fac3eaf6 f62ab967af7a4d3d899a27e5eddda2c6
+#: facad23cd41a4c00b474b12a115be7fb fb2eaa2098c0422881910e0a78a302de
+msgid "Return type"
+msgstr ""
+
+#: aebb8a717ee040ce9e7d4aed8b6ecb83 of tensormesh.functional.ops.skew:1
+msgid "Compute the skew-symmetric matrix from a vector."
+msgstr ""
+
+#: 1d82bfa75f6442af94a6bf00ba56a149 3fb4275dd55e4352a55ec2005a1d2a83
+#: 4e2b7ecada484d4dac1715ead1bc0373 503ae47f6e6c4cbab58ac75430783252
+#: 90a72854af504db5bb42c1a6a6022ba6 9f5e45ee1b0241ba96a989e60bb69a37
+#: b7caea50063b47bcb767453c8d19e81b of
+#: tensormesh.functional.elasticity.voigt_shape_grad:3
+#: tensormesh.functional.elasticity.voigt_shape_val:3
+#: tensormesh.functional.elasticity.voigt_stiffness:1
+#: tensormesh.functional.ops.skew:3
+msgid "For 2D:"
+msgstr ""
+
+#: 69099767830d45938d7dce24c3cb8e64 of tensormesh.functional.ops.skew:5
+#, python-brace-format
+msgid ""
+"\\text{skew}\\left(\\begin{bmatrix}\n"
+"    v_1 \\\\\n"
+"    v_2\n"
+"\\end{bmatrix}\\right) = \\begin{cases}\n"
+"    \\begin{bmatrix}\n"
+"        -v_2 \\\\\n"
+"        v_1\n"
+"    \\end{bmatrix} & \\text{if sign=True} \\\\[1em]\n"
+"    \\begin{bmatrix}\n"
+"        v_2 \\\\\n"
+"        v_1\n"
+"    \\end{bmatrix} & \\text{if sign=False}\n"
+"\\end{cases}"
+msgstr ""
+
+#: 0923e67db1f74311abd724c62692837f 0dfbf2e5df8848ba9b6f9636a1016b7f
+#: 371919cdbd7749c2b241ec669575debf 66b32e506413400b9e770e937949ddbb
+#: cd921b1e46e64816ae1bfabe53652e1d e455f8ee9e594934859d31b3daf15911
+#: f1b6804bd2be4b45828c96f1120e7993 of
+#: tensormesh.functional.elasticity.voigt_shape_grad:23
+#: tensormesh.functional.elasticity.voigt_shape_val:13
+#: tensormesh.functional.elasticity.voigt_stiffness:13
+#: tensormesh.functional.ops.skew:21
+msgid "For 3D:"
+msgstr ""
+
+#: f691990dc09e48af88aa40bb721dcda4 of tensormesh.functional.ops.skew:23
+#, python-brace-format
+msgid ""
+"\\text{skew}(v) = \\begin{cases}\n"
+"    \\begin{bmatrix}\n"
+"        0 & -v_3 & v_2 \\\\\n"
+"        v_3 & 0 & -v_1 \\\\\n"
+"        -v_2 & v_1 & 0\n"
+"    \\end{bmatrix} & \\text{if sign=True} \\\\[1em]\n"
+"    \\begin{bmatrix}\n"
+"        0 & v_3 & v_2 \\\\\n"
+"        v_3 & 0 & v_1 \\\\\n"
+"        v_2 & v_1 & 0\n"
+"    \\end{bmatrix} & \\text{if sign=False}\n"
+"\\end{cases}"
+msgstr ""
+
+#: 61b01fd4d8e94cbaae965a2364f9343d of tensormesh.functional.ops.skew:63
+#, python-brace-format
+msgid ""
+"1D Tensor of shape [2] or [3], representing a vector in "
+":math:`\\mathbb{R}^2` or :math:`\\mathbb{R}^3`"
+msgstr ""
+
+#: 1783d6aa38504361b9a7449f9e152e18 of tensormesh.functional.ops.skew:65
+msgid "If True, use negative signs in skew matrix. Default is True."
+msgstr ""
+
+#: 87a24428707c42f8895db656524adfb3 of tensormesh.functional.ops.skew:67
+msgid "If True, ensure output is at least 2D for 2D case. Default is False."
+msgstr ""
+
+#: edf8755c9c614e00812c2bff06a97fc5 of tensormesh.functional.ops.skew:70
+msgid ""
+"For 2D case:     - 1D Tensor of shape [2] if at_least2d=False     - 2D "
+"Tensor of shape [1,2] if at_least2d=True For 3D case:     - 2D Tensor of "
+"shape [3,3]  The skew-symmetric matrix representation of the input "
+"vector."
+msgstr ""
+
+#: 81aed1b1a8554f839dac2a180910156b of tensormesh.functional.ops.skew:72
+msgid "For 2D case:"
+msgstr ""
+
+#: 0cc6c1d3074647108ecf3ecacff61d3c of tensormesh.functional.ops.skew:73
+msgid "1D Tensor of shape [2] if at_least2d=False"
+msgstr ""
+
+#: d6c9a494b5fc4988a810abbbd826be93 of tensormesh.functional.ops.skew:74
+msgid "2D Tensor of shape [1,2] if at_least2d=True"
+msgstr ""
+
+#: c61d3593172840b39758c39080c21650 of tensormesh.functional.ops.skew:75
+msgid "For 3D case:"
+msgstr ""
+
+#: 657451cc651547b784036c6beb508222 of tensormesh.functional.ops.skew:76
+msgid "2D Tensor of shape [3,3]"
+msgstr ""
+
+#: 0df8b689f7c34d05947235992a6312d5 of tensormesh.functional.ops.skew:78
+msgid "The skew-symmetric matrix representation of the input vector."
+msgstr ""
+
+#: 2dc7b4542fc5461f8d23c96c157fba33 of tensormesh.functional.ops.sqrt:1
+msgid "Square root function that returns 0 for negative inputs."
+msgstr ""
+
+#: fb904b9749ed443f984b9894a3b702af of tensormesh.functional.ops.sqrt:3
+msgid ""
+"This function computes the square root of the input tensor, but clamps "
+"negative values to 0 first. This avoids NaN values that would occur from "
+"taking the square root of negative numbers."
+msgstr ""
+
+#: d4ee261dda364d40b0237f61a0ecb6c9 of tensormesh.functional.ops.sqrt:6
+#, python-brace-format
+msgid ""
+"\\sqrt{x} = \\begin{cases}\n"
+"    \\sqrt{x} & \\text{if } x \\geq 0 \\\\\n"
+"    0 & \\text{if } x < 0\n"
+"\\end{cases}"
+msgstr ""
+
+#: 15b9f082b80d40eaa40533b47cc6e9cb 5541abaeba604b6aa3aed1e1eb186679
+#: 7f5aabb1573347cb91df68b5e07e837a 8b06298706794f91a9a81a0a76cf4738
+#: e7eff8d9d53940e89b06512d198e4d7b of tensormesh.functional.ops.divide:20
+#: tensormesh.functional.ops.divide:22 tensormesh.functional.ops.divide:25
+#: tensormesh.functional.ops.sqrt:19 tensormesh.functional.ops.sqrt:22
+msgid ":math:`[...]`"
+msgstr ""
+
+#: 778fae5977514364819d85a79029d3d3 of tensormesh.functional.ops.divide:1
+msgid "Safe division function that returns 0 for division by zero."
+msgstr ""
+
+#: fcf61b9fa5984fae993684ab91fdf698 of tensormesh.functional.ops.divide:3
+msgid ""
+"This function performs element-wise division of x by y, but returns 0 "
+"wherever y is 0. This avoids NaN/Inf values that would occur from "
+"dividing by zero."
+msgstr ""
+
+#: 03e32ae845214092a02d49c9395efbf4 of tensormesh.functional.ops.divide:6
+#, python-brace-format
+msgid ""
+"\\frac{x}{y} = \\begin{cases}\n"
+"    \\frac{x}{y} & \\text{if } y \\neq 0 \\\\\n"
+"    0 & \\text{if } y = 0\n"
+"\\end{cases}"
+msgstr ""
+
+#: ../../source/api_reference/functional.rst:15
+#: 07dc1a2b74a549c2a6aba36b62ae256b
+msgid "elasticity"
+msgstr ""
+
+#: 0a7448abef044b409fed59123f6a6a0a 5767a214e25c4ac8a8c3c712515b03b1 of
+#: tensormesh.functional.elasticity.strain:1
+#: tensormesh.functional.plastic.update_plastic_stress:46
+#, python-brace-format
+msgid ""
+"\\varepsilon_{ij} = \\frac{1}{2}(\\nabla u_{ij} + \\nabla u_{ji}), \\quad"
+" \\varepsilon,\\nabla u \\in \\mathbb{R}^{d \\times d}"
+msgstr ""
+
+#: 104fc08d10494dd19a1d93643448fcd8 2883de1dee7142f2a329763188c8a4e1
+#: 3787d5e69baf4f0f9942a1cb2689300e 715b4f7a767b467f88e1c5118f2cc994
+#: 7c192445916546678689054033863e27 84b3a6c0b17f4b418ddbbb8b95ae2375
+#: 99fc310cefd9474f81324eda1aac482a c72ab822e73d470193e3c4f2c8c23fae
+#: cb47d1809fa54989b6249477a2048c2a f82a401eed5643edafad656cf36b22c7
+#: f88381e15c6b418180f3eee4ba3f9159 of
+#: tensormesh.functional.elasticity.deviatoric_stress:5
+#: tensormesh.functional.elasticity.deviatoric_stress_norm:4
+#: tensormesh.functional.elasticity.isotropic_stress:5
+#: tensormesh.functional.elasticity.strain:5
+#: tensormesh.functional.elasticity.voigt_shape_grad:15
+#: tensormesh.functional.elasticity.voigt_shape_grad:40
+#: tensormesh.functional.elasticity.voigt_stiffness:28
+#: tensormesh.functional.plastic.update_plastic_stress:15
+msgid "where:"
+msgstr ""
+
+#: 50e504ec4300465ebe1b4404d9f1fa3d of
+#: tensormesh.functional.elasticity.strain:7
+#, python-brace-format
+msgid ""
+":math:`\\nabla u \\in \\mathbb{R}^{d \\times d}` is the displacement "
+"gradient tensor"
+msgstr ""
+
+#: 5968273c503a4afb94e4cd0bfef8c246 b72cf2b200684f9dbaa37c03dc795dee of
+#: tensormesh.functional.elasticity.isotropic_stress:8
+#: tensormesh.functional.elasticity.strain:8
+#, python-brace-format
+msgid ":math:`\\varepsilon \\in \\mathbb{R}^{d \\times d}` is the strain tensor"
+msgstr ""
+
+#: 411bb1bf6d99446da389105ecfb2fc7c of
+#: tensormesh.functional.elasticity.strain:10
+msgid ""
+"1D Tensor of shape [d] gradient of displacement field u with respect to "
+"spatial coordinates"
+msgstr ""
+
+#: 0ee20779f67d4dbb8f9bc92a93a8763c a220e16c44404c41b26a9e24fe6b3a35
+#: e114f862ca264d1096835aa584fec717 of
+#: tensormesh.functional.elasticity.deviatoric_stress:17
+#: tensormesh.functional.elasticity.isotropic_stress:24
+#: tensormesh.functional.elasticity.strain:14
+msgid "2D Tensor of shape [d, d]"
+msgstr ""
+
+#: 0079862f625e4ced83aff098b7ea0f5e of
+#: tensormesh.functional.elasticity.isotropic_stress:1
+#, python-brace-format
+msgid ""
+"\\sigma_{ij} = \\frac{E}{1+\\nu} \\left(\\varepsilon_{ij} + "
+"\\frac{\\nu}{1-2\\nu} \\text{tr}(\\varepsilon) \\delta_{ij}\\right), "
+"\\quad \\sigma,\\varepsilon \\in \\mathbb{R}^{d \\times d}"
+msgstr ""
+
+#: 2032a5f4ec264af696b74ef75133fd2e of
+#: tensormesh.functional.elasticity.isotropic_stress:7
+#, python-brace-format
+msgid ":math:`\\sigma \\in \\mathbb{R}^{d \\times d}` is the stress tensor"
+msgstr ""
+
+#: 8228b7b8fca84d44997bbec8ca49718f of
+#: tensormesh.functional.elasticity.isotropic_stress:9
+#, python-brace-format
+msgid ":math:`E \\in \\mathbb{R}` is Young's modulus"
+msgstr ""
+
+#: da05f0b9441f415d91c47b94be881cf7 of
+#: tensormesh.functional.elasticity.isotropic_stress:10
+#, python-brace-format
+msgid ":math:`\\nu \\in \\mathbb{R}` is Poisson's ratio"
+msgstr ""
+
+#: 20a6ebb3bd9945b3a47805def44e9c9a of
+#: tensormesh.functional.elasticity.isotropic_stress:11
+#, python-brace-format
+msgid ""
+":math:`\\delta_{ij} \\in \\mathbb{R}^{d \\times d}` is the Kronecker "
+"delta tensor"
+msgstr ""
+
+#: 7d3e1f1383d94bca9e2dccf7b950f7f7 ad6c23afe5d94ec2bc5cba3d5f312711 of
+#: tensormesh.functional.elasticity.deviatoric_stress:11
+#: tensormesh.functional.elasticity.isotropic_stress:12
+#, python-brace-format
+msgid ""
+":math:`\\text{tr}: \\mathbb{R}^{d \\times d} \\rightarrow \\mathbb{R}` "
+"denotes the trace operator"
+msgstr ""
+
+#: 0c1bcb74f1e64f218acbb1d0ca2af2cc of
+#: tensormesh.functional.elasticity.isotropic_stress:14
+msgid "2D Tensor of shape [d, d] strain tensor"
+msgstr ""
+
+#: 317949d243d5482083747eca33ae1cc3 of
+#: tensormesh.functional.elasticity.isotropic_stress:17
+msgid "if torch.Tensor, 0D Tensor of shape [] Young's modulus"
+msgstr ""
+
+#: e3a756f5967749059a1b29f414f6700a of
+#: tensormesh.functional.elasticity.isotropic_stress:20
+msgid "if torch.Tensor, 0D Tensor of shape [] Poisson's ratio"
+msgstr ""
+
+#: 848d8acd23d84f32808b60e634073711 of
+#: tensormesh.functional.elasticity.deviatoric_stress:1
+#, python-brace-format
+msgid ""
+"s_{ij} = \\sigma_{ij} - \\frac{1}{d} \\text{tr}(\\sigma) \\delta_{ij}, "
+"\\quad s,\\sigma \\in \\mathbb{R}^{d \\times d}"
+msgstr ""
+
+#: 843ee688d65440018144139313ae2d95 of
+#: tensormesh.functional.elasticity.deviatoric_stress:7
+#, python-brace-format
+msgid ""
+":math:`s_{ij} \\in \\mathbb{R}^{d \\times d}` is the deviatoric stress "
+"tensor"
+msgstr ""
+
+#: 5b005a6091ed471288059e4a0a32b532 of
+#: tensormesh.functional.elasticity.deviatoric_stress:8
+#, python-brace-format
+msgid ":math:`\\sigma_{ij} \\in \\mathbb{R}^{d \\times d}` is the stress tensor"
+msgstr ""
+
+#: 25a5019f74694b319aaa5f018fd91d8e of
+#: tensormesh.functional.elasticity.deviatoric_stress:9
+#, python-brace-format
+msgid ":math:`d \\in \\mathbb{N}` is the dimension"
+msgstr ""
+
+#: 69e6563447a24ec6b0fcb078b02ab33b of
+#: tensormesh.functional.elasticity.deviatoric_stress:10
+#, python-brace-format
+msgid ":math:`\\delta_{ij} \\in \\mathbb{R}^{d \\times d}` is the Kronecker delta"
+msgstr ""
+
+#: 45ea8b6ab3f94f71be23a0477ae2d77d 6c7db6266e1b4510be7c53ae9888b412 of
+#: tensormesh.functional.elasticity.deviatoric_stress:13
+#: tensormesh.functional.elasticity.deviatoric_stress_norm:10
+msgid "2D Tensor of shape [d, d] stress tensor"
+msgstr ""
+
+#: ddf708194d7c4d57a344b6d95c6ad8a5 of
+#: tensormesh.functional.elasticity.deviatoric_stress_norm:1
+msgid "\\|s\\| = \\sqrt{\\frac{3}{2} s:s}"
+msgstr ""
+
+#: 29cf320a38e44bf08da78b60b7dcad8f of
+#: tensormesh.functional.elasticity.deviatoric_stress_norm:6
+#, python-brace-format
+msgid ":math:`s \\in \\mathbb{R}^{d \\times d}` is the deviatoric stress tensor"
+msgstr ""
+
+#: 909b99ab1df744e2af68e6ee545549b8 of
+#: tensormesh.functional.elasticity.deviatoric_stress_norm:7
+#, python-brace-format
+msgid ""
+":math:`\\|s\\| \\in \\mathbb{R}` is the norm of the deviatoric stress "
+"tensor"
+msgstr ""
+
+#: e6408f2b423e483e9ed792614c266092 of
+#: tensormesh.functional.elasticity.deviatoric_stress_norm:8
+#, python-brace-format
+msgid ""
+":math:`:` denotes the double dot product :math:`\\mathbb{R}^{d \\times d}"
+" \\times \\mathbb{R}^{d \\times d} \\rightarrow \\mathbb{R}`"
+msgstr ""
+
+#: fb7f6c397c4c4bc68468d60b465c978b of
+#: tensormesh.functional.elasticity.deviatoric_stress_norm:14
+msgid "0D Tensor of shape []"
+msgstr ""
+
+#: 0ddab063f73b493089fc54296641d97d e3da990c9bf44ffa91b1bc007a956e33 of
+#: tensormesh.functional.elasticity.voigt_shape_grad:1
+msgid "Convert displacement gradient to Voigt notation for strain calculation."
+msgstr ""
+
+#: 0aa77925a0684ca89af703fdfadd567a 227e28d29cda414c9505e7da4f7dfcd7 of
+#: tensormesh.functional.elasticity.voigt_shape_grad:5
+#, python-brace-format
+msgid ""
+"B \\in \\mathbb{R}^{3 \\times (2\\times 3)} = \\begin{bmatrix}\n"
+"    \\frac{\\partial u_1}{\\partial x_1} & 0 & \\mid & \\frac{\\partial "
+"u_2}{\\partial x_1} & 0 & \\mid & \\frac{\\partial u_3}{\\partial x_1} & "
+"0 \\\\\n"
+"    0 & \\frac{\\partial u_1}{\\partial x_2} & \\mid & 0 & "
+"\\frac{\\partial u_2}{\\partial x_2} & \\mid & 0 & \\frac{\\partial "
+"u_3}{\\partial x_2} \\\\\n"
+"    \\frac{\\partial u_1}{\\partial x_2} & \\frac{\\partial "
+"u_1}{\\partial x_1} & \\mid & \\frac{\\partial u_2}{\\partial x_2} & "
+"\\frac{\\partial u_2}{\\partial x_1} & \\mid & \\frac{\\partial "
+"u_3}{\\partial x_2} & \\frac{\\partial u_3}{\\partial x_1}\n"
+"\\end{bmatrix}"
+msgstr ""
+
+#: 4ab53036959148fbbf42f4066b805e1f 5db8b45a97f44798b5cf0cbe4d57d0e8
+#: 79da05802845422f9aad8590c6343482 f0774952828a4dea9091acdfeb87d5fe of
+#: tensormesh.functional.elasticity.voigt_shape_grad:13
+#: tensormesh.functional.elasticity.voigt_stiffness:11
+#, python-brace-format
+msgid "representing [:math:`\\varepsilon_{xx}, \\varepsilon_{yy}, \\gamma_{xy}`]"
+msgstr ""
+
+#: 1226060e45b34b21b2b9c26435688e64 350f61709c2a4dc3898a3fd2e32d41ee
+#: 8691ced7d302425883882fdad7bc72de bd20a5d87f3c4c1b9ca9e2b4efcf39db of
+#: tensormesh.functional.elasticity.voigt_shape_grad:17
+#: tensormesh.functional.elasticity.voigt_shape_grad:42
+#, python-brace-format
+msgid ":math:`u_i \\in \\mathbb{R}` is the displacement component in direction i"
+msgstr ""
+
+#: 60cd4aadd0454894bb410185223fdea7 81d923448beb4e4391b56e442e7837d1
+#: 9e31c20e5c1c46d7861b23740fb99824 ada4b661623643d19a2ccd01f8d76bf6 of
+#: tensormesh.functional.elasticity.voigt_shape_grad:18
+#: tensormesh.functional.elasticity.voigt_shape_grad:43
+#, python-brace-format
+msgid ":math:`x_i \\in \\mathbb{R}` is the spatial coordinate in direction i"
+msgstr ""
+
+#: 0cf1ac0e0dee469ab429cbd32f711189 337a711a5a8141cab609f1fbafad2b22
+#: 8c9e91ed2af84f7688cefcb0d26b4be1 baecb40cd5fd44879dc3276ece325515 of
+#: tensormesh.functional.elasticity.voigt_shape_grad:19
+#: tensormesh.functional.elasticity.voigt_shape_grad:44
+#, python-brace-format
+msgid ""
+":math:`\\frac{\\partial u_i}{\\partial x_j} \\in \\mathbb{R}` is the "
+"partial derivative of displacement i with respect to coordinate j"
+msgstr ""
+
+#: 8b0dba75e43f43dcae282b94631ef79a f86e07ee8f8740f1ae86e5ca8ed2ab8b of
+#: tensormesh.functional.elasticity.voigt_shape_grad:25
+#, python-brace-format
+msgid ""
+"B \\in \\mathbb{R}^{6 \\times (3\\times 3)} = \\begin{bmatrix}\n"
+"    \\frac{\\partial u_1}{\\partial x_1} & 0 & 0 & \\mid & "
+"\\frac{\\partial u_2}{\\partial x_1} & 0 & 0 & \\mid & \\frac{\\partial "
+"u_3}{\\partial x_1} & 0 & 0 \\\\\n"
+"    0 & \\frac{\\partial u_1}{\\partial x_2} & 0 & \\mid & 0 & "
+"\\frac{\\partial u_2}{\\partial x_2} & 0 & \\mid & 0 & \\frac{\\partial "
+"u_3}{\\partial x_2} & 0 \\\\\n"
+"    0 & 0 & \\frac{\\partial u_1}{\\partial x_3} & \\mid & 0 & 0 & "
+"\\frac{\\partial u_2}{\\partial x_3} & \\mid & 0 & 0 & \\frac{\\partial "
+"u_3}{\\partial x_3} \\\\\n"
+"    0 & \\frac{\\partial u_1}{\\partial x_3} & \\frac{\\partial "
+"u_1}{\\partial x_2} & \\mid & 0 & \\frac{\\partial u_2}{\\partial x_3} & "
+"\\frac{\\partial u_2}{\\partial x_2} & \\mid & 0 & \\frac{\\partial "
+"u_3}{\\partial x_3} & \\frac{\\partial u_3}{\\partial x_2} \\\\\n"
+"    \\frac{\\partial u_1}{\\partial x_3} & 0 & \\frac{\\partial "
+"u_1}{\\partial x_1} & \\mid & \\frac{\\partial u_2}{\\partial x_3} & 0 & "
+"\\frac{\\partial u_2}{\\partial x_1} & \\mid & \\frac{\\partial "
+"u_3}{\\partial x_3} & 0 & \\frac{\\partial u_3}{\\partial x_1} \\\\\n"
+"    \\frac{\\partial u_1}{\\partial x_2} & \\frac{\\partial "
+"u_1}{\\partial x_1} & 0 & \\mid & \\frac{\\partial u_2}{\\partial x_2} & "
+"\\frac{\\partial u_2}{\\partial x_1} & 0 & \\mid & \\frac{\\partial "
+"u_3}{\\partial x_2} & \\frac{\\partial u_3}{\\partial x_1} & 0\n"
+"\\end{bmatrix}"
+msgstr ""
+
+#: 0cdf4b6a90e54e938b82bcf4482f3ed6 44fba9bed3fb423c901736ece27cc641
+#: 67738a8dc2194e0fb8b2cd13dc2e6454 894fc6d599b94d01928627bcc5e1a180 of
+#: tensormesh.functional.elasticity.voigt_shape_grad:36
+#: tensormesh.functional.elasticity.voigt_stiffness:26
+#, python-brace-format
+msgid ""
+"representing [:math:`\\varepsilon_{xx}, \\varepsilon_{yy}, "
+"\\varepsilon_{zz}, \\gamma_{yz}, \\gamma_{xz}, \\gamma_{xy}`]"
+msgstr ""
+
+#: 40029153e6fd49c08994daf442759af8 7eb9c24c3870436daf73fabe1a84682d of
+#: tensormesh.functional.elasticity.voigt_shape_grad:38
+msgid ""
+"where :math:`\\varepsilon` denotes normal strain and :math:`\\gamma` "
+"denotes shear strain components"
+msgstr ""
+
+#: 4ce7163f3d224b9bae47812ef8810517 ff559b128a904c5c8ac95adbb954f57e of
+#: tensormesh.functional.elasticity.voigt_shape_grad:46
+msgid "1D Tensor of shape [d], where dim must be 2 or 3 gradient of displacement"
+msgstr ""
+
+#: 97f382ee75a74a08a6567bf9073864f7 b49ea54f79a245e2bb348011d07a7da2 of
+#: tensormesh.functional.elasticity.voigt_shape_grad:50
+msgid "2D Tensor with shape [3, 2] if d=2 or [6, 3] if d=3,"
+msgstr ""
+
+#: 65ace2cca72840398aaf0fd13f362f4a d242d5f985dc4520a8d67a186ad94832 of
+#: tensormesh.functional.elasticity.voigt_stiffness:3
+#, python-brace-format
+msgid ""
+"\\mathbb{C} \\in \\mathbb{R}^{3 \\times 3} = \\begin{bmatrix}\n"
+"    \\lambda + 2\\mu & \\lambda & 0 \\\\\n"
+"    \\lambda & \\lambda + 2\\mu & 0 \\\\\n"
+"    0 & 0 & \\mu\n"
+"\\end{bmatrix}"
+msgstr ""
+
+#: 7a27cda45ea6443796bb5da91ad1ebaa e9e28d55a50e4033a71598d61bf2db75 of
+#: tensormesh.functional.elasticity.voigt_stiffness:15
+#, python-brace-format
+msgid ""
+"\\mathbb{C} \\in \\mathbb{R}^{6 \\times 6} = \\begin{bmatrix}\n"
+"    \\lambda + 2\\mu & \\lambda & \\lambda & 0 & 0 & 0 \\\\\n"
+"    \\lambda & \\lambda + 2\\mu & \\lambda & 0 & 0 & 0 \\\\\n"
+"    \\lambda & \\lambda & \\lambda + 2\\mu & 0 & 0 & 0 \\\\\n"
+"    0 & 0 & 0 & \\mu & 0 & 0 \\\\\n"
+"    0 & 0 & 0 & 0 & \\mu & 0 \\\\\n"
+"    0 & 0 & 0 & 0 & 0 & \\mu\n"
+"\\end{bmatrix}"
+msgstr ""
+
+#: 966b26cc06d547dbb24c8cd48f36766d 99fcfde222ab474d94637d18559875a7 of
+#: tensormesh.functional.elasticity.voigt_stiffness:30
+#, python-brace-format
+msgid ":math:`\\lambda \\in \\mathbb{R} = \\frac{E\\nu}{(1+\\nu)(1-2\\nu)}`"
+msgstr ""
+
+#: 07eaff72767d426bac9d477cf49def17 565049f987b64f089a1a3412aecf8114 of
+#: tensormesh.functional.elasticity.voigt_stiffness:31
+#, python-brace-format
+msgid ":math:`\\mu \\in \\mathbb{R} = \\frac{E}{2(1+\\nu)}`"
+msgstr ""
+
+#: 15b0f547551849a293eb4ebb4eb4da01 600fbc4fcba643f497ba147be9b5b0d1 of
+#: tensormesh.functional.elasticity.voigt_stiffness:35
+msgid "if torch.Tensor, 0D Tensor Young's modulus"
+msgstr ""
+
+#: 99621a2f29294b04969e4bc19d25f440 df1622cec335412ab48900ee496e0585 of
+#: tensormesh.functional.elasticity.voigt_stiffness:38
+msgid "if torch.Tensor, 0D Tensor Poisson's ratio"
+msgstr ""
+
+#: 103c6ce7091e448cbecf08d49c43d66c d3c7d804e3054842a3f76b92bca724b5 of
+#: tensormesh.functional.elasticity.voigt_stiffness:41
+msgid ""
+"Spatial dimension of the problem (2 or 3). For 2D problems use dim=2, for"
+" 3D problems use dim=3. Default is 2."
+msgstr ""
+
+#: 0d4a2befb4df419ca142f0efd316418e c099bd7836454e30ad57dc7e90072331 of
+#: tensormesh.functional.elasticity.voigt_stiffness:46
+msgid ""
+"2D Tensor of shape :math:`[d(d+1)/2, d(d+1)/2]`, where :math:`d` is the "
+"spatial dimension"
+msgstr ""
+
+#: 7871da1971484c17af2e6e3b92d11d4d e1376ac625754ad0878f57746c546b6b of
+#: tensormesh.functional.elasticity.voigt_shape_val:1
+msgid ""
+"Convert shape functions to Voigt notation matrix for strain-displacement "
+"relations."
+msgstr ""
+
+#: 080c6dd264644fd58ddcd56f2787e789 4f852fcc23ce467fb7d8f2a8c06f8dfc of
+#: tensormesh.functional.elasticity.voigt_shape_val:5
+#, python-brace-format
+msgid ""
+"N_1, N_2, N_3 \\in \\mathbb{R} \\quad \\text{(shape values)} \\\\\n"
+"N \\in \\mathbb{R}^{2 \\times (2\\times 3)}= \\begin{bmatrix}\n"
+"N_1 & 0 &\\mid& N_2 & 0 &\\mid& N_3 & 0 \\\\\n"
+"0 & N_1 &\\mid& 0 & N_2 &\\mid& 0 & N_3\n"
+"\\end{bmatrix}"
+msgstr ""
+
+#: 3e48ef31defd4daca205d73fba32b293 fcbd6852406046199b6a78687bbf83a9 of
+#: tensormesh.functional.elasticity.voigt_shape_val:15
+#, python-brace-format
+msgid ""
+"N_1, N_2, N_3 \\in \\mathbb{R} \\quad \\text{(shape values)} \\\\\n"
+"N \\in \\mathbb{R}^{3 \\times (3\\times 3)}= \\begin{bmatrix}\n"
+"N_1 & 0 & 0 &\\mid& N_2 & 0 & 0 &\\mid& N_3 & 0 & 0 \\\\\n"
+"0 & N_1 & 0 &\\mid& 0 & N_2 & 0 &\\mid& 0 & N_3 & 0 \\\\\n"
+"0 & 0 & N_1 &\\mid& 0 & 0 & N_2 &\\mid& 0 & 0 & N_3\n"
+"\\end{bmatrix}"
+msgstr ""
+
+#: 43d6e2019b7e41cb9cd4092117a21d75 5f5a9202095f456a89d6f0234c8ada25 of
+#: tensormesh.functional.elasticity.voigt_shape_val:24
+msgid "0D Tensor of shape [], shape value"
+msgstr ""
+
+#: 581180c131d74432899873d046e2a816 975ec34b6f0645fdbeda60aab52916a3 of
+#: tensormesh.functional.elasticity.voigt_shape_val:27
+msgid "Spatial dimension. Must be 2 or 3."
+msgstr ""
+
+#: 3efd2f6356c742be9c460cc4f2b559ec e03979db76b24540ab1a11badfdbfe27 of
+#: tensormesh.functional.elasticity.voigt_shape_val:30
+#, python-brace-format
+msgid "2D Tensor of shape [d, d], where :math:`d\\in \\{2,3\\}`"
+msgstr ""
+
+#: ../../source/api_reference/functional.rst:23
+#: 1d546992911b47e4affc0674a21918bc
+msgid "plastic"
+msgstr ""
+
+#: 2f10d650d3ea4ef18278266d876490b5 of
+#: tensormesh.functional.plastic.update_plastic_stress:1
+msgid "Update stress tensor using plastic constitutive model."
+msgstr ""
+
+#: 223b1ea38cbd4701bb18054bddc5b4b3 of
+#: tensormesh.functional.plastic.update_plastic_stress:3
+msgid ""
+"The plastic model follows von Mises yield criterion with perfect "
+"plasticity:"
+msgstr ""
+
+#: b2d15bb172914e858fd7a976b832483c of
+#: tensormesh.functional.plastic.update_plastic_stress:5
+msgid ""
+"\\sigma_{\\text{trial}} = \\sigma + \\mathbb{C}:\\Delta\\varepsilon\n"
+"\n"
+"f(\\sigma_{\\text{trial}}) = \\|\\text{dev}(\\sigma_{\\text{trial}})\\| -"
+" \\sigma_y\n"
+"\n"
+"\\Delta\\gamma = \\frac{\\langle f(\\sigma_{\\text{trial}}) "
+"\\rangle}{\\|\\text{dev}(\\sigma_{\\text{trial}})\\|}\n"
+"\n"
+"\\sigma = \\sigma_{\\text{trial}} - \\Delta\\gamma\\, "
+"\\text{dev}(\\sigma_{\\text{trial}})"
+msgstr ""
+
+#: a864315f3e7740f782426f69ad28c9b4 of
+#: tensormesh.functional.plastic.update_plastic_stress:17
+#, python-brace-format
+msgid ":math:`\\sigma` is the stress tensor in :math:`\\mathbb{R}^{D \\times D}`"
+msgstr ""
+
+#: ba4ad7f36ae342a0aa6cca4dd0d25697 of
+#: tensormesh.functional.plastic.update_plastic_stress:18
+#, python-brace-format
+msgid ""
+":math:`\\mathbb{C}` is the elasticity tensor in :math:`\\mathbb{R}^{D "
+"\\times D \\times D \\times D}`"
+msgstr ""
+
+#: b8851c63e06a4622833e72dfcbd8f25b of
+#: tensormesh.functional.plastic.update_plastic_stress:19
+#, python-brace-format
+msgid ""
+":math:`\\varepsilon` is the strain tensor in :math:`\\mathbb{R}^{D "
+"\\times D}`"
+msgstr ""
+
+#: 12037cc6ad41449abb24caa41f98aa31 of
+#: tensormesh.functional.plastic.update_plastic_stress:20
+#, python-brace-format
+msgid ":math:`\\sigma_y` is the yield stress scalar in :math:`\\mathbb{R}`"
+msgstr ""
+
+#: 96306cbf112246aab5a76186e787eded of
+#: tensormesh.functional.plastic.update_plastic_stress:21
+#, python-brace-format
+msgid ""
+":math:`\\text{dev}` denotes the deviatoric part operator "
+":math:`\\mathbb{R}^{D \\times D} \\rightarrow \\mathbb{R}^{D \\times D}`"
+msgstr ""
+
+#: 39fba60fed0c401ab385e17e9ecfc6a8 of
+#: tensormesh.functional.plastic.update_plastic_stress:22
+#, python-brace-format
+msgid ""
+":math:`\\|\\cdot\\|` is the von Mises norm operator :math:`\\mathbb{R}^{D"
+" \\times D} \\rightarrow \\mathbb{R}`"
+msgstr ""
+
+#: 00e7c78e27984d1a8565c2fc51997d74 of
+#: tensormesh.functional.plastic.update_plastic_stress:23
+#, python-brace-format
+msgid ""
+":math:`\\langle \\cdot \\rangle` denotes the positive part operator "
+":math:`\\mathbb{R} \\rightarrow \\mathbb{R}`"
+msgstr ""
+
+#: 6c0bee3793ea40f7aba413787aef1c0b of
+#: tensormesh.functional.plastic.update_plastic_stress:25
+msgid ""
+"The model uses a trial elastic predictor followed by plastic correction "
+"if yielding occurs. If the trial stress exceeds the yield surface, it is "
+"projected back onto the yield surface."
+msgstr ""
+
+#: 11ec54119c704932b49157efad51149b of
+#: tensormesh.functional.plastic.update_plastic_stress:28
+msgid ""
+"1D Tensor of shape [d], where d is the spatial dimension. Gradient of "
+"displacement field with respect to spatial coordinates."
+msgstr ""
+
+#: 448cce44c50141668a048a55d2d4dc00 of
+#: tensormesh.functional.plastic.update_plastic_stress:31
+msgid ""
+"2D Tensor of shape [d, d], where d is the spatial dimension. Current "
+"strain tensor at the start of the timestep."
+msgstr ""
+
+#: 54d5dab5d58f4d38b35fd0eee4be99ab of
+#: tensormesh.functional.plastic.update_plastic_stress:34
+msgid ""
+"2D Tensor of shape [d, d], where d is the spatial dimension. Current "
+"stress tensor at the start of the timestep."
+msgstr ""
+
+#: bc3be8a84a1146be816b6240dbab9890 of
+#: tensormesh.functional.plastic.update_plastic_stress:37
+msgid ""
+"Young's modulus. If tensor, must be 0D scalar tensor. Controls the "
+"elastic stiffness of the material."
+msgstr ""
+
+#: 693d7d900ccc4390b906e1527d1f7850 of
+#: tensormesh.functional.plastic.update_plastic_stress:40
+msgid ""
+"Yield stress threshold. If tensor, must be 0D scalar tensor. Material "
+"yields plastically when von Mises stress exceeds this value."
+msgstr ""
+
+#: 0450103a45af4cf7bb989d9a63707690 of
+#: tensormesh.functional.plastic.update_plastic_stress:43
+#, python-brace-format
+msgid ""
+"Function to compute strain tensor from displacement gradient. Default "
+"uses small strain assumption:  .. math::      \\varepsilon_{ij} = "
+"\\frac{1}{2}(\\nabla u_{ij} + \\nabla u_{ji}), \\quad "
+"\\varepsilon,\\nabla u \\in \\mathbb{R}^{d \\times d}"
+msgstr ""
+
+#: 7bcaa30a776b4ba1807b0b4c6e9f613e of
+#: tensormesh.functional.plastic.update_plastic_stress:43
+msgid ""
+"Function to compute strain tensor from displacement gradient. Default "
+"uses small strain assumption:"
+msgstr ""
+
+#: 7606e9cd8fc24d27a4c630975a22a2a2 of
+#: tensormesh.functional.plastic.update_plastic_stress:50
+#, python-brace-format
+msgid ""
+"Function to compute stress tensor from strain tensor and Young's modulus."
+" Default uses isotropic linear elasticity:  .. math::      \\sigma_{ij} ="
+" \\lambda \\text{tr}(\\varepsilon)\\delta_{ij} + 2\\mu\\varepsilon_{ij}, "
+"\\quad \\sigma,\\varepsilon \\in \\mathbb{R}^{d \\times d}  where "
+":math:`\\lambda = \\frac{E\\nu}{(1+\\nu)(1-2\\nu)}`, :math:`\\mu = "
+"\\frac{E}{2(1+\\nu)}`, :math:`E,\\nu \\in \\mathbb{R}`, and "
+":math:`\\delta_{ij}` is the Kronecker delta"
+msgstr ""
+
+#: c0396de33ecb467e9616be660f021e13 of
+#: tensormesh.functional.plastic.update_plastic_stress:50
+msgid ""
+"Function to compute stress tensor from strain tensor and Young's modulus."
+" Default uses isotropic linear elasticity:"
+msgstr ""
+
+#: 62d3259d47cc48088557e10df9c85552 of
+#: tensormesh.functional.plastic.update_plastic_stress:53
+#, python-brace-format
+msgid ""
+"\\sigma_{ij} = \\lambda \\text{tr}(\\varepsilon)\\delta_{ij} + "
+"2\\mu\\varepsilon_{ij}, \\quad \\sigma,\\varepsilon \\in \\mathbb{R}^{d "
+"\\times d}"
+msgstr ""
+
+#: 280df381281e4f98a147966fc0deffae of
+#: tensormesh.functional.plastic.update_plastic_stress:57
+#, python-brace-format
+msgid ""
+"where :math:`\\lambda = \\frac{E\\nu}{(1+\\nu)(1-2\\nu)}`, :math:`\\mu = "
+"\\frac{E}{2(1+\\nu)}`, :math:`E,\\nu \\in \\mathbb{R}`, and "
+":math:`\\delta_{ij}` is the Kronecker delta"
+msgstr ""
+
+#: 3d03b58473bb4595ad9547809075560d of
+#: tensormesh.functional.plastic.update_plastic_stress:60
+msgid ""
+"2D Tensor of shape [d, d], where d is the spatial dimension. Updated "
+"stress tensor after plastic correction."
+msgstr ""
+

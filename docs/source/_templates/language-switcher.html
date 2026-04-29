@@ -1,0 +1,14 @@
+{#-
+  Language switcher: links the same page in the other language.
+  Layout assumed: English at <root>/, Chinese at <root>/zh/.
+  pagename is e.g. "examples/poisson" (no .html), same in both builds.
+  Note: Sphinx normalizes the language code to use hyphens (e.g. zh-CN).
+-#}
+{%- set depth = pagename.count('/') -%}
+<li class="nav-item">
+{%- if language and language.lower().startswith('zh') %}
+  <a class="nav-link" href="{{ '../' * (depth + 1) }}{{ pagename }}.html" rel="alternate" hreflang="en" title="English">EN</a>
+{%- else %}
+  <a class="nav-link" href="{{ '../' * depth }}zh/{{ pagename }}.html" rel="alternate" hreflang="zh-CN" title="中文">中文</a>
+{%- endif %}
+</li>

@@ -1,0 +1,37 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, TensorMesh Contributors
+# This file is distributed under the same license as the TensorMesh package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: TensorMesh 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-29 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/get_started/installation.rst:2 86b5b5823f4f491fadd15352bd242015
+msgid "Installation"
+msgstr ""
+
+#: ../../source/get_started/installation.rst:6 8b5682ab9b0a47b2ada6809feea1f495
+msgid "Installatoion via PyPi"
+msgstr ""
+
+#: ../../source/get_started/installation.rst 4f6df666ad6041339a1ac646e1cfdf73
+msgid "Tensormesh"
+msgstr ""
+
+#: ../../source/get_started/installation.rst:8 2f051c7c6ad64c0688b855e1068c1f0a
+msgid "is available on PyPi and can be installed via pip:"
+msgstr ""
+

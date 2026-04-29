@@ -1,0 +1,59 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, TensorMesh Contributors
+# This file is distributed under the same license as the TensorMesh package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: TensorMesh 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-29 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/examples/poisson.rst:2 508a4e7b188c42989f847676a9080e84
+msgid "Poisson Equation"
+msgstr ""
+
+#: ../../source/examples/poisson.rst:5 f65b1c784f6f41aeb7a9b8a60eab7634
+msgid "Adaptive Mesh Refinement"
+msgstr ""
+
+#: ../../source/examples/poisson.rst:72 f8b9a091711d475e912727ed219e1cdb
+msgid "3D Poisson Equation (Cube)"
+msgstr ""
+
+#: ../../source/examples/poisson.rst:74 c56e1671785946e2bc53c46ccc1316a6
+msgid ""
+"This example solves the Poisson equation :math:`-\\Delta u = f` on a unit"
+" cube domain :math:`\\Omega = [0, 1]^3` with zero Dirichlet boundary "
+"conditions."
+msgstr ""
+
+#: ../../source/examples/poisson.rst:76 0d614a736d644b13aa191610e9d451c8
+#, python-brace-format
+msgid ""
+"\\begin{aligned}\n"
+"-\\Delta u &= f \\quad \\text{in } \\Omega \\\\\n"
+"u &= 0 \\quad \\text{on } \\partial \\Omega\n"
+"\\end{aligned}"
+msgstr ""
+
+#: ../../source/examples/poisson.rst:83 5abe7e105afe445583c67cd29613c942
+msgid ""
+"For the analytic solution :math:`u(x, y, z) = \\sin(\\pi x) \\sin(\\pi y)"
+" \\sin(\\pi z)`, the source term is :math:`f = 3\\pi^2 u`."
+msgstr ""
+
+#: ../../source/examples/poisson.rst:85 7b0c4d437eee43db800126c8c382604c
+msgid "3D Poisson Solution"
+msgstr ""
+

@@ -1,0 +1,561 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, TensorMesh Contributors
+# This file is distributed under the same license as the TensorMesh package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: TensorMesh 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-29 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/api_reference/dataset.rst:2 908f5db1894c495fbceeef2689df30a6
+msgid "tensormesh.dataset"
+msgstr ""
+
+#: ../../source/api_reference/dataset.rst:6 93b7631e64d34628a73d80c223acf46e
+msgid "Contents"
+msgstr ""
+
+#: ../../source/api_reference/dataset.rst:9 09f097e123a14ab4b2cd65a66e736f54
+msgid "mesh"
+msgstr ""
+
+#: ../../source/api_reference/dataset.rst 113211eb76604f6aa006f5d5177f1525
+#: 235b11d90ed64a5ea93baa976ff586aa 23665217c2c849a0a7e6cd0f7bd42cd9
+#: 2f468abad0a54536a0e8f8c33b2e0343 5996fb559ab74ffc939b0e07da98f4be
+#: 699535ded71641f9b99aa7ffb331d42f 6daa8d0025214331a45d93314051d495
+#: 7479dfa1889f439c865f26db76d9c5ee 76c63ac395a04ec78dbd7f483c100a18
+#: 778a08dccefa4f32af5ef8a5e177bfc3 7d69b278fde44e59bbe455bddafdd0c2
+#: 929054ac028a4bdd851de33ef4b79214 94fbe537102e42c1aee572c1522684ad
+#: a052137968ff44179abb1552ab886c43 a757636a46c54d4c9cfcf957313d7d2a
+#: dce62550141c4de3a335e7eb521f80a7 ddd849b216a0472c9af80646dc4e3d88
+#: e8689499af9641b6b6940eb52e346637 fe42727f53244cabb3b71791291de845
+msgid "Parameters"
+msgstr ""
+
+#: cab2467ac4374effa53b708226ade2ba of
+#: tensormesh.dataset.mesh.meshgen.MeshGen:1
+msgid ""
+"If ``element_type`` is ``None``, then it will generate a mix mesh. "
+"Otherwise, the order and element will be determined by ``element_type``."
+msgstr ""
+
+#: 665dc5e2bdf14be3ab46472788c7ef4d of
+#: tensormesh.dataset.mesh.meshgen.MeshGen:4
+msgid "The dimension of the mesh, e.g., :math:`2` or :math:`3`."
+msgstr ""
+
+#: b6dc1c377bfe4f64bf1ac2ebc8eb3d36 of
+#: tensormesh.dataset.mesh.meshgen.MeshGen:6
+msgid "The order of the element, e.g., :math:`1`, :math:`2`."
+msgstr ""
+
+#: 188b5a598cf54073bca89d265a143dd6 of
+#: tensormesh.dataset.mesh.meshgen.MeshGen:8
+msgid ""
+"The characteristic length of the mesh. The smaller the value, the more "
+"dense the mesh. Default is :math:`0.1`."
+msgstr ""
+
+#: a2d6826abc5d4be494c8178115915ba0 of
+#: tensormesh.dataset.mesh.meshgen.MeshGen:13
+msgid "Examples"
+msgstr ""
+
+#: 558e9c1ebbaf4974bbf15119660679f8 of
+#: tensormesh.dataset.mesh.meshgen.MeshGen:14
+msgid "generate rectangle mesh with triangle elements:"
+msgstr ""
+
+#: 00fc2779ee884f69815ef67e2dea1cdd of
+#: tensormesh.dataset.mesh.meshgen.MeshGen:23
+msgid "generate mixed mesh with left triangle and right rectangle"
+msgstr ""
+
+#: 6b12dd667c5b44ef96ea2d3f2306f633 of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_rectangle:1
+msgid "add a rectangle to the geometry"
+msgstr ""
+
+#: 44ebb32b95294c61af6222be0717dff4 7150e47ded414b6d81efd094fa62bb14 of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_rectangle:3
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_rectangle:3
+msgid "the left boundary of the rectangle"
+msgstr ""
+
+#: 0cbe4f7689494f5dac9eb8df41230b13 a15bee7d49fc4350a596cebaf8223120 of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_rectangle:5
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_rectangle:5
+msgid "the bottom boundary of the rectangle"
+msgstr ""
+
+#: 2f7c938eb6574420acceea15dbe4f14c b2cdf634f5ab481382f816a42e357e53 of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_rectangle:7
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_rectangle:7
+msgid "the width of the rectangle"
+msgstr ""
+
+#: 99cb4ed209a840a1ad015e397e05e651 9bea0c2aceb746f9b487a5ce7b4e40df of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_rectangle:9
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_rectangle:9
+msgid "the height of the rectangle"
+msgstr ""
+
+#: 23aa71ffdcc548b3b2f46fb1867ad4d9 7da856d062154f49bd1876300262e9a9 of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_circle:9
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_rectangle:11
+msgid "the type of the element, can be \"tri\" or \"quad\" default: \"tri\""
+msgstr ""
+
+#: ../../source/api_reference/dataset.rst 0fe828b38da04db5af8b84fba026ed90
+#: 18b84a613bbf47a58a5d985f95acbc91 1de133b7e2a64a8ea32138be4e283c47
+#: 2e068ac9ad254e5aa84804b87ca6e55d 44136abf069b4b1fbb935337c288603a
+#: 51a7f0b3b7474fefa22f52851934087e 66853f548a28417db5faf4d4cd0a2e4d
+#: 66861fc3f2744be2b78418306901e504 72319651390f4d139a0a836fffcfc59a
+#: 8aecfc129169481ebd2931c83ce9be06 9da092d288bb42d387a283de35de729a
+#: a2cce21f4fb146eaa671067c8667f631 a39dce4f44d94941b6070d5ab936be3c
+#: c186ae1d82224870b730d1bda6cedeeb d1af9d45628c4441979be04e23e280e9
+msgid "Returns"
+msgstr ""
+
+#: 3db6f1d1728644f5a2753816f62adef9 4d5c854145c648b2b5bd9d3369efcd90
+#: 7b0eb4a5a259410d9e8c6f0b9a866ae7 8c6dc6894fff4b4691c2008fccacb639
+#: b7800501747640bcb693e087aef9c849 cdc3094e3b704842b5e9e687d2c3038a
+#: d8006183a0364cdd892500318140cf03 df12e0b69f2741718a6d0abab952362c of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_circle:13
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_cube:16
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_rectangle:15
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_sphere:14
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_circle:10
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_cube:16
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_rectangle:12
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_sphere:12
+msgid "the mesh generator itself"
+msgstr ""
+
+#: ../../source/api_reference/dataset.rst 084b838e1f9a488ebec8b72b71985100
+#: 164ba304f8394f8dbea1f810b467629e 1e12f1482c934724bac318fdca13b5ba
+#: 2a3bd31623644bd789acb27fba68d101 3ff819932092466dbaadd369cf945c05
+#: 49e48333302140adb26f382112b4e8d1 52c55d7fedc14482a6eeb4da097596cc
+#: 61aa8511302843ed945020b5d78a4452 8056579348244bb2a4700027d99c1faa
+#: ae81c414984e45889d70089508797723 b60b44cbff2e4e32a861c7195775e0b8
+#: bde4dcaf6e284bd4a323d0b3a838fa56 c2f2c60ca50d43af89abff2972d6238a
+#: d6e6f8aef067490085d485174e7ee0f5
+msgid "Return type"
+msgstr ""
+
+#: 2896b0cdba8144d08421f3e6ac7bdeb3 of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_rectangle:1
+msgid "remove the rectangle from the geometry"
+msgstr ""
+
+#: 95d412817fd24206b569c29d55ccd42e of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_circle:1
+msgid "add a circle to the geometry"
+msgstr ""
+
+#: 4d2d29e46f944c258370e03ea167044d 79360d345c324006858d95d54c06a249
+#: 8f60543e4c0f47098f63b39b63fa5fb5 a7ace60286144e90a63800338e46caf4
+#: fea21edddf534775b1331752bf15ee95 ffd30df8058f4245ab27a32d85ae08b8 of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_circle:3
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_cube:3
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_sphere:5
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_circle:3
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_cube:3
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_sphere:3
+msgid "the x coordinate of the center"
+msgstr ""
+
+#: 137b6ceb0e6346838df89ca2fcf7a4e1 1c85aa1e3a5646d7baec05a42d6ab145
+#: 2d996f9607fb452ab196defb60c4d38b 7bdbaaded23f4b63956ae9495b767ab9
+#: 85ab44d863234879925c1cacfcfb0116 c999817fe6174d2e9dc1831b45383f61 of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_circle:5
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_cube:5
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_sphere:7
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_circle:5
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_cube:5
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_sphere:5
+msgid "the y coordinate of the center"
+msgstr ""
+
+#: 1d2cac361eb24be0a698e1bf9e4df495 cca46ee5c8ef42158a5e31fefc4c43b1 of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_circle:7
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_circle:7
+msgid "the radius of the circle"
+msgstr ""
+
+#: 3ad32880737b4937ac1bf77387393150 of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_circle:1
+msgid "remove the cirlce from the geometry"
+msgstr ""
+
+#: 4fbb86c719be4550bf5be6132a8d4cc4 of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_cube:1
+msgid "add a cube to the geometry, only works for 3d"
+msgstr ""
+
+#: 2c3fda21f122422da4ce1b79cc064944 970e1ecbc37449839cfa18bdea5ac572
+#: 9e139971bb464a738b9f1688f4d1575b a741ccb20a6e47bcb4fb145d236e7c96 of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_cube:7
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_sphere:9
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_cube:7
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_sphere:7
+msgid "the z coordinate of the center"
+msgstr ""
+
+#: 3884c498039249fdb16164ae0e0005cf e305a06073e54110b304bc4adeb1b560 of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_cube:9
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_cube:9
+msgid "the width of the cube"
+msgstr ""
+
+#: 3b50746dec024f48861a1e09b1924482 e0c27323131b42f7baf5df5843683639 of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_cube:11
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_cube:11
+msgid "the height of the cube"
+msgstr ""
+
+#: b7a474cdcf8a4de4ad5e6b3b65a744d4 c3948aeadaad4982b871df455b62acce of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_cube:13
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_cube:13
+msgid "the depth of the cube"
+msgstr ""
+
+#: d80970556d0f46cebca5ef336453de5b of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_cube:1
+msgid "remove the cube from the geometry, only works for 3d"
+msgstr ""
+
+#: 5e544380224b44cf8b98039b26c6b0be of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_sphere:1
+msgid "add a sphere to the geometry, only works for 3d"
+msgstr ""
+
+#: 1fdafb2899774fa092ae2e83673dbeba of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_sphere:3
+msgid "not supported for hex element because of algorithm issue"
+msgstr ""
+
+#: a71db8d453e14ba3bf5ccd0adf977bb3 e605bf4467e54f429d1208b57c6cc73d of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.add_sphere:11
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_sphere:9
+msgid "the radius of the sphere"
+msgstr ""
+
+#: 1befbb3b40e349f9a1a0d853156c6242 of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.remove_sphere:1
+msgid "remove the sphere from the geometry, only works for 3d"
+msgstr ""
+
+#: f4fb951b6ee241f98631ac928dc52e69 of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.gen:1
+msgid "generate the mesh from the geometry"
+msgstr ""
+
+#: ea15d9f693c744ac8515bc29ed49664e of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.gen:3
+msgid "whether to show the mesh in the gmsh gui default: :obj:`False`"
+msgstr ""
+
+#: dbf5a04ed0264999a9fcc26ad6342da4 of
+#: tensormesh.dataset.mesh.meshgen.MeshGen.gen:7
+msgid "the generated mesh"
+msgstr ""
+
+#: ../../source/api_reference/dataset.rst:19 672fa2810fdf4d439076cb4f2f0a8f96
+msgid "equation"
+msgstr ""
+
+#: 668f56a2af424a4dab2f28008dd814dd ce0548f85f5249b4aedc17c9bada6b37 of
+#: tensormesh.dataset.equation.poisson.PoissonMultiFrequency:1
+#: tensormesh.dataset.equation.wave.WaveMultiFrequency:1
+msgid "Multi-frequency wave equation, with :math:`0` boundary condition"
+msgstr ""
+
+#: a604a04aa7ae46e6afe8a4f0e8f5ade8 of
+#: tensormesh.dataset.equation.poisson.PoissonMultiFrequency:3
+msgid "-\\Delta u = f \\quad (x, y)"
+msgstr ""
+
+#: 72d10c67dd474e828b3df56fbf9604c1 of
+#: tensormesh.dataset.equation.poisson.PoissonMultiFrequency:7
+msgid ""
+"where :math:`(x_1,x_2)\\in  [0,1]^2`, with the boundary condition "
+":math:`u(t, \\pm 1, \\pm 1) = 0`"
+msgstr ""
+
+#: 20edbf4c0ce449d1b66d4f5c061bc608 de867cdee27b4e63bebe50c8e0e7949f of
+#: tensormesh.dataset.equation.poisson.PoissonMultiFrequency:10
+#: tensormesh.dataset.equation.wave.WaveMultiFrequency:11
+#, python-brace-format
+msgid ""
+"3D tensor of shape :math:`[N, K, K]` or 2D tensor of shape :math:`[K, "
+"K]`, where :math:`N` is the number of samples, :math:`K` is the dimension"
+" of the frequencies the coefficient of the wave equation, if ``None``, it"
+" will be randomly generated by :math:`\\mu\\sim Unif([-1,1]^{K\\times "
+"K})`"
+msgstr ""
+
+#: 11371e24b3384579b59a3e0f6ffee795 1d45f45eaf3348918714b959e3bf4b8b of
+#: tensormesh.dataset.equation.poisson.PoissonMultiFrequency:14
+#: tensormesh.dataset.equation.wave.WaveMultiFrequency:15
+msgid ""
+"the dimension of the frequencies, if ``a`` is not ``None``, this "
+"parameter will be ignored if ``a`` is ``None``, it will be used to "
+"generate the random ``a``"
+msgstr ""
+
+#: 71f05911c3c44171ab9c7686c3779233 of
+#: tensormesh.dataset.equation.poisson.PoissonMultiFrequency:17
+msgid "the poisson speed, default is :math:`1.0`"
+msgstr ""
+
+#: c260973db0e54468a73abf0f44399644 of
+#: tensormesh.dataset.equation.poisson.PoissonMultiFrequency:19
+msgid "the coefficient of the poisson equation, default is :math:`0.5`"
+msgstr ""
+
+#: a108c5860fb940478dfa096522813cd4 of
+#: tensormesh.dataset.equation.poisson.PoissonMultiFrequency.source_term:1
+msgid "Generate the poisson source function at each point in the domain"
+msgstr ""
+
+#: c49f3b64e11146158f75be18e1be9ef0 of
+#: tensormesh.dataset.equation.poisson.PoissonMultiFrequency.source_term:3
+#, python-brace-format
+msgid ""
+"f=\\frac{\\pi}{K^2} \\sum_{i,j=1}^{K} a_{ij} \\cdot (i^2 + j^2)^{r} "
+"sin(\\pi ix) sin(\\pi jy)"
+msgstr ""
+
+#: 1b818c905cf74ac3b62316f7e529a2f3 22f6448b770c435b9719f77e26fb70f5
+#: 458de298b76046ffa6c696927b12cc66 a84dd29a62494cfd894153a19b35741d of
+#: tensormesh.dataset.equation.poisson.PoissonMultiFrequency.solution:7
+#: tensormesh.dataset.equation.poisson.PoissonMultiFrequency.source_term:7
+#: tensormesh.dataset.equation.wave.WaveMultiFrequency.initial_condition:7
+#: tensormesh.dataset.equation.wave.WaveMultiFrequency.solution:7
+msgid ""
+"2D tensor of shape :math:`[|\\mathcal V|, 2]`, where  :math:`|\\mathcal "
+"V|` is the number of vertices all the points must be in :math:`[0,1]^2`"
+msgstr ""
+
+#: 1b05ab5b620848eb8ebab556c296c9e2 of
+#: tensormesh.dataset.equation.poisson.PoissonMultiFrequency.source_term:13
+msgid ""
+"**u0** -- 1D tensor of shape :math:`[|\\mathcal V|]` or 2D Tensor "
+":math:`[N, |\\mathcal V|]`, where :math:`N` is the number of samples, "
+":math:`|\\mathcal V|` is the number of vertices"
+msgstr ""
+
+#: 19de1d1cabd14e65acc18294be9d6884 7b21f6317ad141a98d5ee56131cf3316 of
+#: tensormesh.dataset.equation.heat.HeatMultiFrequency.solution:1
+#: tensormesh.dataset.equation.poisson.PoissonMultiFrequency.solution:1
+msgid "Generate the poisson solution function at each point in the domain"
+msgstr ""
+
+#: 50e14f4cd3f04084afd5f76200e50fa8 of
+#: tensormesh.dataset.equation.poisson.PoissonMultiFrequency.solution:3
+#, python-brace-format
+msgid ""
+"u(x, y) = \\frac{1}{\\pi\\cdot K^2} \\sum_{i,j=1}^{K} a_{ij} \\cdot (i^2 "
+"+ j^2)^{r-1} sin(\\pi ix) sin(\\pi jy)"
+msgstr ""
+
+#: 905bf22cd4d747718262405538658812 of
+#: tensormesh.dataset.equation.poisson.PoissonMultiFrequency.solution:11
+msgid ""
+"**u** -- 1D tenor of shape :math:`[|\\\\mathcal V|]` or :math:`[N, "
+"|\\\\mathcal V|]`, where :math:`N` is the number of samples, "
+":math:`|\\\\mathcal V|` is the number of vertices"
+msgstr ""
+
+#: 1647ab904dd348aca3de4511deed3f92 of
+#: tensormesh.dataset.equation.heat.HeatMultiFrequency:1
+msgid "Multi-frequency heat equation, with :math:`0` boundary condition"
+msgstr ""
+
+#: 75868fb4b13f49d3a033503e1e1ae8bb of
+#: tensormesh.dataset.equation.heat.HeatMultiFrequency:4
+#, python-brace-format
+msgid "\\frac{\\partial u }{\\partial t} = \\Delta u"
+msgstr ""
+
+#: ef7fe1c939704f4c96ccaf078fbcf03a of
+#: tensormesh.dataset.equation.heat.HeatMultiFrequency:8
+msgid ""
+"where :math:`t \\in [0,T],\\quad(x_1,x_2)\\in  [-1,1]^2`, with the "
+"boundary condition :math:`u(t, \\pm 1, \\pm 1) = 0`"
+msgstr ""
+
+#: 9764e8e238ba4966afb6e8ca59c6f39d of
+#: tensormesh.dataset.equation.heat.HeatMultiFrequency:11
+msgid ""
+"2D tensor of shape :math:`[N, d]` or 1D tensor of shape :math:`[d]`, "
+"where :math:`N` is the number of samples, :math:`d` is the dimension of "
+"the frequencies the coefficient of the heat equation, if ``None``, it "
+"will be randomly generated by :math:`\\mu\\sim Unif([-1,1]^d)`"
+msgstr ""
+
+#: 5a590df99e9d40338d7bcd243700eafe of
+#: tensormesh.dataset.equation.heat.HeatMultiFrequency:15
+msgid ""
+"the dimension of the frequencies, if ``mu`` is not ``None``, this "
+"parameter will be ignored if ``mu`` is ``None``, it will be used to "
+"generate the random ``mu``"
+msgstr ""
+
+#: 7b2a79a509194d73a86023a02e05f503 of
+#: tensormesh.dataset.equation.heat.HeatMultiFrequency.initial_condition:1
+msgid "Generate the heat source function at each point in the domain"
+msgstr ""
+
+#: e418b79932884cb991f57cae91b58904 of
+#: tensormesh.dataset.equation.heat.HeatMultiFrequency.initial_condition:3
+#, python-brace-format
+msgid ""
+"u(0,x_1,x_2,\\mu) = -\\frac{1}{d}\\sum_{m=1}^d  \\mu_m sin(\\pi m "
+"x_1)sin(\\pi m x_2)/\\sqrt m"
+msgstr ""
+
+#: 17e2bf89bded4200b00b13d639d40a7d of
+#: tensormesh.dataset.equation.heat.HeatMultiFrequency.initial_condition:7
+msgid ""
+"2D tensor of shape :math:`[|\\mathcal V|, 2]`, where  :math:`|\\mathcal "
+"V|` is the number of vertices all the points must be in :math:`[-1,1]^2`"
+msgstr ""
+
+#: b0db9b85333446f9bf14a7c207734d25 of
+#: tensormesh.dataset.equation.heat.HeatMultiFrequency.initial_condition:11
+msgid ""
+"1D tensor of shape :math:`[|\\mathcal V|]` or :math:`[N, |\\mathcal V|]`,"
+" where :math:`N` is the number of samples, :math:`|\\mathcal V|` is the "
+"number of vertices"
+msgstr ""
+
+#: c3fbe1a066564ca59f2d64382d1f925c of
+#: tensormesh.dataset.equation.heat.HeatMultiFrequency.solution:3
+msgid ""
+"u(t,x_1,x_2,\\mu) = -\\frac{1}{d}\\sum_{m=1}^d \\frac{\\mu_m}{\\sqrt{m}} "
+"e^{-2m^2\\pi^2t} sin(\\pi m  x_1)sin(\\pi mx_2)"
+msgstr ""
+
+#: 3d14891a6ca547e685a7c89263038e95 of
+#: tensormesh.dataset.equation.heat.HeatMultiFrequency.solution:7
+msgid ""
+"2D tensor of shape :math:`[|\\mathcal V|, 2]`, where  :math:`|\\mathcal "
+"V|` is the number of vertices"
+msgstr ""
+
+#: c0b61821ddeb4e8ba763e5e37dcd2c02 of
+#: tensormesh.dataset.equation.heat.HeatMultiFrequency.solution:9
+msgid "the time"
+msgstr ""
+
+#: 5320e985b9e3403998dc0266aacef44d of
+#: tensormesh.dataset.equation.heat.HeatMultiFrequency.solution:12
+msgid ""
+"**ut** -- 1D tensor of shape :math:`[|\\mathcal V|]` or :math:`[N, "
+"|\\mathcal V|]`, where :math:`N` is the number of samples, "
+":math:`|\\mathcal V|` is the number of vertices"
+msgstr ""
+
+#: 3b87d8d1196f44f49c97607f3ec61e04 of
+#: tensormesh.dataset.equation.wave.WaveMultiFrequency:4
+#, python-brace-format
+msgid "u_{tt} = c^2 \\Delta u"
+msgstr ""
+
+#: 940f59c3b6be434db8288d30f246fa9d of
+#: tensormesh.dataset.equation.wave.WaveMultiFrequency:8
+msgid ""
+"where :math:`t \\in [0,T],\\quad(x_1,x_2)\\in  [0,1]^2`, with the "
+"boundary condition :math:`u(t, \\pm 1, \\pm 1) = 0`"
+msgstr ""
+
+#: 9f845b25f0194b2282d10e38e748c3a7 of
+#: tensormesh.dataset.equation.wave.WaveMultiFrequency:18
+msgid "the wave speed, default is :math:`1.0`"
+msgstr ""
+
+#: 5d63b43b40fc4faf86be74e9b44a7bdf of
+#: tensormesh.dataset.equation.wave.WaveMultiFrequency:20
+msgid "the coefficient of the wave equation, default is :math:`0.5`"
+msgstr ""
+
+#: 0cccb772569145d991375520c9f4da27 of
+#: tensormesh.dataset.equation.wave.WaveMultiFrequency.initial_condition:1
+msgid "Generate the wave initial function at each point in the domain"
+msgstr ""
+
+#: ec64b7a74e894a3880eca58f53a93938 of
+#: tensormesh.dataset.equation.wave.WaveMultiFrequency.initial_condition:3
+#, python-brace-format
+msgid ""
+"u(0, x, y, a) = \\frac{\\pi}{K^2} \\sum_{i,j=1}^{K} a_{ij} \\cdot (i^2 + "
+"j^2)^{-r} sin(\\pi ix) sin(\\pi jy)"
+msgstr ""
+
+#: 1adbe959d77d4bdea877734804929bad of
+#: tensormesh.dataset.equation.wave.WaveMultiFrequency.initial_condition:11
+msgid ""
+"* **u0** (*torch.Tensor*) -- 1D tensor of shape :math:`[|\\mathcal V|]` "
+":math:`[N, |\\mathcal V|]`, where :math:`N` is the number of samples, "
+":math:`|\\mathcal V|` is the number of vertices * **v0** (*torch.Tensor*)"
+" -- 1D tensor of shape :math:`[|\\mathcal V|]` :math:`[N, |\\mathcal "
+"V|]`, where :math:`N` is the number of samples, :math:`|\\mathcal V|` is "
+"the number of vertices"
+msgstr ""
+
+#: 980a5755484847c48284b88ccee6ca55 of
+#: tensormesh.dataset.equation.wave.WaveMultiFrequency.initial_condition:11
+msgid ""
+"**u0** (*torch.Tensor*) -- 1D tensor of shape :math:`[|\\mathcal V|]` "
+":math:`[N, |\\mathcal V|]`, where :math:`N` is the number of samples, "
+":math:`|\\mathcal V|` is the number of vertices"
+msgstr ""
+
+#: 6f22a89b84454c83b14b4284f6c64098 of
+#: tensormesh.dataset.equation.wave.WaveMultiFrequency.initial_condition:12
+msgid ""
+"**v0** (*torch.Tensor*) -- 1D tensor of shape :math:`[|\\mathcal V|]` "
+":math:`[N, |\\mathcal V|]`, where :math:`N` is the number of samples, "
+":math:`|\\mathcal V|` is the number of vertices"
+msgstr ""
+
+#: fad1511622314550b95273f9e45d0a09 of
+#: tensormesh.dataset.equation.wave.WaveMultiFrequency.solution:1
+msgid "Generate the wave solution function at each point in the domain"
+msgstr ""
+
+#: fa93c94f625942c3aed0951a33545951 of
+#: tensormesh.dataset.equation.wave.WaveMultiFrequency.solution:3
+#, python-brace-format
+msgid ""
+"u(t, x, y, a) = \\frac{\\pi}{K^2} \\sum_{i,j=1}^{K} a_{ij} \\cdot (i^2 + "
+"j^2)^{-r} sin(\\pi ix) sin(\\pi jy) cos(c\\pi t \\sqrt{i^2 + j^2})"
+msgstr ""
+
+#: 1d1d4dd8f18d4f6c808885e40bbaf964 of
+#: tensormesh.dataset.equation.wave.WaveMultiFrequency.solution:10
+msgid "the time, default is :math:`0.1`"
+msgstr ""
+
+#: f719415c0d294f13bff9d3d8173da2c4 of
+#: tensormesh.dataset.equation.wave.WaveMultiFrequency.solution:13
+msgid ""
+"**ut** -- 1D tenor of shape :math:`[|\\mathcal V|]` or :math:`[N, "
+"|\\mathcal V|]`, where :math:`N` is the number of samples, "
+":math:`|\\mathcal V|` is the number of vertices"
+msgstr ""
+

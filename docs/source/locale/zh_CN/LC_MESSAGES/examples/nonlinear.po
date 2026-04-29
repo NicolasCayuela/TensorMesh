@@ -1,0 +1,81 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, TensorMesh Contributors
+# This file is distributed under the same license as the TensorMesh package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: TensorMesh 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-29 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/examples/nonlinear.rst:2 25e4b19ec41747539faa584ce7e44721
+msgid "Nonlinear Poisson Equation"
+msgstr ""
+
+#: ../../source/examples/nonlinear.rst:4 6bf0053b14ca4941a117875c88496f02
+msgid ""
+"This example solves a nonlinear Poisson equation with a cubic reaction "
+"term using the Newton-Raphson method and implicit differentiation."
+msgstr ""
+
+#: ../../source/examples/nonlinear.rst:7 c630ff70ec674ae58d05240d6666264e
+msgid "Problem Statement"
+msgstr ""
+
+#: ../../source/examples/nonlinear.rst:9 1f40e2e8722f45b680d801785d25ef55
+msgid ""
+"We solve the following nonlinear PDE on a rectangular domain "
+":math:`\\Omega`:"
+msgstr ""
+
+#: ../../source/examples/nonlinear.rst:11 d9497e0e0834435c8f5df12c251878c5
+#, python-brace-format
+msgid "-\\Delta u + u^3 = f \\quad \\text{in } \\Omega"
+msgstr ""
+
+#: ../../source/examples/nonlinear.rst:15 55c5d84dc37448969c92102175c08271
+msgid ""
+"with zero Dirichlet boundary conditions :math:`u = 0` on :math:`\\partial"
+" \\Omega`."
+msgstr ""
+
+#: ../../source/examples/nonlinear.rst:17 cbbd5a0613f04f1c8404f58a9a498087
+#, python-brace-format
+msgid ""
+"The problem is discretized using finite elements. The nonlinear system of"
+" algebraic equations :math:`F(\\mathbf{u}) = 0` is solved using the "
+"Newton-Raphson method. The gradients of the solution with respect to "
+"parameters (e.g., the source term :math:`f`) are computed using implicit "
+"differentiation, avoiding the need to backpropagate through the iterative"
+" solver."
+msgstr ""
+
+#: ../../source/examples/nonlinear.rst:20 c02c5f797db54a9eaa2375c79c12c107
+msgid "Implementation"
+msgstr ""
+
+#: ../../source/examples/nonlinear.rst:129 5ab39ff15d134e8a84c3d9cf7ca28019
+msgid "Results"
+msgstr ""
+
+#: ../../source/examples/nonlinear.rst:131 5a1802c4a11d4ba4960a91ecfe3d6159
+msgid ""
+"The solver converges quadratically, and gradients can be computed "
+"efficiently without unrolling the optimization loop."
+msgstr ""
+
+#: ../../source/examples/nonlinear.rst:133 215e63653d9f4df4984436ab5fda7c03
+msgid "Nonlinear Poisson Solution"
+msgstr ""
+

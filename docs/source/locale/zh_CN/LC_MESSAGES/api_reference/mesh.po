@@ -1,0 +1,863 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, TensorMesh Contributors
+# This file is distributed under the same license as the TensorMesh package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: TensorMesh 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-29 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/api_reference/mesh.rst:2 baff8a98ab0c48728f763e59144eae1e
+msgid "tensormesh.mesh"
+msgstr ""
+
+#: ../../source/api_reference/mesh.rst 0143497c9ea84a4384349bfdbbf34ac9
+#: 07b97bcb32e5479bb3a5809675fe88cb 0b2d400a7cb6475e945395ed70ec0a84
+#: 1a7b8e7150b74802939e6f9f9d7386b7 203715ffe26e4229a1d4b3bf6ee2ab9c
+#: 34a2c3c2e3b14fef94133c3faa46ab79 3cc86154928b4c56a267ebe3dc881026
+#: 408e0c2164c94a7ca3b9a8d89460b38d 47cbf64b50bc4d49973929026d458ab6
+#: 648fadb6b88e44b1ba003a60997432e0 71c3e8469ee948bcafaa30836fd177b3
+#: 7920ec82f70d4be7a9c4bd27a045b158 7df634ac2528429ea9c994bcef6a2142
+#: 8d56740e5d214460af5741de333e52d4 93d44e0b7be14949829bdefd9a180745
+#: ab0a48bb761d4a49bec534315b7e6a4b bea982cc7c1c4e46a716e52edbdc7708
+#: d89764dcc84d459ca40abd61a32fff23 daa050bb73dc47e6bf0a2e0a7dc0e444
+#: dafaf439569e481586160cf568c5df69 e3f950572cd244d3b0793468ccd91707
+#: e659f755fb7a4f9195961bd5f3e60227
+msgid "Parameters"
+msgstr ""
+
+#: dbca6fe0888446938b5f8e187aebaac8 f9356598f54c44568048c01bd5d582c9 of
+#: tensormesh.mesh.mesh.Mesh:1 tensormesh.mesh.mesh.Mesh.from_meshio:1
+msgid "a meshio mesh object"
+msgstr ""
+
+#: e67e62075ac94840abc7373cbe1aaf61 of tensormesh.mesh.mesh.Mesh:6
+msgid ""
+"2D tensor of shape :math:`[|\\mathcal V|, D]`, where :math:`|\\mathcal "
+"V|` is the number of points and :math:`D` is the dimension of the space "
+"the coordinates of the points"
+msgstr ""
+
+#: 19cfe4f8ade14d5fb01c928cd1c2e623 2151a23eacc64a37b0474d45c4ca0f51
+#: 49408e94a3b14b19b5f0c4b1621d4184 615e11e9b5914643b049120e3463f1b8
+#: b4e8e7e3b1a7459faf8a097f8c36b0d4 df8e9e8b47bd4caaa593f950ab31b0b1
+#: f28c37a88286470fb8e2673e1206eefc f653d643fe8a413999fb7fe8cedd2479
+#: fc040e6e6a8f40c0bf4c015afecfbf01 of tensormesh.mesh.mesh.Mesh
+msgid "type"
+msgstr ""
+
+#: 182eb962c7de4688999074b298101d42 of tensormesh.mesh.mesh.Mesh:9
+msgid "torch.Tensor"
+msgstr ""
+
+#: 478e5b8dc98349068a78f2ecf6376176 of tensormesh.mesh.mesh.Mesh:13
+msgid ""
+"Each key is a :meth:`tensormesh.shape.element_type`, and for each "
+":obj:`element_type`, there is a corresponding 2D tensor of shape "
+":math:`[|\\mathcal V, B]`, where :math:`B` is the number of basis "
+"functions the cells of the mesh"
+msgstr ""
+
+#: f2f2425f17ad4b7a93c24ae7e4553ab4 of tensormesh.mesh.mesh.Mesh:17
+msgid "BufferDict[str, torch.Tensor]"
+msgstr ""
+
+#: 8278eddf983942c091e751680ebe4143 of tensormesh.mesh.mesh.Mesh:21
+msgid "Each key is a :meth:`tensormesh.shape.element_type`, the point data"
+msgstr ""
+
+#: 22612150c6c346b79b1e491d18ece9c9 d1191b229b0a48ac8e111bb008e0adf4 of
+#: tensormesh.mesh.mesh.Mesh:24 tensormesh.mesh.mesh.Mesh:38
+msgid "BufferDict[str, torch.Tensor], optional"
+msgstr ""
+
+#: 4ce9465f609c4b7cbcc03830d2b0cfeb of tensormesh.mesh.mesh.Mesh:28
+msgid "Each key is a :meth:`tensormesh.shape.element_type`, the cell data"
+msgstr ""
+
+#: 752b62bad8e04cff8f5ea48bd621ad1e of tensormesh.mesh.mesh.Mesh:31
+msgid "BufferDict[str, BufferDict[int, torch.Tensor]], optional"
+msgstr ""
+
+#: 5bc7b004e27e4a0b9358c800998681b7 of tensormesh.mesh.mesh.Mesh:35
+msgid "Each key is a :meth:`tensormesh.shape.element_type`, the field data"
+msgstr ""
+
+#: 66d86776f96948239ed582554ed43b5e of tensormesh.mesh.mesh.Mesh:42
+msgid "Each key is a :meth:`tensormesh.shape.element_type`, the cell sets"
+msgstr ""
+
+#: 13f90fce786645ba91937d3cd772c05e of tensormesh.mesh.mesh.Mesh:45
+msgid "dict, optional"
+msgstr ""
+
+#: 0d7da68e393b4031b70208412f44f457 of tensormesh.mesh.mesh.Mesh:49
+msgid ""
+"Each key is a dimension, and the value is a list of element types of the "
+"dimension"
+msgstr ""
+
+#: 082ce8dff1d74f51afc793b12025b6d6 of tensormesh.mesh.mesh.Mesh:51
+msgid "Dict[int, List[str]]"
+msgstr ""
+
+#: 1967b9961c3d41eebe92065443be20eb f5a9d2c0db464b729559c76f561e324e of
+#: tensormesh.mesh.mesh.Mesh:55 tensormesh.mesh.mesh.Mesh:61
+msgid "the default element type"
+msgstr ""
+
+#: a6b75a3a6dbb4ab7a1d1511a8a9826e8 a7283f7b782a4b3bacf9a02f41172886 of
+#: tensormesh.mesh.mesh.Mesh:57 tensormesh.mesh.mesh.Mesh:63
+msgid "str"
+msgstr ""
+
+#: 72ed7e2444134f1db8a0ec72536b3f16 of tensormesh.mesh.mesh.Mesh.__init__:1
+msgid ""
+"Initialize internal Module state, shared by both nn.Module and "
+"ScriptModule."
+msgstr ""
+
+#: 7469c225ae484f2097ef071d8b6d720f of
+#: tensormesh.mesh.mesh.Mesh.register_point_data:1
+msgid ""
+"Add key-value pair to :attr:`point_data` buffer, since the "
+":attr:`point_data` is a :class:`tensormesh.BufferDict`, you are "
+"recommended to use this method instead of :obj:`__setitem__`"
+msgstr ""
+
+#: 485aee1eea404e118a0c1f132f11eeb5 of
+#: tensormesh.mesh.mesh.Mesh.register_point_data:4
+msgid "the key of the value"
+msgstr ""
+
+#: 7ce3d9e126754084bd47416c10ed87cb of
+#: tensormesh.mesh.mesh.Mesh.register_point_data:6
+msgid ""
+"1D tensor of shape :math:`[|\\mathcal V|,...]`, where :math:`\\mathcal V`"
+" is the number of nodes/vertices/points, the value to be registered"
+msgstr ""
+
+#: ../../source/api_reference/mesh.rst 03b04418f29747eeb400d8e1070c3082
+#: 03f03866228f43c98ae64981cd60834b 10d70c6289914b219d922793fd88fe68
+#: 3b45f09122654a2190c90d72a9b656dc 4403e8d181e441daa6e65516b1b0d832
+#: 4e68a4fdb46947a5a5dd7fdb863828aa 6b3533a1dd954e2aa3f677380ebe4956
+#: 6c7704707ab24795bfa0e5098352999a 737fb07617c6441a81c03e42a8c8deff
+#: 7548c0242e8f470b9c7ffa2ad0edcdd3 7d37cfc228ab4435a6ec3bac63493143
+#: 8c4e03affe4241aaabea9feca281ce82 94228c556b4d4f9a9b40a23508b38b7a
+#: 97b1e34fe30342bf948ff9d7f4e66505 98d299ee141c4418bc24a1ba716d72a9
+#: a00a1fde02494209b4c03c1cf7c3303a b92c4c5ea3534e1689e3abc29e4df4ab
+#: c300bb6a66be49b6bc6305d0bee44f24 c5815f54143e427dba2888fa23371ed0
+#: c9d7dad9f96a4abf9474af555981bd1c ce2d43631d4b4f3b92ce56d5090d5acf
+#: d6de56e7a307414682e463645cc81aec dc10300c75d947d8a96e60caa9b60436
+#: f029521aa19b456da693f7732044178c f07a91a229ab4387b44c7276cdae290e
+#: f27a9672021d41efa6c02b10eabb988f fdd3525114fd47ed94c65d73392981c9
+msgid "Returns"
+msgstr ""
+
+#: 7b108e6c43ba4f2aabf3338f7982f8ed bd452b40d2644bcf91368b5de0b7f87e
+#: d9c8e8606feb402cb7d416a9b6b3cbc1 of
+#: tensormesh.mesh.mesh.Mesh.register_point_data:9
+#: tensormesh.mesh.mesh.Mesh.save:7
+msgid "self will be returned"
+msgstr ""
+
+#: ../../source/api_reference/mesh.rst 058e8966e0494b4aa3a4716c4a686d9b
+#: 0b58181a977e41399558cd589cc9d6f5 19ebe15df4a849c694dcd8acb896303a
+#: 2649813aa4a94acda14283704fd3a947 2c3d38095ce74e93b2b170d9281fc432
+#: 3562f9b00df5404096af332c8e185158 3839dde9aeb64e0a9d857515d12421e0
+#: 429687fbb86449bb9cab40b9bed1bd90 5f385be020974f9d8130c203d5413d4f
+#: 5f6648e8c74e4eb4b894863e42c921a6 67bf4c8c85824e679cf7bf107b320121
+#: 6bfbe91a4b294eb294704a9c426085d7 6dd1f924a57f4d64a147212c008d28ea
+#: 7af40b31959149fd8708b109d8f4d26e 7b24693ce1c64b2b99c487d7fd3f7e61
+#: 80eb9a91212c4964adea4ba9659bf37b 858f83dae7ad4a67b79180a6396bb06b
+#: 98555541f8a042c8b53e2256fe9aa407 9d30450888e848f59593b69ea463f7f9
+#: b02485e6ed3940369d67dfe6caa8ec07 bc149541a35243a1ae22aed012076530
+#: bcba6b895d21468591139d9c996500e8 e1c6e2dcf518442a9587fe46b553838c
+#: ef1a7a76232a4026b58754a3d2f347ef f0e89d34129b4e139fedc29e0e554320
+#: fda888ec25c44ad7b792378b61701474
+msgid "Return type"
+msgstr ""
+
+#: 183cec84763e4eee9cfb696be80dafd6 of
+#: tensormesh.mesh.mesh.Mesh.register_element_data:1
+msgid "Add key-value pair to :attr:`cell_data`"
+msgstr ""
+
+#: 05f6eb60ab6c41c098f452f0769e6cb5 of tensormesh.mesh.mesh.Mesh.to_meshio:1
+msgid "the meshio mesh object"
+msgstr ""
+
+#: 2cfa2152defe478095592e667ecd29d1 9d85b8b3de0840daa4b3697201c951fc
+#: d636915a59bb4b00a056ff0ce4983e2c f8732d2398044a28bf64b731b74d305d of
+#: tensormesh.mesh.mesh.Mesh.read:1 tensormesh.mesh.mesh.Mesh.save:1
+msgid "the name of the file"
+msgstr ""
+
+#: 013c05b0b0894ca7bdcf87d483ca2283 07584264d25046098c1fa667ac3a2566
+#: d9366d103f184c42b3c832acc4e21121 f6369a1c8e52499092dcf7800d988fa1 of
+#: tensormesh.mesh.mesh.Mesh.read:3 tensormesh.mesh.mesh.Mesh.save:3
+msgid ""
+"the format of the file, e.g., 'msh', 'vtk', 'obj' default is the file "
+"extension"
+msgstr ""
+
+#: 78fd1c3e118240cda00eae4e53cc832e of
+#: tensormesh.mesh.mesh.Mesh.node_adjacency:1
+msgid ""
+"get the node adjacency matrix, inside each element, the nodes are "
+"considered fully connected"
+msgstr ""
+
+#: a3e1c203dad44b43ab218a2f11d17205 of
+#: tensormesh.mesh.mesh.Mesh.node_adjacency:3
+msgid ""
+"the type of the elements if :obj:`None` is the "
+":obj:`default_element_type` default : :obj:`None`"
+msgstr ""
+
+#: 5d879fc190274428a2741df5b84825f9 of
+#: tensormesh.mesh.mesh.Mesh.node_adjacency:8
+msgid ""
+"the adjacency matrix of nodes :math:`[|\\mathcal V|,|\\mathcal V|]`, "
+"where :math:`|\\mathcal V|` is the number of nodes"
+msgstr ""
+
+#: 3de70cc746d0434aa0ce5121119e0779 of
+#: tensormesh.mesh.mesh.Mesh.element_adjacency:1
+msgid ""
+"get the element adjacency matrix, the element are considered connected "
+"only if they share a boundary/facet"
+msgstr ""
+
+#: 1955248932ab4e598b573f399e6db7d8 of
+#: tensormesh.mesh.mesh.Mesh.element_adjacency:3
+msgid ""
+"the type of the elements, should be of same dimension if :obj:`None` is "
+"the :obj:`default_element_type` default : :obj:`None`"
+msgstr ""
+
+#: dfa895cd578a4015ada8d38160d37d54 of
+#: tensormesh.mesh.mesh.Mesh.element_adjacency:8
+msgid ""
+"the adjacency matrix of elements :math:`[|\\mathcal C|,|\\mathcal C|]`, "
+"where :math:`|\\mathcal C|` is the number of elements"
+msgstr ""
+
+#: 9be7abb138284337aa8630b5de84d65d of tensormesh.mesh.mesh.Mesh.partition:1
+msgid "Partition the mesh into n_parts"
+msgstr ""
+
+#: 863f41ea58ef4cb6b14a1d15c0bbb8bd of tensormesh.mesh.mesh.Mesh.partition:3
+msgid "Number of partitions"
+msgstr ""
+
+#: 7ee326cce303495a97b54d3568154548 of tensormesh.mesh.mesh.Mesh.partition:5
+msgid "Partition method: 'spectral' or 'metis'. Default is 'spectral'."
+msgstr ""
+
+#: d9846852510840ad9b4e3faa2d6f19d8 of tensormesh.mesh.mesh.Mesh.partition:7
+msgid "the type of the elements to partition based on connectivity."
+msgstr ""
+
+#: 6824364941404818a2f61b573b616298 of tensormesh.mesh.mesh.Mesh.partition:10
+msgid "IntTensor of shape [n_elements] containing partition ID"
+msgstr ""
+
+#: 7942b4695a564ff287fbc019573213de of tensormesh.mesh.mesh.Mesh.color:1
+msgid ""
+"Color the mesh elements such that no adjacent elements share the same "
+"color."
+msgstr ""
+
+#: e26fb4b5047d4de290bf2b15298a84c2 of tensormesh.mesh.mesh.Mesh.color:3
+msgid "the type of the elements."
+msgstr ""
+
+#: bb0838040cd44db2895cdaae6ba6523c of tensormesh.mesh.mesh.Mesh.color:6
+msgid "IntTensor of shape [n_elements] containing color ID"
+msgstr ""
+
+#: 00271c56f1d24df181aac7c3a126929b of tensormesh.mesh.mesh.Mesh.elements:1
+msgid "Get the element connectivity for specified element types."
+msgstr ""
+
+#: 66306c6e88ca4e1c9c93abcfeebe7c36 of tensormesh.mesh.mesh.Mesh.elements:4
+msgid "Examples"
+msgstr ""
+
+#: 20f4a161593048c891be81689b986408 of tensormesh.mesh.mesh.Mesh.elements:5
+msgid "Get elements of default type:"
+msgstr ""
+
+#: 33f86a633c644e6eafd6c8c7ca90b674 of tensormesh.mesh.mesh.Mesh.elements:13
+msgid "Get elements of specific type:"
+msgstr ""
+
+#: a6bfa56e2a7d4786b66b248b664b8d5d of tensormesh.mesh.mesh.Mesh.elements:19
+msgid "Get elements of multiple types:"
+msgstr ""
+
+#: f89f0fc802e549d7a3e378e76f107a4a of tensormesh.mesh.mesh.Mesh.elements:25
+msgid "Get all element types:"
+msgstr ""
+
+#: 0e33cc3da61c441fb4e8de1a81cdbcaa of tensormesh.mesh.mesh.Mesh.elements:31
+msgid "Get elements of specific dimension:"
+msgstr ""
+
+#: 1d8e90d0b86740d2b72e3c873cc122ec of tensormesh.mesh.mesh.Mesh.elements:41
+msgid ""
+"the type of the elements:  - if :obj:`all`, return dict of all elements -"
+" if :obj:`int`, return dict of elements of that dimension - if "
+":obj:`str`, return elements of that type - if :obj:`Iterable[str]`, "
+"return elements of those types - if :obj:`None`, use "
+":obj:`default_eletyp` (default)"
+msgstr ""
+
+#: 76a45b521ea14b8d8969dde2ef8c8805 of tensormesh.mesh.mesh.Mesh.elements:41
+msgid "the type of the elements:"
+msgstr ""
+
+#: fe2f216fc1384efb87d44ecef5a91fbd of tensormesh.mesh.mesh.Mesh.elements:43
+msgid "if :obj:`all`, return dict of all elements"
+msgstr ""
+
+#: 893add2391d44576b599ad383b68c55b of tensormesh.mesh.mesh.Mesh.elements:44
+msgid "if :obj:`int`, return dict of elements of that dimension"
+msgstr ""
+
+#: 75e5f59518de40efa258739b167630d5 of tensormesh.mesh.mesh.Mesh.elements:45
+msgid "if :obj:`str`, return elements of that type"
+msgstr ""
+
+#: 2e6e291936924ca093659ebad17fbf12 of tensormesh.mesh.mesh.Mesh.elements:46
+msgid "if :obj:`Iterable[str]`, return elements of those types"
+msgstr ""
+
+#: 7283444f86c149d58a337750d292df59 of tensormesh.mesh.mesh.Mesh.elements:47
+msgid "if :obj:`None`, use :obj:`default_eletyp` (default)"
+msgstr ""
+
+#: e499876602a04930bb46dacf8a16b9c2 of tensormesh.mesh.mesh.Mesh.elements:50
+msgid ""
+"- if :obj:`element_type` is :obj:`str`, return the corresponding elements"
+" connections of shape :math:`[|\\mathcal C|, B]`, where :math:`|\\mathcal"
+" C|` is the number of elements and :math:`B` is the number of basis "
+"functions - if :obj:`element_type` is :obj:`int`, return dict of elements"
+" of that dimension - if :obj:`element_typs` is :obj:`Iterable[str]`, "
+"return the mapping of corresponding elements connections of shape "
+":math:`[|\\mathcal C|, B]`, where :math:`|\\mathcal C|` is the number of "
+"elements and :math:`B` is the number of basis functions - if "
+":obj:`element_type` is :obj:`None`, the :obj:`element_type` will be the "
+":obj:`default_element_type` and do as above - if :obj:`element_type` is "
+":obj:`\"all\"`, return all elements as a dictionary"
+msgstr ""
+
+#: 2e4fce8bd4f3477db830c533d3054c33 of tensormesh.mesh.mesh.Mesh.elements:52
+msgid ""
+"if :obj:`element_type` is :obj:`str`, return the corresponding elements "
+"connections of shape :math:`[|\\mathcal C|, B]`, where :math:`|\\mathcal "
+"C|` is the number of elements and :math:`B` is the number of basis "
+"functions"
+msgstr ""
+
+#: a41cf8398b214e6c859282104cbf5fba of tensormesh.mesh.mesh.Mesh.elements:53
+msgid ""
+"if :obj:`element_type` is :obj:`int`, return dict of elements of that "
+"dimension"
+msgstr ""
+
+#: 5f998c8384a84cacaddb8b5432d47136 of tensormesh.mesh.mesh.Mesh.elements:54
+msgid ""
+"if :obj:`element_typs` is :obj:`Iterable[str]`, return the mapping of "
+"corresponding elements connections of shape :math:`[|\\mathcal C|, B]`, "
+"where :math:`|\\mathcal C|` is the number of elements and :math:`B` is "
+"the number of basis functions"
+msgstr ""
+
+#: 7aaa9aefb5cc4bfc8f063d17978918fe of tensormesh.mesh.mesh.Mesh.elements:55
+msgid ""
+"if :obj:`element_type` is :obj:`None`, the :obj:`element_type` will be "
+"the :obj:`default_element_type` and do as above"
+msgstr ""
+
+#: eb72c0fd92fa41af9698084fe63f131f of tensormesh.mesh.mesh.Mesh.elements:56
+msgid ""
+"if :obj:`element_type` is :obj:`\"all\"`, return all elements as a "
+"dictionary"
+msgstr ""
+
+#: 88fd4c78e530474eadc8bf8f42315df0 of tensormesh.mesh.mesh.Mesh.clone:1
+msgid ""
+"The gradient will vanish if you use :obj:`torch.Tensor.clone` to clone "
+"the mesh, so we provide this method to clone the mesh :returns: the "
+"cloned mesh :rtype: tensormesh.mesh.Mesh"
+msgstr ""
+
+#: ffb33f1dc5fd4c9fb26283645e27bc86 of tensormesh.mesh.mesh.Mesh.plot:1
+msgid ""
+"the values to plot, if None, only plot the mesh if :obj:`Dict[str, "
+"torch.Tensor]`, a static subplots will be plotted, the key is the name of"
+" the subplot, the value is of shape :math:`[|\\mathcal V|]`, where "
+":math:`|\\mathcal V|` is the number of points if :obj:`Dict[str, "
+"List[torch.Tensor]]`, a mp4/gif will be plotted, the key is the name of "
+"the subplot, each item in the list is of shape :math:`[|\\mathcal V|]`, "
+"where :math:`|\\mathcal V|` is the number of points default: None"
+msgstr ""
+
+#: 8b4c24ded13b41ce821082c76f6050c5 of tensormesh.mesh.mesh.Mesh.plot:6
+msgid ""
+"the path to save the plot, if None, it will not be saved if the "
+":obj:`values` is passed in as :obj:`Dict[str, List[torch.Tensor]]`, the "
+":obj:`save_path` must endswith '.mp4' or '.gif' default: None"
+msgstr ""
+
+#: 5bd65a41bb9046d3a7a4720bf79621e4 of tensormesh.mesh.mesh.Mesh.plot:10
+msgid ""
+"the time interval between each frame, only used when :obj:`values` is "
+"passed in as :obj:`Dict[str, List[torch.Tensor]]` default: None"
+msgstr ""
+
+#: 6779dd5b95c24590a0156813169b449e of tensormesh.mesh.mesh.Mesh.plot:13
+msgid ""
+"whether to show the mesh, when :obj:`values` is passed in as "
+":obj:`Dict[str, List[torch.Tensor]]` or :obj:`Dict[str, torch.Tensor]` "
+"default: False"
+msgstr ""
+
+#: 99bfe0d95ce340aa859f053213e90872 of tensormesh.mesh.mesh.Mesh.plot:16
+msgid ""
+"whether to fix the color limits across all frames, only used when "
+":obj:`values` is passed in as :obj:`Dict[str, List[torch.Tensor]]`. If "
+"True, the color limits are determined by the global min and max across "
+"all frames, ensuring a consistent colorbar throughout the animation. "
+"default: False"
+msgstr ""
+
+#: dc611fa3f46e451b82606dc2b6f4649e of tensormesh.mesh.mesh.Mesh.plot:20
+msgid ""
+"whether to display the plot interactively (e.g., via "
+":func:`matplotlib.pyplot.show`) default: False"
+msgstr ""
+
+#: 329baa67aef84f2e94f45eaa0be9b273 of tensormesh.mesh.mesh.Mesh.plot:23
+msgid ""
+"additional keyword arguments passed to the underlying visualization "
+"functions"
+msgstr ""
+
+#: 83213e89e6ab4720adc9560f687ce16c of tensormesh.mesh.Mesh.n_points:1
+msgid "the number of nodes/vertices/points :math:`|\\mathcal V|`"
+msgstr ""
+
+#: a07d536c100842ea8f2a1225ed13ff1b of tensormesh.mesh.Mesh.n_elements:1
+msgid "the number of elements :math:`|\\mathcal C|`"
+msgstr ""
+
+#: 829d70338cff4cf5beb3b839997fa408 of tensormesh.mesh.Mesh.boundary_mask:3
+msgid ""
+"1D tensor of shape :math:`[|\\mathcal V|]`, where  :math:`|\\mathcal V|` "
+"is the number of points the mask of the boundary points, "
+":obj:`\"is_boundary\"` key or :obj:`\"boundary_mask\"` key is required in"
+" :attr:`point_data`"
+msgstr ""
+
+#: edcc036c131a4fd6b101c2ece9966e71 of
+#: tensormesh.mesh.Mesh.default_element_type:3
+msgid ""
+"* *str or List[str]* -- the default element type, if the mesh is composed"
+" of mixed elements, it will return List[str],   otherwise it will return "
+"str * *noindex:*"
+msgstr ""
+
+#: 400d91e932644b869f8e4e8d7810090f of
+#: tensormesh.mesh.Mesh.default_element_type:3
+msgid ""
+"*str or List[str]* -- the default element type, if the mesh is composed "
+"of mixed elements, it will return List[str], otherwise it will return str"
+msgstr ""
+
+#: d1770e95518d4c16a4253b6f69b96c96 of
+#: tensormesh.mesh.Mesh.default_element_type:5
+msgid "*noindex:*"
+msgstr ""
+
+#: 1834a230490f4981a485170b2dc02b50 of tensormesh.mesh.Mesh.dtype:1
+msgid "the data type of the points, e.g., torch.float32, torch.float64"
+msgstr ""
+
+#: 56e5a2d640074c41a7b31394f45b3b97 of tensormesh.mesh.Mesh.device:1
+msgid ""
+"the device of the points, e.g., torch.device(\"cpu\"), "
+"torch.device(\"cuda:0\")"
+msgstr ""
+
+#: ce9f62b03d25487d83166dd9b06955be d87a0bb8cab545729d2da337bce74ff0
+#: de25509a5f6840a18e55ee915483f6c2 of tensormesh.mesh.mesh.Mesh.from_meshio:3
+#: tensormesh.mesh.mesh.Mesh.read:6
+msgid "whether to turn [0,1,2,3] -> [0,1,3,2]"
+msgstr ""
+
+#: 0c8283b1066e44c5a2bde83f19d4e334 28a538cd672a4f0f8e1413d44ed45a53
+#: 349e8c5a0c954a43afd5efc35a7dc84a 35e0f66556d743bca23da108caef7c42
+#: 3a3faf364b464e269348fa29c04408ff 3c62b29a9b6549d09dc1aae75970496d
+#: 464641846bc14df6b3de4b9e2ccf8a5c 4a6c7f028e284aae9f5de7b27333ed16
+#: 5aa6755057754c5791454b5583fe64aa 6ca687721ec2401dab38628bea46ee83
+#: 8a3259362d324516bb29bc1585811878 fac57f2ce01b45a887d836f24098f339 of
+#: tensormesh.mesh.mesh.Mesh.from_meshio:6 tensormesh.mesh.mesh.Mesh.gen_L:35
+#: tensormesh.mesh.mesh.Mesh.gen_circle:26
+#: tensormesh.mesh.mesh.Mesh.gen_cube:32
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_circle:29
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_cube:50
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_rectangle:41
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_sphere:29
+#: tensormesh.mesh.mesh.Mesh.gen_rectangle:29
+#: tensormesh.mesh.mesh.Mesh.gen_sphere:26 tensormesh.mesh.mesh.Mesh.read:9
+msgid "the mesh object"
+msgstr ""
+
+#: 0a0bde7333cc4a9aa1dd3a808a42257f 1f1e53791ff84dd0a7516888e2e66f89
+#: 3f7c8df1cf2245aea9862fc18f1561b6 4386921277454cee8b5ea9a10aa682ea
+#: 705c3affb70f414484bae9087da775a8 bf97b63f793f4216bec259c9e192ac39
+#: bfa394577bed47a0ada855a0d68029c0 edfa1bc8ba674226958d10b382b313a5
+#: fec7a276fca84db19fd0400051cdc9f4 of tensormesh.mesh.mesh.Mesh.gen_L:1
+#: tensormesh.mesh.mesh.Mesh.gen_circle:1 tensormesh.mesh.mesh.Mesh.gen_cube:1
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_circle:1
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_cube:1
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_rectangle:1
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_sphere:1
+#: tensormesh.mesh.mesh.Mesh.gen_rectangle:1
+#: tensormesh.mesh.mesh.Mesh.gen_sphere:1
+msgid "the characteristic length of the mesh, default: :obj:`0.1`"
+msgstr ""
+
+#: 2499d5ff23c54390a93ce0f958e3f1c7 2bff1f948f554b19a2d95fab6b530e49
+#: 5202063f73224b4f966ee375ac3438a0 bce8b26580b546c48bc81a64f151d62b
+#: dd43819d2f914f518e301228ef2c81c5 eb995d494e61461896a0e6ae8b4bd877
+#: f163c85e6720433fb08f26df0d376efc f25581c75c91474691d84134a6c7067c
+#: ff9f0c88a9c54efb89980ffad445c295 of tensormesh.mesh.mesh.Mesh.gen_L:4
+#: tensormesh.mesh.mesh.Mesh.gen_circle:4 tensormesh.mesh.mesh.Mesh.gen_cube:4
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_circle:4
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_cube:4
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_rectangle:4
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_sphere:4
+#: tensormesh.mesh.mesh.Mesh.gen_rectangle:4
+#: tensormesh.mesh.mesh.Mesh.gen_sphere:4
+msgid "the order of the basis function, default: :obj:`1`"
+msgstr ""
+
+#: 22f0e24eb9604307ac7e8728b29b93d4 f6db7c6d42e3415e9771e465a358f8c2 of
+#: tensormesh.mesh.mesh.Mesh.gen_circle:7
+#: tensormesh.mesh.mesh.Mesh.gen_rectangle:7
+msgid "the type of the element, default: :obj:`\"tri\"`"
+msgstr ""
+
+#: 5f7d9440e5d647f8a5ed3042f8a94cb9 d6e8c49110cf44a8b7ed18bcdb0e03ae of
+#: tensormesh.mesh.mesh.Mesh.gen_L:10
+#: tensormesh.mesh.mesh.Mesh.gen_rectangle:10
+msgid "the left boundary of the rectangle, default: :obj:`0.0`"
+msgstr ""
+
+#: 147a90d556874d5f808bfa97fb5a82c2 2a2fb49742484068a1f63d3bb1a3f68c of
+#: tensormesh.mesh.mesh.Mesh.gen_L:13
+#: tensormesh.mesh.mesh.Mesh.gen_rectangle:13
+msgid "the right boundary of the rectangle, default: :obj:`1.0`"
+msgstr ""
+
+#: 2a60ae92580646f48ae25fea1314c1a1 fc4a66e5a0924b04a773861ee86cb112 of
+#: tensormesh.mesh.mesh.Mesh.gen_L:16
+#: tensormesh.mesh.mesh.Mesh.gen_rectangle:16
+msgid "the bottom boundary of the rectangle, default: :obj:`0.0`"
+msgstr ""
+
+#: 2d80d805d8984b7d8a3f8f3f2bd3464c 6bdda47389dd4c10a98980363e65a310 of
+#: tensormesh.mesh.mesh.Mesh.gen_L:19
+#: tensormesh.mesh.mesh.Mesh.gen_rectangle:19
+msgid "the top boundary of the rectangle, default: :obj:`1.0`"
+msgstr ""
+
+#: 4152327ca7584fc5ae5a0d5f1e6d1838 62a6af21346a4962a5aab0fd65986bfd
+#: 65f597e417e44f0793e003e86c6ac721 811791744bc04cbaba98bc3baf72d2c8
+#: 967c310607ee4e54bb225d36f5806518 9787ccc21b8a49d39ad23515760d3f53
+#: a3012be751c143cc8cb5f3135d2d0932 ad8d9698256c48abb51d2583f8039215
+#: cc7a25ef348d4199bb823b529966d202 of tensormesh.mesh.mesh.Mesh.gen_L:28
+#: tensormesh.mesh.mesh.Mesh.gen_circle:19
+#: tensormesh.mesh.mesh.Mesh.gen_cube:25
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_circle:22
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_cube:43
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_rectangle:34
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_sphere:22
+#: tensormesh.mesh.mesh.Mesh.gen_rectangle:22
+#: tensormesh.mesh.mesh.Mesh.gen_sphere:19
+msgid "whether to visualize the mesh, default: :obj:`False`"
+msgstr ""
+
+#: ff4c5ba654c34086a48affc207f1611a of
+#: tensormesh.mesh.mesh.Mesh.gen_rectangle:25
+msgid ""
+"the path to save the mesh, if :obj:`None`, it will be decided by "
+":meth:`tensormesh.dataset.mesh.gen_rectangle`, default: :obj:`None`"
+msgstr ""
+
+#: 4d98e3e62b494c2cbd0e883ed2528837 be1e940d9f674a868230e3aeb82abf66
+#: f52833631a5b457dab55379210c9a9ab of tensormesh.mesh.mesh.Mesh.gen_L:7
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_circle:7
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_rectangle:7
+msgid "the type of the element, default: :obj:`\"quad\"`"
+msgstr ""
+
+#: f7cb9633129f493997cbcb563a94daff of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_rectangle:10
+msgid "the left boundary of the outer rectangle, default: :obj:`0.0`"
+msgstr ""
+
+#: 876c2cf979b94a0d8895118f49c6bdb8 of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_rectangle:13
+msgid "the right boundary of the outer rectangle, default: :obj:`1.0`"
+msgstr ""
+
+#: bb6bb229784841d59d74a61e35eb2379 of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_rectangle:16
+msgid "the bottom boundary of the outer rectangle, default: :obj:`0.0`"
+msgstr ""
+
+#: 7fa9761e505e49f2b8e9634a37617cf0 of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_rectangle:19
+msgid "the top boundary of the outer rectangle, default: :obj:`1.0`"
+msgstr ""
+
+#: 924283c72fc3463496bdcf6631508998 of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_rectangle:22
+msgid "the left boundary of the inner rectangle, default: :obj:`0.25`"
+msgstr ""
+
+#: 3198e6b040fc4a288d9b3ab34f81fe13 of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_rectangle:25
+msgid "the right boundary of the inner rectangle, default: :obj:`0.75`"
+msgstr ""
+
+#: 84b028a1886a422eba482c11e58c2dfe of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_rectangle:28
+msgid "the bottom boundary of the inner rectangle, default: :obj:`0.25`"
+msgstr ""
+
+#: a1d5c3e1541c417093b6802d3e6cb842 of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_rectangle:31
+msgid "the top boundary of the inner rectangle, default: :obj:`0.75`"
+msgstr ""
+
+#: adaf7d5231724e68b350cf9dd6573641 of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_rectangle:37
+msgid ""
+"the path to save the mesh, if :obj:`None`, it will be decided by "
+":meth:`tensormesh.dataset.mesh.gen_hollow_rectangle`, default: "
+":obj:`None`"
+msgstr ""
+
+#: 55ed4173c65744fabfe1ee265f9630e3 9d4d2709e492467f815f4d6bff813805 of
+#: tensormesh.mesh.mesh.Mesh.gen_circle:10
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_circle:10
+msgid "the x coordinate of the center of the circle, default: :obj:`0.0`"
+msgstr ""
+
+#: 38b8f9f6faf246a1bf4ab482d47ba673 e67965c655ec4161a1a74f43ab979c19 of
+#: tensormesh.mesh.mesh.Mesh.gen_circle:13
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_circle:13
+msgid "the y coordinate of the center of the circle, default: :obj:`0.0`"
+msgstr ""
+
+#: ff607219f1404927a90c4c06e1239b89 of tensormesh.mesh.mesh.Mesh.gen_circle:16
+msgid "the radius of the circle, default: :obj:`1.0`"
+msgstr ""
+
+#: 7bda2895784f4fa98ac9197649418ef6 of tensormesh.mesh.mesh.Mesh.gen_circle:22
+msgid ""
+"the path to save the mesh, if :obj:`None`, it will be decided by "
+":meth:`tensormesh.dataset.mesh.gen_circle`, default: :obj:`None`"
+msgstr ""
+
+#: 3b2d83f0db54476382bf9ce87dee3b90 of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_circle:16
+msgid "the inner radius of the circle, default: :obj:`1.0`"
+msgstr ""
+
+#: c15c8210f7d845efac05ba18f73bdcde of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_circle:19
+msgid "the outer radius of the circle, default: :obj:`2.0`"
+msgstr ""
+
+#: 54a80481605d4a7284fc74dbe490299c of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_circle:25
+msgid ""
+"the path to save the mesh, if :obj:`None`, it will be decided by "
+":meth:`tensormesh.dataset.mesh.gen_hollow_circle`, default: :obj:`None`"
+msgstr ""
+
+#: ccfaa2ebd27649c490d79631babbdf2c of tensormesh.mesh.mesh.Mesh.gen_L:22
+msgid "the top inner boundary of the rectangle, default: :obj:`0.5`"
+msgstr ""
+
+#: 50505c13f7a44e61b5f9222956ad471a of tensormesh.mesh.mesh.Mesh.gen_L:25
+msgid "the right inner boundary of the rectangle, default: :obj:`0.5`"
+msgstr ""
+
+#: 044426ecb6ee4b98b3d699dae2c53e05 of tensormesh.mesh.mesh.Mesh.gen_L:31
+msgid ""
+"the path to save the mesh, if :obj:`None`, it will be decided by "
+":meth:`tensormesh.dataset.mesh.gen_L`, default: :obj:`None`"
+msgstr ""
+
+#: ee312cb3454042c8abc8ca3a3e1b3203 of tensormesh.mesh.mesh.Mesh.gen_cube:7
+msgid "the left boundary of the cube, default: :obj:`0.0`"
+msgstr ""
+
+#: 213201809bdc407dac6454b02e05ac8b of tensormesh.mesh.mesh.Mesh.gen_cube:10
+msgid "the right boundary of the cube, default: :obj:`1.0`"
+msgstr ""
+
+#: 4611f2897daf4468a3ebdfa8ce0de7bf of tensormesh.mesh.mesh.Mesh.gen_cube:13
+msgid "the bottom boundary of the cube, default: :obj:`0.0`"
+msgstr ""
+
+#: 31ba2f7b98804f2096df7ea6c1b18d01 of tensormesh.mesh.mesh.Mesh.gen_cube:16
+msgid "the top boundary of the cube, default: :obj:`1.0`"
+msgstr ""
+
+#: ca9d6ec9f6b84cacbea087d6c4ec778b of tensormesh.mesh.mesh.Mesh.gen_cube:19
+msgid "the front boundary of the cube, default: :obj:`0.0`"
+msgstr ""
+
+#: 990d373938444276b671304999be8db5 of tensormesh.mesh.mesh.Mesh.gen_cube:22
+msgid "the back boundary of the cube, default: :obj:`1.0`"
+msgstr ""
+
+#: 0df331db73014b2e96a774bad5badc5a of tensormesh.mesh.mesh.Mesh.gen_cube:28
+msgid ""
+"the path to save the mesh, if :obj:`None`, it will be decided by "
+":meth:`tensormesh.dataset.mesh.gen_cube`, default: :obj:`None`"
+msgstr ""
+
+#: e22b50a3395e42b7aa672330672ee526 of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_cube:7
+msgid "the left boundary of the outer cube, default: :obj:`0.0`"
+msgstr ""
+
+#: e09d7c2c286f42c78202428d34c44659 of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_cube:10
+msgid "the right boundary of the outer cube, default: :obj:`1.0`"
+msgstr ""
+
+#: a626da5b255a4448bfa08d715c50a5c3 of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_cube:13
+msgid "the bottom boundary of the outer cube, default: :obj:`0.0`"
+msgstr ""
+
+#: 593579a4b04d4348b7db60e8b5df7b96 of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_cube:16
+msgid "the top boundary of the outer cube, default: :obj:`1.0`"
+msgstr ""
+
+#: 3c6b5dbf32a44f96ac5e376c402a3066 of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_cube:19
+msgid "the front boundary of the outer cube, default: :obj:`0.0`"
+msgstr ""
+
+#: 2c123fec03274ba6b5c9386f7d5aa5df of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_cube:22
+msgid "the back boundary of the outer cube, default: :obj:`1.0`"
+msgstr ""
+
+#: 0a35134bbd654e6b9fa835c4a8da03cd of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_cube:25
+msgid "the left boundary of the inner cube, default: :obj:`0.25`"
+msgstr ""
+
+#: 25735ab63c7347949c1d588154939780 of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_cube:28
+msgid "the right boundary of the inner cube, default: :obj:`0.75`"
+msgstr ""
+
+#: 29b695457cdb46a5a8d6446692bedb89 of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_cube:31
+msgid "the bottom boundary of the inner cube, default: :obj:`0.25`"
+msgstr ""
+
+#: 76bdfd7d1b244bdaad0e8eb9662c5dd7 of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_cube:34
+msgid "the top boundary of the inner cube, default: :obj:`0.75`"
+msgstr ""
+
+#: 136e624faa5d4766ab208c448697c038 of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_cube:37
+msgid "the front boundary of the inner cube, default: :obj:`0.25`"
+msgstr ""
+
+#: 2a2a2eb14d2844e69c98bf8f0511dc16 of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_cube:40
+msgid "the back boundary of the inner cube, default: :obj:`0.75`"
+msgstr ""
+
+#: 9d4ea446849c433daee9082360f6483d of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_cube:46
+msgid ""
+"the path to save the mesh, if :obj:`None`, it will be decided by "
+":meth:`tensormesh.dataset.mesh.gen_hollow_cube`, default: :obj:`None`"
+msgstr ""
+
+#: 08a16a0e35b44a1c9c4d622d13031b29 867b0b968440454d8ae318365ebe5666 of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_sphere:7
+#: tensormesh.mesh.mesh.Mesh.gen_sphere:7
+msgid "the x coordinate of the center of the sphere, default: :obj:`0.0`"
+msgstr ""
+
+#: 0ddeaf189b1f48d1b609263b0eb91db2 fed21e35b014478e9448c82c4af8c91a of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_sphere:10
+#: tensormesh.mesh.mesh.Mesh.gen_sphere:10
+msgid "the y coordinate of the center of the sphere, default: :obj:`0.0`"
+msgstr ""
+
+#: 0bab66180f2648af940c32456fa8213b 6cbdf0737d4f46ce9021b0e3d1dce0fd of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_sphere:13
+#: tensormesh.mesh.mesh.Mesh.gen_sphere:13
+msgid "the z coordinate of the center of the sphere, default: :obj:`0.0`"
+msgstr ""
+
+#: 9b66ee959bc740b99bdc8ee845c547f1 of tensormesh.mesh.mesh.Mesh.gen_sphere:16
+msgid "the radius of the sphere, default: :obj:`1.0`"
+msgstr ""
+
+#: 1ad2744d1508430abb48f0f1823ddc54 of tensormesh.mesh.mesh.Mesh.gen_sphere:22
+msgid ""
+"the path to save the mesh, if :obj:`None`, it will be decided by "
+":meth:`tensormesh.dataset.mesh.gen_sphere`, default: :obj:`None`"
+msgstr ""
+
+#: 5e115080952d469a8505a8f432e82e80 of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_sphere:16
+msgid "the inner radius of the sphere, default: :obj:`1.0`"
+msgstr ""
+
+#: 083fbe0ff0d3490abcb6203c8105bd1e of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_sphere:19
+msgid "the outer radius of the sphere, default: :obj:`2.0`"
+msgstr ""
+
+#: 8057e54d96544263bcef3e3dc571a40b of
+#: tensormesh.mesh.mesh.Mesh.gen_hollow_sphere:25
+msgid ""
+"the path to save the mesh, if :obj:`None`, it will be decided by "
+":meth:`tensormesh.dataset.mesh.gen_hollow_sphere`, default: :obj:`None`"
+msgstr ""
+

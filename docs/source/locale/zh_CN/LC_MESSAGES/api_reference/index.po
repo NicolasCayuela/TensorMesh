@@ -1,0 +1,135 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, TensorMesh Contributors
+# This file is distributed under the same license as the TensorMesh package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: TensorMesh 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-29 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/api_reference/index.rst:2 2c990b08128241509a877425671c1096
+msgid "API Reference"
+msgstr ""
+
+#: ../../source/api_reference/index.rst:4 12d7b2dbf88046219072c3e175645f79
+msgid "Complete API documentation for all TensorMesh modules."
+msgstr ""
+
+#: ../../source/api_reference/index.rst:8 8b02021a3d1d4e0cb58a98ea26ff7abd
+msgid "Core Modules"
+msgstr ""
+
+#: ../../source/api_reference/index.rst:13 c2e579f87a4b4f44b62c22d3c6fb137b
+msgid "Mesh"
+msgstr ""
+
+#: ../../source/api_reference/index.rst:17 6624ce4dcd3c44bfbf8b8c6e7d248dd4
+msgid "Mesh data structures and operations."
+msgstr ""
+
+#: ../../source/api_reference/index.rst:19 48ed4186693a42a79357101036b9638b
+msgid "Element"
+msgstr ""
+
+#: ../../source/api_reference/index.rst:23 dcc08d1dd3364498be120f466a76dd7d
+msgid "Finite element definitions and quadrature."
+msgstr ""
+
+#: ../../source/api_reference/index.rst:25 682cde54c37942a184fb09535b2eefb6
+msgid "Assemble"
+msgstr ""
+
+#: ../../source/api_reference/index.rst:29 e6e87a42da604378a2f40bdf52f7c9e1
+msgid "Matrix and vector assembly routines."
+msgstr ""
+
+#: ../../source/api_reference/index.rst:33 c88e3b69587e4403bccd7b50737cf4f6
+msgid "Linear Algebra"
+msgstr ""
+
+#: ../../source/api_reference/index.rst:38 1cbaff0e5e384738bc7078548573263b
+msgid "Sparse"
+msgstr ""
+
+#: ../../source/api_reference/index.rst:42 73627de60f8f4dc9b4327474282fd16e
+msgid "Sparse matrix operations and solvers."
+msgstr ""
+
+#: ../../source/api_reference/index.rst:44 2b4dc4adb5644c2282d93505bc97f009
+msgid "Operator"
+msgstr ""
+
+#: ../../source/api_reference/index.rst:48 80222ab2ea3e442f9396100ea5f41c10
+msgid "Differential operators and boundary conditions."
+msgstr ""
+
+#: ../../source/api_reference/index.rst:52 1ee78e5a1b90472e939ca3d3f4bda72a
+msgid "Solvers & Integration"
+msgstr ""
+
+#: ../../source/api_reference/index.rst:57 d66449b706ba4078b46f6b2171b03659
+msgid "ODE"
+msgstr ""
+
+#: ../../source/api_reference/index.rst:61 b7ce89cdf7e346f89467ee1742e4a314
+msgid "Time integration and ODE solvers."
+msgstr ""
+
+#: ../../source/api_reference/index.rst:63 0318dd378e014426b060504a84d0cd96
+msgid "Functional"
+msgstr ""
+
+#: ../../source/api_reference/index.rst:67 2d292fae83c44cbbb09493d92cc4525f
+msgid "Functional forms and variational methods."
+msgstr ""
+
+#: ../../source/api_reference/index.rst:69 9206a54b2e9941d9a90b34c2d138384b
+msgid "Optimizer"
+msgstr ""
+
+#: ../../source/api_reference/index.rst:73 9b6826be79364a9e9fca7260cef8a29c
+msgid "Optimization algorithms for inverse problems."
+msgstr ""
+
+#: ../../source/api_reference/index.rst:77 14e80e4d2e2b48799756a79bb3ffd40d
+msgid "Deep Learning & Data"
+msgstr ""
+
+#: ../../source/api_reference/index.rst:82 2d4a9535bf2741b68956a581c459c140
+msgid "Neural Network"
+msgstr ""
+
+#: ../../source/api_reference/index.rst:86 709cae4944ee47bda74bdb3ddc015bbe
+msgid "Neural network modules for physics-informed learning."
+msgstr ""
+
+#: ../../source/api_reference/index.rst:88 c4770bf62f234a0a85ea50bf33a523d1
+msgid "Dataset"
+msgstr ""
+
+#: ../../source/api_reference/index.rst:92 c928437c657f4851996604ba66e8f801
+msgid "Built-in datasets and data loaders."
+msgstr ""
+
+#: ../../source/api_reference/index.rst:96
+#: ../../source/api_reference/index.rst:101 3b6c33550c654c998653785e448f1572
+#: acde0ff398304e73ac35e0d2dc4c40f9
+msgid "Visualization"
+msgstr ""
+
+#: ../../source/api_reference/index.rst:105 a8a94ca41c4c4ec38ff1e0d6e467e301
+msgid "Plotting and visualization tools."
+msgstr ""
+

@@ -1,0 +1,141 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, TensorMesh Contributors
+# This file is distributed under the same license as the TensorMesh package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: TensorMesh 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-29 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/examples/index.rst:2 e6dfe95894364566a5dbeb9556b10e56
+msgid "Example Gallery"
+msgstr ""
+
+#: ../../source/examples/index.rst:4 1fdac75876a848b08d38b6864757252c
+msgid ""
+"Explore practical examples demonstrating TensorMesh capabilities, from "
+"basic mesh operations to advanced PDE solving."
+msgstr ""
+
+#: ../../source/examples/index.rst:7 14e6d522a181445db728bf7a2f3a5768
+msgid "Mesh Operations"
+msgstr ""
+
+#: ../../source/examples/index.rst:12 38c80e6ad2f1480d80cf2fdb377df6d2
+msgid "Mesh Generation"
+msgstr ""
+
+#: ../../source/examples/index.rst:16 c80aa72605084c72b2f6bdc8779d50ab
+msgid "Generate meshes for common geometries automatically."
+msgstr ""
+
+#: ../../source/examples/index.rst:18 9fd134f0658949079015875d61b84da9
+msgid "Adjacency"
+msgstr ""
+
+#: ../../source/examples/index.rst:22 d00325a68ca44829b4eaadd23d6b7bd6
+msgid "Work with mesh connectivity and adjacency matrices."
+msgstr ""
+
+#: ../../source/examples/index.rst:24 e75da8a443954635a2090dd9a455fb65
+msgid "Partition"
+msgstr ""
+
+#: ../../source/examples/index.rst:28 9546e45fee604f5f8923354cdd62b420
+msgid "Partition meshes for parallel computing."
+msgstr ""
+
+#: ../../source/examples/index.rst:30 c2908e35688248c9aaa12b7fe6e520db
+msgid "Coloring"
+msgstr ""
+
+#: ../../source/examples/index.rst:34 86aac669e71e4d96b6944157db658e5a
+msgid "Graph coloring for efficient parallel assembly."
+msgstr ""
+
+#: ../../source/examples/index.rst:38 f6e1024ba27e40dd8281bb7ccb47f65c
+msgid "Finite Element Basics"
+msgstr ""
+
+#: ../../source/examples/index.rst:43 c613d6fe72a74ba0bc4beb84b2676c3b
+msgid "Basis Functions"
+msgstr ""
+
+#: ../../source/examples/index.rst:47 709cae65fa7446e28bdf749ea6ab72df
+msgid "Understand and visualize basis functions on elements."
+msgstr ""
+
+#: ../../source/examples/index.rst:49 5e30defc314243b192774fce805c65da
+msgid "Values & Interpolation"
+msgstr ""
+
+#: ../../source/examples/index.rst:53 099df1a4d85d4b8388bb37190e6d7bb6
+msgid "Interpolate and evaluate field values on meshes."
+msgstr ""
+
+#: ../../source/examples/index.rst:57 73607a90fe8447f3873d5ecc95bd058e
+msgid "PDE Examples"
+msgstr ""
+
+#: ../../source/examples/index.rst:62 99752807c35944149d661eaf7a1cb581
+msgid "Poisson Equation"
+msgstr ""
+
+#: ../../source/examples/index.rst:66 86c87a13a0b641d4bb8af52d682e9873
+msgid "Solve the classic Poisson equation with various boundary conditions."
+msgstr ""
+
+#: ../../source/examples/index.rst:68 19cdf3f4118d46698b4ab2ff73f6a6c0
+msgid "Wave Equation"
+msgstr ""
+
+#: ../../source/examples/index.rst:72 4ed96cd7f4884940b4ee37dbfd61a63a
+msgid "Time-dependent wave propagation simulation."
+msgstr ""
+
+#: ../../source/examples/index.rst:74 3a2af786878f4e068844610d95bbe685
+msgid "Nonlinear PDEs"
+msgstr ""
+
+#: ../../source/examples/index.rst:78 0da8d3e112cd47c5a9d0036ef1f37bc4
+msgid "Solve nonlinear partial differential equations."
+msgstr ""
+
+#: ../../source/examples/index.rst:82 ../../source/examples/index.rst:93
+#: 6b5d35c516cf4395ab6e61b192f3d062 e8a20080ac74436b81db106cc5efbb7a
+msgid "Solid Mechanics"
+msgstr ""
+
+#: ../../source/examples/index.rst:87 07da6040b0fc4fabb90bb37204985d77
+msgid "Linear Elasticity"
+msgstr ""
+
+#: ../../source/examples/index.rst:91 82b48b784d7a478fa16bbac99098f22e
+msgid "Linear elastic deformation analysis."
+msgstr ""
+
+#: ../../source/examples/index.rst:97 4618b15df0bf42948d3b1101345e7217
+msgid "Advanced solid mechanics simulations."
+msgstr ""
+
+#: ../../source/examples/index.rst:101 ../../source/examples/index.rst:106
+#: 3126a252296e4a3c9fffe41208d0a057 97709f438ae840b3ad2de6ab55fd7ae7
+msgid "Inverse Problems"
+msgstr ""
+
+#: ../../source/examples/index.rst:110 d3b814b1485d4aa2b5edbffa7b5a3901
+msgid "Solve inverse problems with automatic differentiation."
+msgstr ""
+

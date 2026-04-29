@@ -1,0 +1,465 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, TensorMesh Contributors
+# This file is distributed under the same license as the TensorMesh package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: TensorMesh 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-29 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/get_started/benchmark.rst:2 d52cde7f0c82482384bdd770d69f7ceb
+msgid "Benchmark"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:4 481290fd94ce410693928ba0b8399d3e
+msgid ""
+"This page presents comprehensive benchmarks comparing TensorMesh with "
+"other popular FEM frameworks."
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:7 2aeb18fc4e6c4aa9a2051eecffe79617
+msgid "Test Environment"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:9 be286bea6eef446e985c4c7d334ef5c4
+msgid "**CPU**: Intel(R) Xeon(R) Platinum 8468"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:10 9ab01e5787e14f8cad62912bc0655585
+msgid "**GPU**: NVIDIA H200 (141 GB VRAM)"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:11 55ef8750ee8a42f3b39452bf6a8eadb8
+msgid "**OS**: Linux"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:14 9f8137f8ce4c44b09b716c03a4f8ec18
+msgid "Compared Frameworks"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:20 e483a6fcc6124828b707b5b160e0941b
+msgid "Framework"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:21 d6b5258645334556b1d369aace1531f2
+msgid "Language"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:22 000ddfe016a146379d25f71679aecb64
+msgid "CPU"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:23 f4d1533b563e4af3bd9ab3fbd71b36b4
+msgid "CUDA"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:24 663ad46e42324ee792e1ec3ce278951c
+msgid "Notes"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:25 9f0c8f63ad4b4792b77b6eb44180f2ec
+msgid "`FEniCS <https://fenicsproject.org/>`_"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:26 3f262e844a1f40f09949754feaa61c97
+msgid "C++/Python"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:27
+#: ../../source/get_started/benchmark.rst:32
+#: ../../source/get_started/benchmark.rst:37
+#: ../../source/get_started/benchmark.rst:38
+#: ../../source/get_started/benchmark.rst:42
+#: ../../source/get_started/benchmark.rst:43 08cc155e32a74bcd8d8eee39c148a208
+#: 194cfe90dc624c51bf8eee077b07857e 264d468b6e6f465695867ee55f262540
+#: 8f10a5e35b884a1086471512520b9970 92be34e15a134604b177f1939dda0a2a
+#: aff0aa857a8448118a89e825011dd826
+msgid "✅"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:28
+#: ../../source/get_started/benchmark.rst:33 0d4f0a3e785e4ed4b592f9e66e5522ae
+#: 85bc0e19fb7f4d3ab5a5b10271c772e2
+msgid "❌"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:29 db6093df702848ecb1ad8cac506e12c0
+msgid "Reference implementation"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:30 84f9a6de246f414e8b4fa0dc1a4b35e8
+msgid "`scikit-fem <https://github.com/kinnala/scikit-fem>`_"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:31 d401d2b368164dc2a2395715ee742ba1
+msgid "Python"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:34 2b7388142d7a4ef68717b2c5151c65c0
+msgid "Lightweight, pure Python"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:35 a9ef1b0e74374dfdaeed4afad99d2884
+msgid "`JAX-FEM <https://github.com/tianjuxue/jax-fem>`_"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:36 1d4db10c32da438188b9308a58b92064
+msgid "JAX"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:39 ab3fbbb5637e417fb054dfe90d937b51
+msgid "Differentiable FEM"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:40 37bc1a65d1634cf88ebdabe5269f0735
+msgid "**TensorMesh**"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:41 a583575f2ae944cca48cc2b36c963b36
+msgid "PyTorch"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:44 5bd2961afba44996a38d1f96bf367a98
+msgid "GPU-accelerated FEM"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:47 9d69cafe6d7a4a67987bede64168e61c
+msgid "Solver Configuration"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:49 62f4503f0af74939ba9a44ab5f8a626e
+msgid "All benchmarks use unified solver settings for fair comparison:"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:55 f4541671ac9f4e58846717cc7c62dcb4
+msgid "Parameter"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:56 e741ffb9aff745a48bf2486ff628511e
+msgid "Value"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:57 16c3eecca03e4111b907571f1283afff
+msgid "Method"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:58 d8d157899797468aa6eeae6fb2be9768
+msgid "BiCGSTAB"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:59 1877f193616f4a1eb370f5fe50b736ec
+msgid "Relative Tolerance"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:60
+#: ../../source/get_started/benchmark.rst:62 74c5ba1e2c72459981a760bd39e71d6f
+#: 7b917c95befa4bdfa744b92e59c7ee94
+msgid "1e-10"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:61 fd03361a53834cb6b731aee9890762ad
+msgid "Absolute Tolerance"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:63 a0e86c201ea145c59d7dcad03eb36c78
+msgid "Max Iterations"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:64 e3b8fdc23dee4831945082e6e0b9ebdb
+msgid "10000"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:65 44c03c50600740e7a72961c7250c0ed1
+msgid "Preconditioner"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:66 da117a1195db4f60bafb3bd6fa5a2b78
+msgid "Jacobi"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:69 dbef9af793784917ad26bc3892fa6c98
+msgid "Poisson Equation (3D)"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:71 bf3c499c0aac4e73a43c2bdff3e5c16c
+msgid ""
+"Solve the Poisson equation :math:`-\\Delta u = f` with Dirichlet boundary"
+" conditions."
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:76
+#: ../../source/get_started/benchmark.rst:91 7d37748195614d6c8270bd2f093a2675
+#: c23957b4014944c18549806b541d138c
+msgid "**Solve Time**"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:77
+#: ../../source/get_started/benchmark.rst:92 55e8ada2c8d04ba48ecf99a2e659f8bd
+#: a7ff9c99a15f4437a2dd8ea82c879d22
+msgid "**Residual Convergence**"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:84 571e05c7ce784e3ba2200c752c6a77d2
+msgid "Linear Elasticity (3D)"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:86 eea7d60a3788476499dfb52f21ff7634
+msgid ""
+"Solve the linear elasticity equation with fixed and traction boundary "
+"conditions."
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:99 a9a95ce6b28b44ce91bb0c95c8bd00e2
+msgid "Topology Optimization (Inverse Problem)"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:101 e2564ecd10354997ac66efdb863388ab
+msgid ""
+"Comparison of topology optimization using SIMP method between JAX-FEM and"
+" TensorMesh."
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:103 7719ed3b987e48dc8fa24f94b51258e3
+msgid "**Problem Setup:**"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:105 7a60b4f7cbc14d408207cc5c33c1d41b
+msgid "Domain: 60 × 30 (1800 QUAD4 elements)"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:106 e3ee14c0610d46fe99cf6828e6b7b297
+msgid "Left boundary fixed, right-bottom corner loaded"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:107 29b56e48865c483caf69ca472ba6e004
+msgid "Volume fraction constraint: 50%"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:113 91cce9cdef5246a8a97d06f857ad6632
+msgid "**Performance Comparison:**"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:119 bda144154c47405bb5833ac94ced9fe5
+msgid "Metric"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:120
+#: ../../source/get_started/benchmark.rst:143 0e7f664bf8bb4ab1bc669df6a5ec66b5
+#: 1fb71ba0885748dfadc0c97dfa751792
+msgid "JAX-FEM"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:121
+#: ../../source/get_started/benchmark.rst:144 0a773fabe4104dd5b2548e82199d210e
+#: 5c652b5c004a4ae8b010f6c45c6a8695
+msgid "TensorMesh"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:122 5aeda0d5acab4410978e8feb128e9f2e
+msgid "Speedup"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:123 4b35275fdebd45ec8335c9dea540ea0b
+msgid "Setup time"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:124 33c6b47eaa464d059a1a1d70a989ca92
+msgid "2.62 s"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:125 f9df08a580fd4e99a1f75e076b522ad5
+msgid "0.58 s"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:126 5a4fc0854dec4852be0d3c6f3bb4d0cc
+msgid "**4.5×**"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:127 e24c5da1185c4ace8dc7a359d73dd84d
+msgid "Optimization (51 iters)"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:128 83ade55832e0434789a1cb1027729189
+msgid "28.51 s"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:129 f1f9256535fe483086f074c84aa7bd14
+msgid "7.77 s"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:130 8cca65bac7ad43719c1edb54683e5afe
+msgid "**3.7×**"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:131 0842a405ca4d46df9a3a006efc87af1e
+msgid "**Total time**"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:132 cf45a2f5a4344f52a930cd2f91b8dea2
+msgid "**31.13 s**"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:133 7dd71779bfd84953ad2ea5a4c246ff4a
+msgid "**8.35 s**"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:134 1b379805b6c24f87a7c772edef37e484
+msgid "**3.7× 🚀**"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:136 aad40d76643140a099a278885d1b0c0d
+msgid "**Accuracy Comparison:**"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:142 e3b03897c0174038b4140a213028c8f3
+msgid "Accuracy"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:145 ff1680d1db8b49f084e1351598eefe9e
+msgid "Status"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:146 f8203558f0d640a3acaf77590a5b09c2
+msgid "Initial Compliance"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:147
+#: ../../source/get_started/benchmark.rst:148 96dad528071640eca6f02ac6e7e656b3
+#: c9713b79817643b48044e7fa1ff2274e
+msgid "53.71"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:149
+#: ../../source/get_started/benchmark.rst:157 30f5d3c056404c1b985358330d1bdc11
+#: e08e9fb132fa445ab9bc859d2c041478
+msgid "✅ Match"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:150 ef357405a29243e38ad2a6627b68f2be
+msgid "Final Compliance"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:151 d44270ec024f448da3f3c1a0a1e8f97e
+msgid "84.03"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:152 6356cbc9608f4df28d716f399aefd7a3
+msgid "83.75"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:153 81c1d21eabbd44e0802151f2ab99a434
+#, python-format
+msgid "✅ 0.33% diff"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:154 0257c1ffc1a146f289363b75c505a09a
+msgid "Volume Fraction"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:155
+#: ../../source/get_started/benchmark.rst:156 01fc746c4c86475e8ced9ab4a4109152
+#: 93dd5183f3ba4620ae2278d55153b045
+msgid "0.500"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:159 4c92e71f5ce74703b1fb26aad66b6700
+msgid "**Optimization Result:**"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:165 a248bbf4244047fcb60ca93f104f4cbd
+msgid "**Convergence Comparison:**"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:171 6d40285a08b542aba2f288228a5e916d
+msgid "See :doc:`../examples/inverse` for detailed implementation."
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:174 bf032724e55843a48ea445d36f1f02b5
+msgid "Assembly Benchmark"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:176 d5db210149184c74aaa74b9e74db7ecc
+msgid "Stiffness matrix assembly performance comparison."
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:178 53113a5819c04cd28d553efd0c69fd49
+msgid "3D Assembly Runtime Comparison"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:181 6dcece635c4946fc927488b3ac6eeffd
+msgid "3D Assembly Memory Usage"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:185 a1d007977c134733a8001dba9446f2c6
+msgid "Full Pipeline Benchmark"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:187 1e310dc5f6ae4b46bfb9d8b055ceee29
+msgid "End-to-end pipeline performance for solving the Poisson problem."
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:189 ea1422bee01b40ae8ee7d2f98ae64e53
+msgid "Pipeline Speed Comparison"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:193 fd9ce60d0b83485780afc4d7600a2399
+msgid "Dataset Generation Benchmark"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:195 df039685857e4935a9cc4afdc27e9d20
+msgid ""
+"Benchmark for ``PoissonMultiFrequency.source_term`` & ``solution`` "
+"generation speed and memory usage."
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:197 59f98a7dfc95486bb5247498a3ee5be1
+msgid ""
+"The ``PoissonMultiFrequency`` class generates analytical solutions for "
+"the Poisson equation with multi-frequency source terms:"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:199 bf82194de5374e3ebec30fade05e3366
+#, python-brace-format
+msgid "-\\Delta u = f, \\quad u|_{\\partial \\Omega} = 0"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:203 82b3f94b18a6475d997a64bd4ba742cd
+msgid "where the source term is a sum of sinusoidal modes:"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:205 267d1424d565470caf3cf45cd9640cd6
+#, python-brace-format
+msgid ""
+"f(x) = \\sum_{i,j=1}^{K} a_{ij} \\cdot (i^2 + j^2) \\pi^2 \\sin(i \\pi x)"
+" \\sin(j \\pi y)"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:209 98f1281b973c4d21b4108bf1d92425dd
+msgid "and the corresponding analytical solution is:"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:211 bc4a8f92262845a1aa14ce603dbe95fc
+#, python-brace-format
+msgid "u(x) = \\sum_{i,j=1}^{K} a_{ij} \\sin(i \\pi x) \\sin(j \\pi y)"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:215 ee423e3ca8a643d7a04f19a48599a061
+msgid "Time Benchmark"
+msgstr ""
+
+#: ../../source/get_started/benchmark.rst:220 6625d0a8fbf346c6b4590f69887ef48c
+msgid "Memory Benchmark"
+msgstr ""
+

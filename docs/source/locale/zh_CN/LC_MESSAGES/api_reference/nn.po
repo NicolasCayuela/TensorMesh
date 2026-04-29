@@ -1,0 +1,53 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, TensorMesh Contributors
+# This file is distributed under the same license as the TensorMesh package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: TensorMesh 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-29 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/api_reference/nn.rst:2 7ce36ad5c3c34836a4375938758f56ce
+msgid "tensormesh.nn"
+msgstr ""
+
+#: ../../source/api_reference/nn.rst:5 a2ad3447688244fb8e5a5567f3309e6b
+msgid "contents"
+msgstr ""
+
+#: ../../source/api_reference/nn.rst:8 f8efc0a0ef934d5b9dbe9781ff03af6b
+msgid "BufferUtils"
+msgstr ""
+
+#: 5535fb6b68c547bbbced4b2ec64cad12 9c5f72a696f44ce8a71deb2c55d94952 of
+#: tensormesh.nn.buffer_dict.BufferDict.__init__:1
+#: tensormesh.nn.buffer_list.BufferList.__init__:1
+msgid ""
+"Initialize internal Module state, shared by both nn.Module and "
+"ScriptModule."
+msgstr ""
+
+#: 2ba792c187b441c39d72973cee940562 e4f94d01ad094c39aee374842120d4e9 of
+#: tensormesh.nn.buffer_dict.BufferDict.as_parameter:1
+#: tensormesh.nn.buffer_list.BufferList.as_parameter:1
+msgid "Convert a buffer to a parameter"
+msgstr ""
+
+#: 183fda55baf447e08293113921affdc4 c394e12c07274177857535411cfdd09d of
+#: tensormesh.nn.buffer_dict.BufferDict.as_buffer:1
+#: tensormesh.nn.buffer_list.BufferList.as_buffer:1
+msgid "Convert a parameter to a buffer"
+msgstr ""
+

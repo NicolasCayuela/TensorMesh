@@ -1,8 +1,6 @@
 <p align="center">
-  <img src="assets/logo.png" alt="TensorMesh Logo" width="400"/>
+  <img src="assets/logo.png" alt="TensorMesh" width="600"/>
 </p>
-
-<h1 align="center">TensorMesh</h1>
 
 <p align="center">
   A differentiable, GPU-accelerated Finite Element Method library built on PyTorch.

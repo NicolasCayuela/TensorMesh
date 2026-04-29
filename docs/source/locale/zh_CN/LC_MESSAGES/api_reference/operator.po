@@ -1,0 +1,150 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, TensorMesh Contributors
+# This file is distributed under the same license as the TensorMesh package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: TensorMesh 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-29 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/api_reference/operator.rst:2 e98f4afb120b47b4a876a9304c094aa9
+msgid "tensormesh.operator"
+msgstr ""
+
+#: ../../source/api_reference/operator.rst:5 c1fb62d3a4c2493b891aff0e2b8688df
+msgid "contents"
+msgstr ""
+
+#: ../../source/api_reference/operator.rst:8 f2e917ea011a4f209f6369ab3ac402e9
+msgid "Condenser"
+msgstr ""
+
+#: 5b4db16a78934569aebb3b6772f9f1d4 of tensormesh.operator.condense.Condenser:1
+msgid "Static Condensing Operator for Dirichlet Boundary Condition"
+msgstr ""
+
+#: cbe7b0bc7fe6474180f61eac9ccbb75a of tensormesh.operator.condense.Condenser:3
+#, python-brace-format
+msgid "K_{inner} u_{inner} = f_{inner} - K_{ou2in} u_{ou2in}"
+msgstr ""
+
+#: 2da7168a606e4addaf5beba51052e5db of tensormesh.operator.condense.Condenser:8
+msgid "Examples"
+msgstr ""
+
+#: ../../source/api_reference/operator.rst 9ea32d6a3ba34cac897ec0e618e797c9
+#: e6605a13c2e74a9ca19543bde8529e24 ee991e1080bf43a5b1d4ff143b454e4f
+msgid "Parameters"
+msgstr ""
+
+#: 6b6c4f5030664a27bed2f5d77209ae87 of
+#: tensormesh.operator.condense.Condenser:42
+msgid ""
+"1D tensor of shape :math:`[n_{\\text{dof}}]` the mask of the dirichlet "
+"boundary condition"
+msgstr ""
+
+#: 7863cbcfd0df407a8f0fbf0e2a892b64 of
+#: tensormesh.operator.condense.Condenser:45
+msgid ""
+"1D tensor of shape :math:`[n_{\\text{dof}}]` or "
+":math:`[n_{\\text{outer_dof}}]` the value of the dirichlet boundary "
+"condition. The default value is 0."
+msgstr ""
+
+#: 3301fef7d16448aebf59b65040e236c6 of
+#: tensormesh.operator.condense.Condenser:51
+msgid "the mask of the dirichlet boundary condition"
+msgstr ""
+
+#: 07161fc12ed34c20ab6e146be1fdbe0e 5cc2200c7ef141b49393f0b952f4ce7a of
+#: tensormesh.operator.condense.Condenser
+msgid "type"
+msgstr ""
+
+#: 31415642c014414189947e148bb20344 of
+#: tensormesh.operator.condense.Condenser:53
+msgid "torch.Tensor of shape  :math:`[n_{\\text{dof}}]`"
+msgstr ""
+
+#: aa58fabc9d4e4200bc1ef5e204c71588 of
+#: tensormesh.operator.condense.Condenser:57
+msgid "the value of the dirichlet boundary condition"
+msgstr ""
+
+#: bcd838642cfc4c70bda4630b7b7637ff of
+#: tensormesh.operator.condense.Condenser:59
+msgid "torch.Tensor of shape :math:`[n_{\\text{outer_dof}}]`"
+msgstr ""
+
+#: db175edc26d841548f22e91274b80ef0 of
+#: tensormesh.operator.condense.Condenser.update_dirichlet:1
+msgid "Update the dirichlet value for time-dependent problems"
+msgstr ""
+
+#: 5b4ad2f9076f4c2e93e1e343768f979c of
+#: tensormesh.operator.condense.Condenser.condense_rhs:1
+msgid "only condense the right hand side"
+msgstr ""
+
+#: ce528e28711944b6b703c0a6b317b9f5 of
+#: tensormesh.operator.condense.Condenser.condense_rhs:3
+#, python-brace-format
+msgid "f_{inner} - K_{ou2in} u_{ou2in}"
+msgstr ""
+
+#: 6532b1c884494a2a94319e0a86ea8f93 of
+#: tensormesh.operator.condense.Condenser.condense_rhs:7
+msgid ""
+"ND tensor of shape :math:`[ n_{\\text{dof}},...]` the right hand side of "
+"the linear system"
+msgstr ""
+
+#: ../../source/api_reference/operator.rst 0129659590a8402ab23dd0fea8778f56
+#: c8a596b951b04135aa21ee6befa651fb
+msgid "Returns"
+msgstr ""
+
+#: d5d773f8c1f4461b8a9b70519ccb1638 of
+#: tensormesh.operator.condense.Condenser.condense_rhs:11
+msgid ""
+"Ntensor of shape :math:`[ n_{\\text{inner_dof}},...]` the condensed right"
+" hand side"
+msgstr ""
+
+#: ../../source/api_reference/operator.rst 7f371087b5b84dc09dfd6373fadf53c0
+#: fee0bcb8f7d04e6092d7c1628292c78e
+msgid "Return type"
+msgstr ""
+
+#: 271039a615254d1fa932bc8079ddb01a of
+#: tensormesh.operator.condense.Condenser.recover:1
+msgid "recovert the solution"
+msgstr ""
+
+#: dcc5f090fe514c20b2d8038bf965565d of
+#: tensormesh.operator.condense.Condenser.recover:3
+msgid ""
+"ND tensor of shape :math:`[n_{\\text{inner_dof}}, ...]` the solution of "
+"the condensed linear system"
+msgstr ""
+
+#: 136e85d3414142888da8b710db2e14e7 of
+#: tensormesh.operator.condense.Condenser.recover:7
+msgid ""
+"ND tensor of shape :math:`[n_{\\text{dof}}, ...]` the recovered solution "
+"of the linear system"
+msgstr ""
+

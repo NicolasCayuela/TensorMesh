@@ -1,0 +1,182 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, TensorMesh Contributors
+# This file is distributed under the same license as the TensorMesh package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: TensorMesh 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-29 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/examples/basis.rst:2 ee87c07cb33b46a0acb4aac96c870d39
+msgid "Basis"
+msgstr ""
+
+#: ../../source/examples/basis.rst:6 ec3b3449376f49d7a7ff41c8b66705cb
+msgid "1D Line Basis"
+msgstr ""
+
+#: ../../source/examples/basis.rst:8 437cbaddfab9435abbf8485597eaa247
+msgid ""
+"The 1D line element basis functions of order $p$ are Lagrange polynomials"
+" defined at $p+1$ equidistant nodes $\\xi_j$ on the reference interval "
+"$[-1, 1]$ (or $[0, 1]$)."
+msgstr ""
+
+#: ../../source/examples/basis.rst:10 c24fde0a8d3043a8ba426a0b9ed7a67b
+msgid "The shape function associated with node $i$ is given by:"
+msgstr ""
+
+#: ../../source/examples/basis.rst:12 4c95aa849d7a47aea409814c9d399ce6
+msgid ""
+"N_i(\\xi) = \\prod_{\\substack{j=0 \\\\ j \\neq i}}^p \\frac{\\xi - "
+"\\xi_j}{\\xi_i - \\xi_j}"
+msgstr ""
+
+#: ../../source/examples/basis.rst:34 e4a70fbae364473e9b39cdd49c5203c3
+msgid "2D Triangle Basis"
+msgstr ""
+
+#: ../../source/examples/basis.rst:36 b0340097a1f14955b45ca1c808ed8429
+msgid ""
+"The basis functions for triangular elements are typically defined using "
+"barycentric coordinates $(\\lambda_1, \\lambda_2, \\lambda_3)$ on the "
+"reference triangle, where $\\lambda_1 + \\lambda_2 + \\lambda_3 = 1$. The"
+" coordinates are related to the reference coordinates $(\\xi, \\eta)$ by:"
+msgstr ""
+
+#: ../../source/examples/basis.rst:38 8f5e8a4d634a4409999f233917cfdb3d
+msgid ""
+"\\lambda_1 = 1 - \\xi - \\eta, \\quad \\lambda_2 = \\xi, \\quad "
+"\\lambda_3 = \\eta"
+msgstr ""
+
+#: ../../source/examples/basis.rst:42 59b1d5b8995e46d4b0ccd2e4a2fcb0ad
+msgid ""
+"For a Lagrange element of order $p$, the basis functions are defined at "
+"nodes located at $(i/p, j/p)$ where $i,j \\ge 0$ and $i+j \\le p$."
+msgstr ""
+
+#: ../../source/examples/basis.rst:70 e079cc47f8434ea8b7e9b73cc910ea4c
+msgid "2D Quadrilateral Basis"
+msgstr ""
+
+#: ../../source/examples/basis.rst:72 3fe4c27dcae749248bb4b88d54ee32f2
+msgid ""
+"Quadrilateral elements use tensor-product basis functions constructed "
+"from 1D Lagrange polynomials. For an order $p$ element, the shape "
+"functions are:"
+msgstr ""
+
+#: ../../source/examples/basis.rst:74 219e82ab12954325a6705b377676237a
+#, python-brace-format
+msgid "N_{ij}(\\xi, \\eta) = N_i(\\xi) N_j(\\eta)"
+msgstr ""
+
+#: ../../source/examples/basis.rst:78 25a694e102a447949439e9bad09b06d8
+msgid ""
+"where $N_i(\\xi)$ and $N_j(\\eta)$ are the 1D Lagrange polynomials of "
+"order $p$ in the $\\xi$ and $\\eta$ directions, respectively."
+msgstr ""
+
+#: ../../source/examples/basis.rst:106 f25bbff5368c4c498f42f04c98823695
+msgid "3D Tetrahedron Basis"
+msgstr ""
+
+#: ../../source/examples/basis.rst:108 d96b65c6a6ab41348ae73e35fb11b078
+msgid ""
+"Tetrahedral basis functions are defined using 3D barycentric coordinates "
+"$(\\lambda_1, \\lambda_2, \\lambda_3, \\lambda_4)$ on the reference "
+"tetrahedron, with $\\sum \\lambda_i = 1$."
+msgstr ""
+
+#: ../../source/examples/basis.rst:110 efdbcd04254247c391f9ec9aca9475fb
+msgid ""
+"The relationship to Cartesian reference coordinates $(\\xi, \\eta, "
+"\\zeta)$ is:"
+msgstr ""
+
+#: ../../source/examples/basis.rst:112 b47491e4d38f4695899b13d41e98513f
+msgid ""
+"\\lambda_1 = 1 - \\xi - \\eta - \\zeta, \\quad \\lambda_2 = \\xi, \\quad "
+"\\lambda_3 = \\eta, \\quad \\lambda_4 = \\zeta"
+msgstr ""
+
+#: ../../source/examples/basis.rst:116 350e8a209b774f81a899c80ad04744ea
+msgid ""
+"Lagrange basis functions are defined at equidistant nodes determined by "
+"the polynomial order $p$."
+msgstr ""
+
+#: ../../source/examples/basis.rst:146 acac29fae6ea4ec9b06f39c996398c97
+msgid "3D Hexahedron Basis"
+msgstr ""
+
+#: ../../source/examples/basis.rst:148 28c9128342b64d4b974bb1175e13f787
+msgid ""
+"Hexahedral elements use a tensor product of three 1D Lagrange "
+"polynomials. For an order $p$ element, the basis functions are:"
+msgstr ""
+
+#: ../../source/examples/basis.rst:150 80d5d368558541c08b632fb091eda086
+#, python-brace-format
+msgid "N_{ijk}(\\xi, \\eta, \\zeta) = N_i(\\xi) N_j(\\eta) N_k(\\zeta)"
+msgstr ""
+
+#: ../../source/examples/basis.rst:154 1ba10b77919d476e96774bf941ac6e3f
+msgid "where $N(\\cdot)$ are the standard 1D Lagrange basis functions."
+msgstr ""
+
+#: ../../source/examples/basis.rst:185 bb673a6f083241679b66d0557679f702
+msgid "3D Pyramid Basis"
+msgstr ""
+
+#: ../../source/examples/basis.rst:187 0f6b91a91ea94cffb88435a2839b1732
+msgid ""
+"Pyramid elements serve as transition elements between hexahedra and "
+"tetrahedra. Their basis functions are constructed by combining tensor "
+"products in the base with a linear interpolation to the apex."
+msgstr ""
+
+#: ../../source/examples/basis.rst:189 fd0f8b177952424c9497e1ef959c3361
+msgid ""
+"The shape functions are typically defined to ensure continuity with "
+"adjacent hexahedral (quadrilateral faces) and tetrahedral (triangular "
+"faces) elements."
+msgstr ""
+
+#: ../../source/examples/basis.rst:220 aad5385be95e492ca7d3c2f028fcf9e7
+msgid "3D Prism Basis"
+msgstr ""
+
+#: ../../source/examples/basis.rst:222 c46b5cf4614a48c5be1095af7da5745e
+msgid ""
+"Prismatic elements (wedges) are the tensor product of a 2D triangle in "
+"the $(\\xi, \\eta)$ plane and a 1D line in the $\\zeta$ direction."
+msgstr ""
+
+#: ../../source/examples/basis.rst:224 7c2fdc68d8dd471fba994a53fbb9fe40
+#, python-brace-format
+msgid ""
+"N_{k,l}(\\xi, \\eta, \\zeta) = N_k^{\\Delta}(\\xi, \\eta) \\cdot "
+"N_l^{1D}(\\zeta)"
+msgstr ""
+
+#: ../../source/examples/basis.rst:228 92297e9f157f48f3ac8002be7ca65325
+#, python-brace-format
+msgid ""
+"where $N_k^{\\Delta}$ are the triangular basis functions and $N_l^{1D}$ "
+"are the 1D linear basis functions."
+msgstr ""
+

@@ -1,0 +1,458 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, TensorMesh Contributors
+# This file is distributed under the same license as the TensorMesh package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: TensorMesh 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-29 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/api_reference/ode.rst:2 a920186534ca471cb63c21ec8db90439
+msgid "tensormesh.ode"
+msgstr ""
+
+#: ../../source/api_reference/ode.rst:5 0279f971488045a182400bd37be9209c
+msgid "contents"
+msgstr ""
+
+#: ../../source/api_reference/ode.rst:8 8888c456a3c74aa3a0493c045c62398e
+msgid "Runge-Kutta methods"
+msgstr ""
+
+#: ../../source/api_reference/ode.rst:10 80d0962c867444ecb499e920d02eadd1
+#, python-brace-format
+msgid ""
+"\\begin{array}{c|c}\n"
+"\\textbf  c & \\mathfrak A \\\\\n"
+"\\hline\n"
+"&\\textbf b^\\top\n"
+"\\end{array}\n"
+"\\quad = \\quad\n"
+"\\begin{array}{c|ccc}\n"
+"c_1 & a_{11} & \\cdots & a_{1s}\\\\\n"
+"\\vdots & \\vdots & \\ddots & \\vdots \\\\\n"
+"c_s & a_{s1} & \\cdots & a_{ss}\\\\\\hline\n"
+"& b_1 & \\cdots & b_s\n"
+"\\end{array}\n"
+"\\qquad\n"
+"\\textbf c, \\textbf b \\in \\mathbb R^s,\\mathfrak A\\in  \\mathbb "
+"R^{s\\times s}"
+msgstr ""
+
+#: ../../source/api_reference/ode.rst:28 218fbbe7463741a9abca042f73a17bd7
+#: 9a13504270ac4d5188bc514c8f209bed of
+#: tensormesh.ode.explicit_rungekutta.ExplicitRungeKutta.step:3
+#, python-brace-format
+msgid ""
+"\\textbf k_i =\\textbf f(t+c_i\\tau, \\textbf u +\\tau \\sum_{j=1}^s "
+"a_{ij}\\textbf k_j)\\quad \\Psi^{t,t+\\tau}\\textbf u = \\textbf "
+"u+\\tau\\sum_{i=1}^s b_i \\textbf  k_i"
+msgstr ""
+
+#: ../../source/api_reference/ode.rst:32 a02c638a07664ba3a6379e0deb05f24c
+#, python-brace-format
+msgid "c_i = \\sum_j a_{ij}"
+msgstr ""
+
+#: ../../source/api_reference/ode.rst:38 4c694f862e6a452c839186f18ebf7e80
+msgid "Built-in Methods"
+msgstr ""
+
+#: 0c92392029bd42f482787b3a9322fda0 of
+#: tensormesh.ode.explicit_rungekutta.ExplicitRungeKutta:1
+#, python-brace-format
+msgid "\\frac{\\partial u}{\\partial t} = f(t, u)"
+msgstr ""
+
+#: 448deb9eee4846c083b747496fada7f0 8547e673a03243d4a131af45b2188990
+#: 9597a8058dbe41c89c121643478a138a e423b74cdbf44e7e9a2cbdeeac387144
+#: ec4c7d3887a44d8f8387762c0aa55cfe of tensormesh.ode.builtin.ExplicitEuler:20
+#: tensormesh.ode.builtin.ImplicitLinearEuler:20
+#: tensormesh.ode.builtin.MidPointLinearEuler:20
+#: tensormesh.ode.explicit_rungekutta.ExplicitRungeKutta:6
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta:33
+msgid "Examples"
+msgstr ""
+
+#: 282e3177560b4a0d83bae78cbe8b4dbb 4d101f7f5c5a4ef3bda5051d8b9939c5
+#: 7ade663b4ada418292a2aecf8135b448 of tensormesh.ode.builtin.ExplicitEuler:21
+#: tensormesh.ode.builtin.ImplicitLinearEuler:21
+#: tensormesh.ode.explicit_rungekutta.ExplicitRungeKutta:7
+msgid "\\frac{\\text{d}u}{\\text{d}t} = u"
+msgstr ""
+
+#: ../../source/api_reference/ode.rst 05dc364ecbc1470abd9c1cc5841a8970
+#: 25b8daa349414d81a8f7948e260db7c6 2df23d2df2fc46679a93d254bdb037f3
+#: 39ef2c3eca114ca98bf2df7d929538b4 5df70aee84604cb0ba94e065389a4811
+#: 8833a20784a14d8893e76b6c5628f4c1 9299656062a34abba160adff95570271
+#: a6462ada9f7d42029f6b2efea95d0607 bb9d6a3af736465e9f3c3ce1ecc47c33
+#: cac0cd5ccbe844d3bef0b1ecf971b36b f7f456d8e8754b06951f1dc9c82296de
+msgid "Parameters"
+msgstr ""
+
+#: ddf5fd2d8eaf4892857d4005a7027b26 of
+#: tensormesh.ode.explicit_rungekutta.ExplicitRungeKutta:24
+msgid ""
+"2D tensor of shape [s, s] shoule be lower triangular  .. math::      a = "
+"\\begin{bmatrix}     0 & \\cdots &0& 0 \\     a_{21} & \\cdots &0 & 0 \\"
+"     \\vdots & \\ddots & \\vdots  &\\vdots\\     a_{s1} & \\cdots & "
+"a_{s{s-1}} &0     \\end{bmatrix}"
+msgstr ""
+
+#: 9e73bf57d3744170842439ce6b578ff3 of
+#: tensormesh.ode.explicit_rungekutta.ExplicitRungeKutta:24
+msgid "2D tensor of shape [s, s] shoule be lower triangular"
+msgstr ""
+
+#: 5a31607526fe41528308eaa69f29c1ca of
+#: tensormesh.ode.explicit_rungekutta.ExplicitRungeKutta:27
+msgid ""
+"a = \\begin{bmatrix}\n"
+"0 & \\cdots &0& 0 \\\\\n"
+"a_{21} & \\cdots &0 & 0 \\\\\n"
+"\\vdots & \\ddots & \\vdots  &\\vdots\\\\\n"
+"a_{s1} & \\cdots & a_{s{s-1}} &0\n"
+"\\end{bmatrix}"
+msgstr ""
+
+#: 468fc9d6a536487fbfbc2e4a286e294b 8d2e5274d0a24240a13d537c672c33ff of
+#: tensormesh.ode.explicit_rungekutta.ExplicitRungeKutta:36
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta:29
+#, python-brace-format
+msgid "1D tensor of shape [s], :math:`\\sum_{b_i} = 1`"
+msgstr ""
+
+#: bdae2522fdc247469ff06c1666e2e224 of
+#: tensormesh.ode.explicit_rungekutta.ExplicitRungeKutta.forward:1
+msgid "right side function :math:`f(t, u)`"
+msgstr ""
+
+#: 2f9e5ef2aee04b94ae1b84859b16b56c of
+#: tensormesh.ode.explicit_rungekutta.ExplicitRungeKutta.forward:3
+#, python-brace-format
+msgid "\\frac{\\partial u}{\\partial t} = \\text{forward}(t, u)"
+msgstr ""
+
+#: 30b6168c9cd7453ab2cd12a498b42a44 of
+#: tensormesh.ode.explicit_rungekutta.ExplicitRungeKutta.forward:7
+msgid "default :math:`f(t, u) = u`"
+msgstr ""
+
+#: a3881f307f6c47899cecefb955e38ffe e332c7d71cbe490ebe8856eb5ae26739
+#: e639815958004a22913c1631e7e40f17 ea09cf22138143c5a6b3541514905e14 of
+#: tensormesh.ode.explicit_rungekutta.ExplicitRungeKutta.forward:9
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.forward_A:7
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.forward_B:7
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.forward_M:7
+msgid "time"
+msgstr ""
+
+#: 1571d5b63c7c4b928d9decbf5a3462d2 of
+#: tensormesh.ode.explicit_rungekutta.ExplicitRungeKutta.forward:11
+msgid "value of shape :math:`[D]` where D is the dimension of the problem"
+msgstr ""
+
+#: ../../source/api_reference/ode.rst 0b6c750693dd4e58be655b8800da0e8d
+#: 0e279f56b4224c568abd379ad3da28ab 3f369d806c3f43fe896e21fe08e40adf
+#: 3f4eb61a860746da83d1d0946d821d1f 5f4e5df03c1847bb9bb6e10daf1532f0
+#: 7a5af53b6db34baaa1e0747cdc57e9d4 a4f73db348ca48dab9c144c11d7e2cca
+#: db3c5892f81b40a0b127f7d75d5c90eb
+msgid "Returns"
+msgstr ""
+
+#: 5c502abbe4f940e88284c99b595254cf of
+#: tensormesh.ode.explicit_rungekutta.ExplicitRungeKutta.forward:14
+msgid ""
+"value of shape :math:`[D]` where D is the dimension of the problem the "
+"value of the right side function :math:`f(t, u)`"
+msgstr ""
+
+#: ../../source/api_reference/ode.rst 2764ce67b9cc40f8b37284ed39180f25
+#: 39a44e11fb254f598975c2056cd76c94 3d3beaddf0f94ecaade9d8dddc40b25a
+#: 80dbf2a2210649e2b9f730d7017e011b 957d00d61b684f4685a3978226e6884e
+#: 9e07220fd69b4a9884e81ed6b369c8ac c4885c53c67b4dffa98053e4b418426e
+#: ed9e6221aa1543038a21cc8ae79cd47e
+msgid "Return type"
+msgstr ""
+
+#: ff4734c25f7746baa967fcae53335c38 of
+#: tensormesh.ode.explicit_rungekutta.ExplicitRungeKutta.step:1
+msgid "one step of explicit Runge-Kutta method"
+msgstr ""
+
+#: 1910f5f9945049cf9baa58355b28831a 766c1333c1cc42bc8fa50251f723d961 of
+#: tensormesh.ode.explicit_rungekutta.ExplicitRungeKutta.step:7
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.step:3
+msgid "initial time"
+msgstr ""
+
+#: 391a8e75c053411592789794b907b5a9 d0ffa0778bbc4310b9478a5f07564a2f of
+#: tensormesh.ode.explicit_rungekutta.ExplicitRungeKutta.step:9
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.step:5
+msgid "initial value of shape :math:`[D]` where D is the dimension of the problem"
+msgstr ""
+
+#: ed37d45937df40229475e97c6d71f777 fe999d00b7f744ea8dd28f0e899b242f of
+#: tensormesh.ode.explicit_rungekutta.ExplicitRungeKutta.step:11
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.step:7
+msgid "time step"
+msgstr ""
+
+#: 31280f2ee079411b809a2fd930e2e192 of
+#: tensormesh.ode.explicit_rungekutta.ExplicitRungeKutta.step:14
+#, python-brace-format
+msgid ""
+"value of shape :math:`[D]` where D is the dimension of the problem the "
+"value of the solution at time :math:`t_0 + \\text{d}t`"
+msgstr ""
+
+#: f6cddda615394e0cbc0e5bd33e86b3c3 of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta:1
+#, python-brace-format
+msgid ""
+"M(t) \\frac{\\partial u}{\\partial t} = A(t) u + B(t)\n"
+"\n"
+msgstr ""
+
+#: cb6266c222c3435190187f956f647f33 of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta:4
+#, python-brace-format
+msgid ":math:`M\\in \\mathbb R^{n\\times n}`"
+msgstr ""
+
+#: 731dbbab4a0442ce92996e3ce741744d of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta:5
+#, python-brace-format
+msgid ":math:`A\\in \\mathbb R^{n\\times n}`"
+msgstr ""
+
+#: c98a66b1579948b4a901d94ecccd2b98 of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta:6
+#, python-brace-format
+msgid ":math:`B\\in \\mathbb R^{n}`"
+msgstr ""
+
+#: 622ed18f18f141648333e5707e818d30 of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta:7
+msgid ":math:`u\\in \\mathbb R^n`"
+msgstr ""
+
+#: 574bec88f34f4ea8be95b18090eea7c4 of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta:9
+msgid ""
+"\\begin{bmatrix}\n"
+"M_0 - A_0\\tau a_{0,0}& - A_0\\tau a_{0,1}&\\cdots  & - A_{0}\\tau "
+"a_{0,{n-1}}\\\\\n"
+"-A_1\\tau a_{1,0}& M_1-A_1\\tau a_{1,1} & \\cdots & - A_{1}\\tau "
+"a_{1,{n-1}}\\\\\n"
+"\\vdots & \\vdots &\\ddots & \\vdots \\\\\n"
+"-A_{n-1}\\tau a_{{n-1},0} & -A_{n-1}\\tau a_{{n-1},1} & \\cdots &  "
+"M_{n-1} - A_{n-1}\\tau a_{n-1,n-1}\n"
+"\\end{bmatrix}\n"
+"\\begin{bmatrix}\n"
+"\\textbf k_0\\\\ \\textbf k_1 \\\\\\vdots \\\\\\textbf k_{n-1}\n"
+"\\end{bmatrix}=\n"
+"\\begin{bmatrix}\n"
+"B_0 + A_0 u \\\\\n"
+"B_1 + A_1 u \\\\\n"
+"\\vdots\\\\\n"
+"B_{n-1} + A_{n-1} u\n"
+"\\end{bmatrix}"
+msgstr ""
+
+#: f6bfde2f886842d2ae5732b15b90c95b of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta:27
+msgid "2D tensor of shape [s, s]"
+msgstr ""
+
+#: e02e36d1a5b8454ab810c7cbc047ae4c of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta:34
+msgid "M \\frac{\\text{d}u}{\\text{d}t} = Au + B"
+msgstr ""
+
+#: a335b17b5cf94af1bea3eb6ab3eb09dc of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.forward_M:1
+msgid "left side matrix"
+msgstr ""
+
+#: 3090d9c0070445ada9b0bfe62f5a589b 366a826d9d724c3cb59158f0ef76e50c
+#: a9bcd994da194f028f8d5232af692e68 of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.forward_A:3
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.forward_B:3
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.forward_M:3
+#, python-brace-format
+msgid "M \\frac{\\partial u}{\\partial t} = A(t)u + B(t)"
+msgstr ""
+
+#: ab1332465e074dfda3a8974460d920bc of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.forward_M:10
+msgid ""
+"normally, 2D :meth:`torch.Tensor` or "
+":meth:`tensormesh.sparse.SparseMatrix` of shape :math:`[D, D]` where "
+":math:`D` is the dimension of the problem; if return :obj:`int` or "
+":obj:`float`, the left side matrix :math:`M` is assumed to be a diagonal "
+"matrix with the same value"
+msgstr ""
+
+#: 599168b8f91f4108a021595a1aa82626 of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.forward_A:1
+msgid "compute the linear mapping term :math:`A(t)`"
+msgstr ""
+
+#: 0930ad9bd64f4601b6ff47318644881b of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.forward_A:10
+msgid ""
+"2D :meth:`torch.Tensor` or :meth:`tensormesh.sparse.SparseMatrix` of "
+"shape :math:`[D, D]` where :math:`D` is the dimension of the problem; if "
+"return :obj:`int` or :obj:`float`, the linear mapping term is assumed to "
+"be a diagonal matrix with the same value"
+msgstr ""
+
+#: 37cb2d98f60e47749b976addc3c03511 of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.forward_B:1
+msgid "compute the linear mapping term :math:`B(t)`"
+msgstr ""
+
+#: 8d9ed2bb92e0495bb62655e1704b10b4 of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.forward_B:10
+msgid ""
+"1D :meth:`torch.Tensor` of shape :math:`[D]` where :math:`D` is the "
+"dimension of the problem; if return :obj:`int` or :obj:`float`, the "
+"linear mapping term is assumed to be a vector with the same value"
+msgstr ""
+
+#: 6ee95c8912e14c9fa4a876a434aea755 d758c5ef158a4a28a480cb39688fdbb9 of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.pre_solve_lhs:1
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.pre_solve_rhs:1
+msgid ""
+"precompute something before solving the linear system, for example, do "
+"the condensation"
+msgstr ""
+
+#: 951e084d7c324fe7bb7c3708340fd287 of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.pre_solve_lhs:4
+msgid "the left side matrix"
+msgstr ""
+
+#: 9cf25cd170a2419b98bdef5e88b717d0 of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.pre_solve_lhs:7
+msgid "the left side matrix after precompute"
+msgstr ""
+
+#: f498359a02484533816a8905e2f107b1 of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.pre_solve_rhs:4
+msgid "the right hand side vector"
+msgstr ""
+
+#: eb1b8d5a4b8746488899b8846093b624 of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.pre_solve_rhs:7
+msgid "the right hand side vector after precompute"
+msgstr ""
+
+#: d0c6ce6b0b0b413788a213443bb946e9 of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.post_solve:1
+msgid ""
+"postprocess after solving the linear system, for example, do the "
+"condensation recovery"
+msgstr ""
+
+#: e98fc97d091343dcb248049ebc7bd69e of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.post_solve:4
+msgid "the solution of the linear system"
+msgstr ""
+
+#: e7ed30d30fbe43dea622d6de1afb056b of
+#: tensormesh.ode.implicit_linear_rungekutta.ImplicitLinearRungeKutta.post_solve:7
+msgid "the solution after postprocess"
+msgstr ""
+
+#: 9c4f2bdd0d354a5ca725b6a5f819b91c of tensormesh.ode.builtin.ExplicitEuler:1
+#, python-brace-format
+msgid ""
+"\\begin{array}{c|c}\n"
+"\\textbf{c} & \\mathfrak{A} \\\\\n"
+"\\hline\n"
+"& \\textbf{b}^\\top\n"
+"\\end{array}\n"
+"=\n"
+"\\begin{array}{c|c}\n"
+"0 & 0 \\\\\n"
+"\\hline\n"
+"& 1\n"
+"\\end{array}"
+msgstr ""
+
+#: 172fcc77adb244c9b0e2a74eac0f261e of tensormesh.ode.builtin.ExplicitEuler:15
+#, python-brace-format
+msgid ""
+"\\Psi^{t,t+\\tau}\\textbf{u} \\approx \\textbf{u} + \\tau "
+"\\textbf{f}(t,\\textbf{u})"
+msgstr ""
+
+#: 8f9d12dcc10c4f519dcd43ba2a5d2e38 of
+#: tensormesh.ode.builtin.ImplicitLinearEuler:1
+#, python-brace-format
+msgid ""
+"\\begin{array}{c|c}\n"
+"\\textbf{c} & \\mathfrak{A} \\\\\n"
+"\\hline\n"
+"& \\textbf{b}^\\top\n"
+"\\end{array}\n"
+"=\n"
+"\\begin{array}{c|c}\n"
+"1 & 1 \\\\\n"
+"\\hline\n"
+"& 1\n"
+"\\end{array}"
+msgstr ""
+
+#: 157aa7d723344bc1b06c0305a694ed87 of
+#: tensormesh.ode.builtin.ImplicitLinearEuler:15
+#, python-brace-format
+msgid ""
+"\\Psi^{t,t+\\tau}\\textbf{u} \\approx \\textbf{w}\\quad "
+"\\textbf{w}=\\textbf{u}+\\tau\\textbf{f}(t+\\tau,\\textbf{w})"
+msgstr ""
+
+#: e81efb7abccd46be8972081862c0cafa of
+#: tensormesh.ode.builtin.MidPointLinearEuler:1
+#, python-brace-format
+msgid ""
+"\\begin{array}{c|c}\n"
+"\\textbf{c} & \\mathfrak{A} \\\\\n"
+"\\hline\n"
+"& \\textbf{b}^\\top\n"
+"\\end{array}\n"
+"=\n"
+"\\begin{array}{c|c}\n"
+"\\frac{1}{2} & \\frac{1}{2} \\\\\n"
+"\\hline\n"
+"& 1\n"
+"\\end{array}"
+msgstr ""
+
+#: 9cd9bd70283b4b938e714490ee468500 of
+#: tensormesh.ode.builtin.MidPointLinearEuler:15
+msgid ""
+"\\Psi^{t,t+\\tau}\\textbf{u} \\approx \\textbf{w}\\quad \\textbf{w} = "
+"\\textbf{u} +\\tau "
+"\\textbf{f}\\left(t+\\frac{\\tau}{2},\\frac{\\textbf{w}+\\textbf{u}}{2}\\right)"
+msgstr ""
+
+#: c98b57e4a789491aa2060d1040907be1 of
+#: tensormesh.ode.builtin.MidPointLinearEuler:21
+msgid "\\frac{\\text{d} u}{\\text{d} t} = u"
+msgstr ""
+

@@ -1,0 +1,578 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, TensorMesh Contributors
+# This file is distributed under the same license as the TensorMesh package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: TensorMesh 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-29 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/examples/inverse.rst:2 e1393cd8cf46410f845f0f901f69919b
+msgid "Inverse Problems (Topology Optimization)"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:4 4acee466cf654409892add90792211c2
+msgid ""
+"TensorMesh is built from the ground up to be **fully differentiable**. "
+"This makes it an ideal platform for solving inverse problems, such as "
+"**Topology Optimization**, where gradients of physical quantities (like "
+"compliance, stress, or heat flux) with respect to design variables (like "
+"shape or density) are required."
+msgstr ""
+
+#: ../../source/examples/inverse.rst:6 cdf879dc196f4e49a957d6940b147d7d
+msgid ""
+"Instead of manually deriving and implementing the Adjoint Method, you can"
+" simply rely on PyTorch's ``autograd`` to compute sensitivities "
+"automatically."
+msgstr ""
+
+#: ../../source/examples/inverse.rst:9 4201c5e742a14581820e8f41f0dd96ae
+msgid "SIMP Topology Optimization"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:11 4f728388b30c437cbc9da14afce9e689
+msgid ""
+"**Solid Isotropic Material with Penalization (SIMP)** is the standard "
+"approach for density-based topology optimization. The goal is to "
+"distribute a limited amount of material in a domain to maximize stiffness"
+" (minimize compliance)."
+msgstr ""
+
+#: ../../source/examples/inverse.rst:14 3e9fc4bf18104bd3b5a79a0bc7e10c05
+msgid "Problem Setup"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:16 b3048ce040614cf5aca1af9469cc87a4
+msgid "Consider a 2D cantilever beam topology optimization problem:"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:22 b16f06f020614a4fa271da09b0437c5d
+msgid "**Geometry:**"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:24 1f0eb6e25ab842aebecd7e07b573e16f
+msgid "Domain: :math:`L_x \\times L_y = 60 \\times 30` (unit length)"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:25 d776770bb00241d4a9a2681ac4b6ed58
+msgid "Mesh: :math:`60 \\times 30` quadrilateral elements (QUAD4)"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:26 8bec914ea1964deca42eb6e8a34ea0df
+msgid "Nodes: 1891"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:27 07255b3323104789ac0337ebe6ee37a4
+msgid "Elements: 1800"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:29 2ffe266aba2e447db460c339787fd322
+msgid "**Boundary Conditions:**"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:31 47b92edaf31e49499f8da8f16cb86507
+msgid "**Dirichlet (fixed)**: Left boundary :math:`x = 0`"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:33 9e296bf6887c4089b5f3d6ad7e172fb6
+#, python-brace-format
+msgid ""
+"\\mathbf{u} = \\mathbf{0} \\quad \\text{on } \\Gamma_D = \\{(x, y) : x = "
+"0\\}\n"
+"\n"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:36 607225c5372c4c4eb701cde5bb3cbb1b
+msgid "**Neumann (load)**: Right-bottom corner with surface traction"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:38 2a0ec611aa1a42f399d5631fc9a81f29
+#, python-brace-format
+msgid ""
+"\\mathbf{t} = [0, -100]^T \\text{ N/m} \\quad \\text{on } \\Gamma_N\n"
+"\n"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:41 1e6a96fe4ac042d38d28edcf8f88f387
+msgid "**Material Parameters:**"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:47 7226a1de559943acaa40b2ace2ac9b98
+msgid "Parameter"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:48 614f85912c464ee3b50cc1c9103452d2
+msgid "Symbol"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:49 6c4a980885714f4fbc1ee55caeb77f71
+msgid "Value"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:50 4a39dfd30ef647e18777e84a797b686f
+msgid "Unit"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:51 59e63efcae964814b682ec98063db6b0
+msgid "Max Young's Modulus"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:52 cce8e789e2fb4956a9eeca1d5faeec3d
+#, python-brace-format
+msgid ":math:`E_{max}`"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:53 c64aba28b6494df988a3b6680c74498d
+msgid "70,000"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:54 ../../source/examples/inverse.rst:58
+#: 8dee7c35a34f4176a87192de51e8548b a1eec6634e684f41ab477679525b5681
+msgid "MPa"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:55 ff5be504be9341ca964cc6f00a53a9b9
+msgid "Min Young's Modulus"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:56 01d354858eea4fe0aec7bf4307a86475
+#, python-brace-format
+msgid ":math:`E_{min}`"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:57 385ce731714e400090c74ab9ccdbcce0
+msgid "70"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:59 58f464f1cb6941c39592fe4ebf58a31b
+msgid "Poisson's Ratio"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:60 7020efbd3f924737ad9314efa75998b1
+msgid ":math:`\\nu`"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:61 7cf40687403c42dc84604cd5f5b4e6e4
+msgid "0.3"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:62 ../../source/examples/inverse.rst:66
+#: ../../source/examples/inverse.rst:70 51acca26cac24f74a8cc74ba8645aa07
+#: 7bc8cd6a60ed4b0db22d8e499827be42 b3f28841761547908dc2ac72fef098ff
+msgid "\\-"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:63 8e3b820aad814b00a0978ec9f93db2e0
+msgid "SIMP Penalty"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:64 d3a5fe543c12489ca17e9568f97671cb
+msgid ":math:`p`"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:65 fe5aba4e14384f7cbbd8cbe957aeb1d3
+msgid "3"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:67 b67e5a5ee40643ef8f6a11d67b213317
+msgid "Target Volume Fraction"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:68 a67f65e6553b42ae8a15f8a698917be4
+#, python-brace-format
+msgid ":math:`\\bar{v}`"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:69 b342a50ea2694357842492caa991072a
+msgid "0.5"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:73 d9efdd70652b4f419fcec34fef2522df
+msgid "Mathematical Formulation"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:75 5e607fbf35e6476181a0f54ab1b86181
+msgid "**Objective Function (Compliance Minimization):**"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:77 6a51a07790a2459db85a273cb8893d71
+#, python-brace-format
+msgid ""
+"\\min_{\\rho} \\quad C(\\rho) = \\mathbf{u}^T \\mathbf{K}(\\rho) "
+"\\mathbf{u}\n"
+"\n"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:80 1b19dd75b10b4e639c849e58f3dbb642
+msgid "**Subject to:**"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:82 345b59b854a1456aa27d8aa37b0a17a5
+#, python-brace-format
+msgid ""
+"\\begin{aligned}\n"
+"& \\mathbf{K}(\\rho)\\mathbf{u} = \\mathbf{F} \\quad "
+"\\text{(equilibrium)} \\\\\n"
+"& \\frac{1}{|\\Omega|} \\int_{\\Omega} \\rho \\, d\\Omega \\leq \\bar{v} "
+"\\quad \\text{(volume constraint)} \\\\\n"
+"& 0 < \\rho_{min} \\leq \\rho \\leq 1 \\quad \\text{(bounds)}\n"
+"\\end{aligned}\n"
+"\n"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:89 fae5c17aafc049c4af81a8ad35d514b5
+msgid "**SIMP Material Interpolation:**"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:91 b036fd34687e4820ac509ec7334ba02b
+#, python-brace-format
+msgid ""
+"E(\\rho) = E_{min} + \\rho^p (E_{max} - E_{min})\n"
+"\n"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:94 2c51eaf317c94adf80f2d687c4b5a918
+msgid "where :math:`p = 3` is the penalty factor that promotes 0-1 solutions."
+msgstr ""
+
+#: ../../source/examples/inverse.rst:97 2adc8056a83940b8b2d23c5d4cba6004
+msgid "Sensitivity Analysis"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:99 b148add1c72f46e299a234373a026fa8
+msgid "Using the adjoint method, the compliance gradient is:"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:101 019f396ed5da43428b1a7beec642f4ef
+msgid ""
+"\\frac{\\partial C}{\\partial \\rho_e} = -\\mathbf{u}_e^T "
+"\\frac{\\partial \\mathbf{K}^e}{\\partial \\rho_e} \\mathbf{u}_e\n"
+"\n"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:104 50cd7742646b458cb0f9c029f95a61f2
+msgid "For SIMP interpolation:"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:106 a0ffba8cab7c48958f001f313ed37ae4
+#, python-brace-format
+msgid ""
+"\\frac{\\partial C}{\\partial \\rho_e} = -p \\rho_e^{p-1} (E_{max} - "
+"E_{min}) \\, \\mathbf{u}_e^T \\mathbf{K}_0^e \\mathbf{u}_e\n"
+"\n"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:109 a9cbefb0dfdb4e5c8309e29e8f90a0df
+msgid ""
+"With TensorMesh, you don't need to implement this manually - PyTorch's "
+"autograd handles it automatically!"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:112 6cd39b8c1e6a4f5b904cae8447d2b7ad
+msgid "TensorMesh Implementation"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:167 576006cbac8842329ec93ca67f34bb15
+msgid "Optimization Results"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:169 b894c7dd494c43c285e702bdae3f63ec
+msgid "**Optimization Progress:**"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:174 74e934bd66034f5386780027a61bd770
+msgid "Iter"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:175 ../../source/examples/inverse.rst:218
+#: ../../source/examples/inverse.rst:239 238160941aaa4d9b97096a90458b58b8
+#: 3953700e3b594a608c4290aee15a75f6 d5c020319b414eb3ab80cfbef421344a
+msgid "JAX-FEM"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:176 ../../source/examples/inverse.rst:219
+#: ../../source/examples/inverse.rst:240 71372399af764ac6af3bb0938b2f5d30
+#: 756cc8af38014920966c08ad6d6c4bc3 ed623cca5a6d409b8fb818ef04562881
+msgid "TensorMesh"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:177 2ccac5f2c6554504ad088f6f1f275e63
+msgid "0"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:182 1072e49239e842cdbc8d25a0e32f695f
+msgid "10"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:187 ee340fc716004f36be47964c9328d480
+msgid "25"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:192 0ff15ef0863f4e4fa275cb462e8db8c8
+msgid "50"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:198 512879105637445d9e9e0aac48e62c57
+msgid "**Final Result:**"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:204 79a6142004274048a5e02001074f3c84
+msgid "**Convergence Comparison:**"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:211 fdd2507a3f4343719c8ebfb22276c38e
+msgid "Performance Comparison"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:217 c74d427a46e84d7da3432bc2fc40cd52
+msgid "Metric"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:220 21c90bf92e884d209535e39c7b459b44
+msgid "Speedup"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:221 98c0b90e3adc4bf694220f6be0ce62b7
+msgid "Setup time"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:222 8c5e0709424b457287f4abea239d3cbb
+msgid "2.62 s"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:223 6791888cde204ba4b9a399ef7ac46bb2
+msgid "0.58 s"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:224 2ebbb88938774fd1b7dc7546f9d524dd
+msgid "**4.5×**"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:225 bac79446f6554958afec91f1f82436d8
+msgid "Optimization (51 iters)"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:226 f28e7a52b4c947869e6e28ba2b6dd77e
+msgid "28.51 s"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:227 a5d5dcd33a914a45871343f7be7de54e
+msgid "7.77 s"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:228 b485ef1dd3a74369a6120520553a8589
+msgid "**3.7×**"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:229 d7a3880fdd374cee9fff9cb0a9f06878
+msgid "**Total time**"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:230 59a33c6f9d9c41969f7eef8c3f7ca93c
+msgid "**31.13 s**"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:231 eaa8b293ec0a4073815ae52ad26eedb9
+msgid "**8.35 s**"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:232 fa39d42b0fc34b2ca50265b7cb3292db
+msgid "**3.7× 🚀**"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:238 e33597f0824c4c24842725772f68ef06
+msgid "Accuracy"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:241 9cafae4524c0463cbee55fb76f11e519
+msgid "Status"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:242 d5f67d40bf4349d5b196075eb02fc3a2
+msgid "Initial Compliance"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:243 ../../source/examples/inverse.rst:244
+#: 21d778d061c44af89516dccf8cbf68b5 e3d2546bec624e5497e5677c15cfab36
+msgid "53.71"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:245 ../../source/examples/inverse.rst:253
+#: 6a620193012c430db0c369a68bcb271b 96e8fb4a17f84bbc99e4d13291f3ab06
+msgid "✅ Match"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:246 b36a892bfde34944a434927aa1321e87
+msgid "Final Compliance"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:247 6ab5ce5e694a4159a10f5096c25280b5
+msgid "84.03"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:248 e4200ffb4eca4da7bda8043b379e3caa
+msgid "83.75"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:249 a4d5d69ee9e3466abc8c6313145be4f8
+#, python-format
+msgid "✅ 0.33% diff"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:250 c3815b834268461cb97cc156775cace4
+msgid "Volume Fraction"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:251 ../../source/examples/inverse.rst:252
+#: 4b491d2ecb7c4169b03d91bb955575a0 7687b197189d44bfac4bcaabe93d2674
+msgid "0.500"
+msgstr ""
+
+#: ../../source/examples/inverse.rst:256 cc079b0b325b4fef9b862caeccdb4dd1
+msgid "API Reference"
+msgstr ""
+
+#: f3577c2fcfa94f4fa84d39ce3378cdc5 of tensormesh.optimizer.oc.OCOptimizer:1
+msgid "Optimality Criteria (OC) optimizer for topology optimization."
+msgstr ""
+
+#: 6e73abab342b4476a06b3753f1dbea21 of tensormesh.optimizer.oc.OCOptimizer:3
+msgid ""
+"Similar interface to :obj:`torch.optim.Optimizer`, but specifically "
+"designed for density-based topology optimization with volume constraints."
+msgstr ""
+
+#: 8c0abcdc2b7847faba2bfe27aa67951d of tensormesh.optimizer.oc.OCOptimizer:6
+msgid "The OC update rule is:"
+msgstr ""
+
+#: 1b86a0ad7db64d5f94bbe71f2cffa81c of tensormesh.optimizer.oc.OCOptimizer:8
+msgid ""
+"\\rho_{\\text{new}} = \\rho \\cdot B_e^{\\eta}\n"
+"\n"
+msgstr ""
+
+#: 4faaf88a8e344120a7bd0c3d60146462 of tensormesh.optimizer.oc.OCOptimizer:11
+msgid "where:"
+msgstr ""
+
+#: 5b320445684d452d9708a6843a4883fb of tensormesh.optimizer.oc.OCOptimizer:13
+msgid ""
+"B_e = \\sqrt{\\frac{-\\frac{\\partial C}{\\partial \\rho}}{\\lambda "
+"\\cdot \\frac{\\partial V}{\\partial \\rho}}}\n"
+"\n"
+msgstr ""
+
+#: 246dee9ca71c46619f223d6dd5ea0be3 of tensormesh.optimizer.oc.OCOptimizer:16
+msgid ""
+":math:`\\lambda`: Lagrange multiplier (found by bisection to satisfy "
+"volume constraint)"
+msgstr ""
+
+#: 67914b8e7fe94a0c84d1390172568445 of tensormesh.optimizer.oc.OCOptimizer:17
+msgid ":math:`\\eta = 0.5`: damping exponent"
+msgstr ""
+
+#: ../../source/examples/inverse.rst 08d07d3dbb5b4d01897af911fca93a5c
+msgid "Parameters"
+msgstr ""
+
+#: 203a49b66103426597219d8e157e4b33 of tensormesh.optimizer.oc.OCOptimizer:19
+msgid "Tensor or list of tensors (design variables)"
+msgstr ""
+
+#: 163abbb49b664501862d7ee4dbe90f8b of tensormesh.optimizer.oc.OCOptimizer:21
+msgid "Target volume fraction"
+msgstr ""
+
+#: 83ac3ea0d02b49e0a9b801ca342315fe of tensormesh.optimizer.oc.OCOptimizer:23
+msgid "Maximum density change per iteration default: :obj:`0.2`"
+msgstr ""
+
+#: 88206915e4d24cc39b6834646c08fe10 of tensormesh.optimizer.oc.OCOptimizer:26
+msgid "Minimum density default: :obj:`1e-3`"
+msgstr ""
+
+#: 28c3dac7a34244ef8731328bea6ef4ee of tensormesh.optimizer.oc.OCOptimizer:29
+msgid "Maximum density default: :obj:`1.0`"
+msgstr ""
+
+#: 30a471f19fbc4b66a569fcb716575335 of tensormesh.optimizer.oc.OCOptimizer:32
+msgid "Damping exponent default: :obj:`0.5`"
+msgstr ""
+
+#: f2910c53d98a48e39be1f955fd294d52 of tensormesh.optimizer.oc.OCOptimizer:35
+msgid "Tolerance for bisection default: :obj:`1e-4`"
+msgstr ""
+
+#: 9f7fba33391a49c987dfc3af8f0b1277 of tensormesh.optimizer.oc.OCOptimizer:38
+msgid "Maximum bisection iterations default: :obj:`50`"
+msgstr ""
+
+#: 465568f1cd8b45758dcfb375d8f64838 of tensormesh.optimizer.oc.OCOptimizer:43
+msgid "Examples"
+msgstr ""
+
+#: ac7ddf894ed94b02ae9bd14e0ea3456a of
+#: tensormesh.optimizer.oc.OCOptimizer.zero_grad:1
+msgid "Clear gradients of all parameters."
+msgstr ""
+
+#: d24542d898d74210b07a3db9e3255b4f of
+#: tensormesh.optimizer.oc.OCOptimizer.step:1
+msgid "Perform OC update step."
+msgstr ""
+
+#: fd017c78d8e5462abb6c5c98b6ec97bb of
+#: tensormesh.optimizer.oc.OCOptimizer.step:3
+msgid "Args:"
+msgstr ""
+
+#: 68ee7a3d4e154de18241caa17e604095 of
+#: tensormesh.optimizer.oc.OCOptimizer.step:4
+msgid "dc: Compliance sensitivity (dC/dρ). If None, uses param.grad."
+msgstr ""
+
+#: d83e25c184be4fe888c43994e8d5c5d8 of
+#: tensormesh.optimizer.oc.OCOptimizer.step:5
+msgid "Note: dc should be negative for compliance minimization."
+msgstr ""
+
+#: 8a5be35646ff4eb0be112ca2a9d4f889 of
+#: tensormesh.optimizer.oc.OCOptimizer.step:6
+msgid "dv: Volume sensitivity (dV/dρ). If None, uses uniform 1/n_elem."
+msgstr ""
+
+#: 0b50f120a6074a69a9e5c1bb37134200 of
+#: tensormesh.optimizer.oc.OCOptimizer.step:8
+msgid "Returns:"
+msgstr ""
+
+#: 06487f8e99794dd483694582ebaeb6c8 of
+#: tensormesh.optimizer.oc.OCOptimizer.step:9
+msgid "dict: Step info including 'lambda' and 'volume'"
+msgstr ""
+
+#: 71200a6df6a94b70b85172dccc832b88 of
+#: tensormesh.optimizer.oc.OCOptimizer.get_volume:1
+msgid "Get current volume fraction."
+msgstr ""
+
+#: 588fa8ee28074965ac6e13e756de7d1e of
+#: tensormesh.optimizer.oc.OCOptimizer.get_stats:1
+msgid "Get optimizer statistics."
+msgstr ""
+

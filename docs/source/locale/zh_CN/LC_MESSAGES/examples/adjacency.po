@@ -1,0 +1,101 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, TensorMesh Contributors
+# This file is distributed under the same license as the TensorMesh package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: TensorMesh 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-29 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/examples/adjacency.rst:2 21721e5bfab74903ba240c4fb7bf45ce
+msgid "Adjacency"
+msgstr ""
+
+#: ../../source/examples/adjacency.rst:4 14c009cb6d1c44869941b802ad83fb39
+msgid ""
+"The adjacency information of a mesh describes how its components (nodes, "
+"elements) are connected to each other. This is crucial for building "
+"graph-based representations of the mesh."
+msgstr ""
+
+#: ../../source/examples/adjacency.rst:7 836de5f5c4ab417082d988b35b6ca09d
+msgid "2D Node Adjacency"
+msgstr ""
+
+#: ../../source/examples/adjacency.rst:9 04bcce30cead4a4db63c24f7669a009e
+msgid ""
+"Node adjacency describes the connectivity between nodes. Two nodes $i$ "
+"and $j$ are considered adjacent if they belong to the same edge in the "
+"mesh."
+msgstr ""
+
+#: ../../source/examples/adjacency.rst:11 7d4d3fa61ff8494b9e41888eeeeb669f
+#, python-brace-format
+msgid "The adjacency matrix $A \\in \\{0, 1\\}^{N_v \\times N_v}$ is defined as:"
+msgstr ""
+
+#: ../../source/examples/adjacency.rst:13 7c4b76873c7941fb89c4e5e3a8525082
+#, python-brace-format
+msgid ""
+"A_{ij} = \\begin{cases}\n"
+"1 & \\text{if nodes } i \\text{ and } j \\text{ share an edge} \\\\\n"
+"0 & \\text{otherwise}\n"
+"\\end{cases}"
+msgstr ""
+
+#: ../../source/examples/adjacency.rst:20 8700618fd37e4ab9919701071f348b66
+msgid "where $N_v$ is the number of vertices (nodes)."
+msgstr ""
+
+#: ../../source/examples/adjacency.rst:51 e75e0401a1bc42cea0ebaf357667b276
+msgid "2D Element Adjacency"
+msgstr ""
+
+#: ../../source/examples/adjacency.rst:53 5e74ab895f02402f9597b61b9eaaa3cc
+msgid ""
+"Element adjacency describes the connectivity between elements. Two "
+"elements $e_i$ and $e_j$ are considered adjacent if they share a common "
+"face (or an edge in 2D)."
+msgstr ""
+
+#: ../../source/examples/adjacency.rst:55 7fe6e15e3d214ed98a7027ebaa0def34
+#, python-brace-format
+msgid ""
+"The element adjacency matrix $E \\in \\{0, 1\\}^{N_e \\times N_e}$ is "
+"defined as:"
+msgstr ""
+
+#: ../../source/examples/adjacency.rst:57 cf2f71fe2ff74cb3af6f083569801118
+#, python-brace-format
+msgid ""
+"E_{ij} = \\begin{cases}\n"
+"1 & \\text{if elements } e_i \\text{ and } e_j \\text{ share a common "
+"boundary (edge in 2D, face in 3D)} \\\\\n"
+"0 & \\text{otherwise}\n"
+"\\end{cases}"
+msgstr ""
+
+#: ../../source/examples/adjacency.rst:64 46a456444fe84c768be2151545a56b6e
+msgid "where $N_e$ is the number of elements."
+msgstr ""
+
+#: ../../source/examples/adjacency.rst:100 a973e2876ad547a185de292881d9c93d
+msgid "3D Node Adjacency"
+msgstr ""
+
+#: ../../source/examples/adjacency.rst:134 2301e51d57e94cc68137da1a583e6477
+msgid "3D Element Adjacency"
+msgstr ""
+

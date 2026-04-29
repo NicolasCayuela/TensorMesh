@@ -1,0 +1,266 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, TensorMesh Contributors
+# This file is distributed under the same license as the TensorMesh package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: TensorMesh 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-29 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/examples/partition.rst:2 66dea841c85a4b7eb0228284b8cbf1e0
+msgid "Graph Partitioning"
+msgstr ""
+
+#: ../../source/examples/partition.rst:4 d2a852c41ae2432b88ba5c0ffca0ff31
+msgid "Graph Partition Exploded View"
+msgstr ""
+
+#: ../../source/examples/partition.rst:10 1f7c1fd0e2ca44db8264084306955f4f
+msgid "Overview"
+msgstr ""
+
+#: ../../source/examples/partition.rst:11 b266d71dca1e4d50b1291ad04829dd37
+msgid ""
+"Mesh partitioning (or domain decomposition) is a fundamental "
+"preprocessing step for parallel finite element analysis. The goal is to "
+"divide the mesh into :math:`k` subdomains such that:"
+msgstr ""
+
+#: ../../source/examples/partition.rst:13 79b02d7d9e7143b4910c74fd1d488267
+msgid "**Load Balance**: Each subdomain has roughly the same number of elements."
+msgstr ""
+
+#: ../../source/examples/partition.rst:14 b0ecf29ffd064d8c89db5e73fbf8731d
+msgid ""
+"**Minimal Interface**: The number of shared nodes (communication cost) is"
+" minimized."
+msgstr ""
+
+#: ../../source/examples/partition.rst:16 e4b5886b40444a66a22dfcc3ad03c844
+msgid ""
+"TensorMesh provides a highly efficient, GPU-accelerated implementation of"
+" **Recursive Spectral Bisection**."
+msgstr ""
+
+#: ../../source/examples/partition.rst:19 6f3c194ea1ee41c98582ed8b30569b76
+msgid "Algorithm Details"
+msgstr ""
+
+#: ../../source/examples/partition.rst:22 484b892aaa5348b7a186a9020d543287
+msgid "Spectral Partitioning"
+msgstr ""
+
+#: ../../source/examples/partition.rst:23 a4ec50dc283a4c0ab8d94a4ae41a19d0
+msgid ""
+"The method leverages the spectral properties of the **Graph Laplacian** "
+"matrix :math:`L = D - A`, where :math:`A` is the adjacency matrix and "
+":math:`D` is the degree matrix."
+msgstr ""
+
+#: ../../source/examples/partition.rst:25 1fb6667f0e064e57b474aef2498ad9ec
+msgid ""
+"**Fiedler Vector**: The algorithm computes the eigenvector corresponding "
+"to the second smallest eigenvalue of the Laplacian (known as the Fiedler "
+"vector). This vector maps the graph vertices onto a line while preserving"
+" locality."
+msgstr ""
+
+#: ../../source/examples/partition.rst:26 c3a4044046844e5680938fda7817a3c2
+msgid ""
+"**Bisection**: Nodes are partitioned into two sets based on the median "
+"value (or sign) of the Fiedler vector components."
+msgstr ""
+
+#: ../../source/examples/partition.rst:27 7835988c8a644839b924ffed76b4301a
+msgid ""
+"**Recursion**: To partition into :math:`k=2^m` parts, the algorithm is "
+"applied recursively to each subgraph."
+msgstr ""
+
+#: ../../source/examples/partition.rst:29 517b44fb18864923a0d8f6f7d97e3afe
+msgid ""
+"**GPU Acceleration** Solving the eigenvalue problem for large sparse "
+"matrices is computationally intensive. TensorMesh utilizes "
+"``torch.lobpcg`` (Locally Optimal Block Preconditioned Conjugate "
+"Gradient) on the GPU to efficiently find the smallest eigenpairs of the "
+"sparse Laplacian without moving data to the CPU."
+msgstr ""
+
+#: ../../source/examples/partition.rst:33 0d735c803fef4df29ddbeda01b9c0c41
+msgid "Ghost Nodes & Overlap"
+msgstr ""
+
+#: ../../source/examples/partition.rst:34 ca43d89000164a1183c76b53cfbcf7bf
+msgid ""
+"In element-based partitioning, elements are assigned to unique "
+"partitions. However, nodes on the boundary (interface) must be shared "
+"between partitions to maintain continuity."
+msgstr ""
+
+#: ../../source/examples/partition.rst:36 e28b356a0d1540fbb32e66210b18b52b
+msgid "**Internal Nodes**: Nodes belonging exclusively to one partition."
+msgstr ""
+
+#: ../../source/examples/partition.rst:37 36f9f4958316442cb0f47dd46e6032d5
+msgid "**Ghost Nodes**: Nodes shared by two or more partitions."
+msgstr ""
+
+#: ../../source/examples/partition.rst:39 35c812efcf5742a784703f2046f1340e
+msgid ""
+"TensorMesh's ``partition_mesh`` function automatically handles this "
+"topology. It returns a list of independent ``Mesh`` objects (submeshes). "
+"Each submesh contains its own local nodes, but preserves the mapping to "
+"the original mesh via the ``orig_nid`` (original node ID) point data. "
+"This allows for easy data exchange during parallel computation."
+msgstr ""
+
+#: ../../source/examples/partition.rst:42 b899a1e1bc384d67ac240f1d1721401f
+msgid "Usage"
+msgstr ""
+
+#: ../../source/examples/partition.rst:66 00ea1351034b4016b150bdc0906882af
+msgid "API Reference"
+msgstr ""
+
+#: 0d4255bb269a47d2a50d81fd04aee895 of
+#: tensormesh.mesh.partition.partition_mesh:1
+msgid "Partition a mesh into independent submeshes for parallel computation."
+msgstr ""
+
+#: 9f98ddf8de1c4e75871be7510edb39d2 of
+#: tensormesh.mesh.partition.partition_mesh:3
+msgid ""
+"This function performs element-based domain decomposition, creating "
+"``n_parts`` submeshes that can be processed independently (with ghost "
+"node communication for boundary data exchange)."
+msgstr ""
+
+#: e377bf1b3bd74424be81aa33433e61ca of tensormesh.mesh.partition.partition_mesh
+msgid "Parameters"
+msgstr ""
+
+#: 0b806950aa5f4f5e8a6489beebd298a6 of
+#: tensormesh.mesh.partition.partition_mesh:7
+msgid "The mesh to partition. Must have elements of at least one type."
+msgstr ""
+
+#: 0fce4c7c653740e6832584fc811a1e0b of
+#: tensormesh.mesh.partition.partition_mesh:9
+msgid "Number of partitions to create."
+msgstr ""
+
+#: cf80fcda835a4efb84c397c0d2cba49d of
+#: tensormesh.mesh.partition.partition_mesh:11
+msgid ""
+"Partitioning algorithm:  - ``'coordinate'``: Recursive Coordinate "
+"Bisection on element   centroids.  Very fast — O(n log n).  Default. - "
+"``'spectral'``: Recursive Spectral Bisection using Fiedler vector.   "
+"Better partition quality but much slower. - ``'metis'``: Uses pymetis "
+"(requires installation)."
+msgstr ""
+
+#: b1aa9729226a4cd8bc9dc40d88fcff7e of
+#: tensormesh.mesh.partition.partition_mesh:11
+msgid "Partitioning algorithm:"
+msgstr ""
+
+#: 8df54a713b684f0ab529cb173f7456cb of
+#: tensormesh.mesh.partition.partition_mesh:13
+msgid ""
+"``'coordinate'``: Recursive Coordinate Bisection on element centroids.  "
+"Very fast — O(n log n).  Default."
+msgstr ""
+
+#: f9d5eef143d54e6c9700a73d8e9cdf96 of
+#: tensormesh.mesh.partition.partition_mesh:15
+msgid ""
+"``'spectral'``: Recursive Spectral Bisection using Fiedler vector. Better"
+" partition quality but much slower."
+msgstr ""
+
+#: da170c8e76ee4348809b48527ed728c9 of
+#: tensormesh.mesh.partition.partition_mesh:17
+msgid "``'metis'``: Uses pymetis (requires installation)."
+msgstr ""
+
+#: c6f539cbf28f41cbab9d6c6705bfc8ff of
+#: tensormesh.mesh.partition.partition_mesh:19
+msgid ""
+"Whether to include ghost nodes (shared boundary nodes) in submeshes. "
+"Currently only ``True`` is supported for element-based partitioning. "
+"Default: ``True``."
+msgstr ""
+
+#: 1a7d6cd6b52a4e83b3d2d7039644c219 of tensormesh.mesh.partition.partition_mesh
+msgid "Returns"
+msgstr ""
+
+#: 308d9ad7834041579c2ebebc8de87254 of
+#: tensormesh.mesh.partition.partition_mesh:24
+msgid ""
+"A list of ``n_parts`` submeshes. Each submesh is a complete ``Mesh`` "
+"object containing:  - Local nodes and elements with renumbered indices - "
+"``point_data['orig_nid']``: Tensor mapping local node indices to   "
+"original global node indices (for data exchange between partitions)  "
+"Returns ``None`` for empty partitions."
+msgstr ""
+
+#: b97559f112ff410d902c87263980e0c8 of
+#: tensormesh.mesh.partition.partition_mesh:24
+msgid ""
+"A list of ``n_parts`` submeshes. Each submesh is a complete ``Mesh`` "
+"object containing:"
+msgstr ""
+
+#: a586521d309042c298a9775ff3ecbdd7 of
+#: tensormesh.mesh.partition.partition_mesh:27
+msgid "Local nodes and elements with renumbered indices"
+msgstr ""
+
+#: 6fb86b651de54a78926c7e8d584c1821 of
+#: tensormesh.mesh.partition.partition_mesh:28
+msgid ""
+"``point_data['orig_nid']``: Tensor mapping local node indices to original"
+" global node indices (for data exchange between partitions)"
+msgstr ""
+
+#: 4fae4ece61334473998571056a687ce0 of
+#: tensormesh.mesh.partition.partition_mesh:31
+msgid "Returns ``None`` for empty partitions."
+msgstr ""
+
+#: b02bd2135d4845d49aac57e7d38b877b of tensormesh.mesh.partition.partition_mesh
+msgid "Return type"
+msgstr ""
+
+#: 2e0ea1be89524662b5a1139bb43d4b11 of
+#: tensormesh.mesh.partition.partition_mesh:35
+msgid "Notes"
+msgstr ""
+
+#: a6d77dd258e249dda734d55acef06c66 of
+#: tensormesh.mesh.partition.partition_mesh:36
+msgid ""
+"Ghost nodes are nodes shared between partitions (on the interface). They "
+"are duplicated in each partition that uses them, enabling independent "
+"local computation. The ``orig_nid`` mapping allows reconstruction of "
+"global solutions and inter-partition communication."
+msgstr ""
+
+#: 39718861895c49868c6921fc44f977d2 of
+#: tensormesh.mesh.partition.partition_mesh:42
+msgid "Examples"
+msgstr ""
+

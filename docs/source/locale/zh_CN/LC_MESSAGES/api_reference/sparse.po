@@ -1,0 +1,362 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, TensorMesh Contributors
+# This file is distributed under the same license as the TensorMesh package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: TensorMesh 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-29 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/api_reference/sparse.rst:2 52b42ec30e6c4cef8aa376f2e7584d0c
+msgid "tensormesh.sparse"
+msgstr ""
+
+#: ../../source/api_reference/sparse.rst:6 83d5b47777a44672abd37fa72b58d204
+msgid "Contents"
+msgstr ""
+
+#: ../../source/api_reference/sparse.rst:9 d225eedafc3c48bba098e7286f73e780
+msgid "SparseMatrix"
+msgstr ""
+
+#: 12565dea1fc8475abc79556824cc36ef of tensormesh.sparse.matrix.SparseMatrix:1
+msgid "COO format sparse matrix for FEM computations."
+msgstr ""
+
+#: 165942ebcae44a8682b6d6bd9a2eb344 of tensormesh.sparse.matrix.SparseMatrix:3
+msgid ""
+"Extends torch_sla.SparseTensor with FEM-specific utilities like block "
+"assembly, layout comparison, and scipy interoperability."
+msgstr ""
+
+#: 11be98b4c9f445f892fe68693de97524 a465fc685b02438a9796e63abd0074c2 of
+#: tensormesh.sparse.matrix.SparseMatrix:7
+#: tensormesh.sparse.matrix.SparseMatrix.to:12
+msgid "Examples"
+msgstr ""
+
+#: ../../source/api_reference/sparse.rst 28caba73d2ba4361bbf3f91c26329851
+#: 38ff24c9d1ab4cecb0d530b3af2296f6 41ce3513ec8242a59f8cbf36c972c37e
+#: 7e36380f66be42ecae341116f7cfcf0c fbc4640a5f12481b8dee566e9fd767ce of
+#: tensormesh.sparse.matrix.SparseMatrix.to
+msgid "Parameters"
+msgstr ""
+
+#: c1b2fba551b3462e8cdaf823256ee848 of tensormesh.sparse.matrix.SparseMatrix:35
+msgid "1D float tensor of shape [nnz], the non-zero values"
+msgstr ""
+
+#: 864d0c9e07994daa98d6dbe1baedefbe of tensormesh.sparse.matrix.SparseMatrix:37
+msgid "1D int tensor of shape [nnz], the row indices"
+msgstr ""
+
+#: 2f90aeb892954935bb24c74d2849a686 of tensormesh.sparse.matrix.SparseMatrix:39
+msgid "1D int tensor of shape [nnz], the column indices"
+msgstr ""
+
+#: e912c254df044b0b8d9497dfe90effb3 of tensormesh.sparse.matrix.SparseMatrix:41
+msgid "The shape of the sparse matrix (nrows, ncols)"
+msgstr ""
+
+#: 7a16a0faf99947528d7efd6467d9a424 of tensormesh.sparse.SparseMatrix.edata:1
+msgid "Alias for values (backward compatibility with old TensorMesh API)."
+msgstr ""
+
+#: 4251083949684ec3ab829ae88c9f0412 of tensormesh.sparse.SparseMatrix.row:1
+msgid "Alias for row_indices."
+msgstr ""
+
+#: fef6ef3f89b24e5fa9961a415f4a898a of tensormesh.sparse.SparseMatrix.col:1
+msgid "Alias for col_indices."
+msgstr ""
+
+#: 8d5632d0ead64e9ba4e9ad82e9bdced7 of tensormesh.sparse.SparseMatrix.edges:1
+msgid "Edge indices of shape [2, nnz]."
+msgstr ""
+
+#: 0ddba9d5c4bd41b990644b7f10942187 of
+#: tensormesh.sparse.SparseMatrix.layout_hash:1
+msgid "Hash of the sparsity pattern for comparison."
+msgstr ""
+
+#: 410b73576a2648d2a068195714432841 of
+#: tensormesh.sparse.SparseMatrix.layout_mask:1
+msgid "Binary mask where non-zero elements are 1."
+msgstr ""
+
+#: f7941bd8bd87443283af6de217c0d545 of tensormesh.sparse.SparseMatrix.grad:1
+msgid "Return gradient as SparseMatrix (if values have gradient)."
+msgstr ""
+
+#: 27a42a7aacc24d90801c927d4664be92 of
+#: tensormesh.sparse.matrix.SparseMatrix.to:1
+msgid "Move tensor to device and/or convert dtype."
+msgstr ""
+
+#: 93ab0c55ac1e4389acead3678c61fb08 of
+#: tensormesh.sparse.matrix.SparseMatrix.to:3
+msgid "Target device (e.g., 'cuda', 'cpu', 'cuda:0')."
+msgstr ""
+
+#: 27ce643c9a9a44ae9c6edfc523f13346 of
+#: tensormesh.sparse.matrix.SparseMatrix.to:5
+msgid "Target data type (e.g., torch.float32, torch.float64)."
+msgstr ""
+
+#: ../../source/api_reference/sparse.rst 0bce5c50e7f14257a5789ce452a4dd71
+#: 35e90e3866ae4b01b984f0ffbdc1e2dc 3ef5a72c896048e59e6d637af1a37a62
+#: c115204a37c5470f8b7215c9cef90063 d3a2f104ffd04f108599cf697f913934 of
+#: tensormesh.sparse.matrix.SparseMatrix.to
+msgid "Returns"
+msgstr ""
+
+#: 843456b1d5b04cd6b940739128c45b55 of
+#: tensormesh.sparse.matrix.SparseMatrix.to:8
+msgid "New SparseTensor on the target device/dtype."
+msgstr ""
+
+#: ../../source/api_reference/sparse.rst 07a55e5d9a8b4bc88949cfd8619a06f7
+#: 5355c503c5244262b240edc26eb0462f 623263b665224c21af2e544827f8b958
+#: b5a1abdef657477ca1dae14c6d67d517 c7f6e55055114181bfba44278c4223e4 of
+#: tensormesh.sparse.matrix.SparseMatrix.to
+msgid "Return type"
+msgstr ""
+
+#: feb00980361f43fbb43aa462485be5b3 of
+#: tensormesh.sparse.matrix.SparseMatrix.cuda:1
+msgid "Move tensor to CUDA device."
+msgstr ""
+
+#: 00c7329038ed4a65af36066bcf27c9d1 of
+#: tensormesh.sparse.matrix.SparseMatrix.cuda:3
+msgid "CUDA device index. Default: current device."
+msgstr ""
+
+#: abcbb6497c664b228fc418bf92b49345 of
+#: tensormesh.sparse.matrix.SparseMatrix.cuda:6
+msgid "Tensor on CUDA."
+msgstr ""
+
+#: d8adf58494394724a5065764a66483e0 of
+#: tensormesh.sparse.matrix.SparseMatrix.cpu:1
+msgid "Move tensor to CPU."
+msgstr ""
+
+#: c915890e726d487182f3b5f49dc4ba23 of
+#: tensormesh.sparse.matrix.SparseMatrix.cpu:3
+msgid "Tensor on CPU."
+msgstr ""
+
+#: ef852dfe98624cfbbf4f179fc2e0b205 of
+#: tensormesh.sparse.matrix.SparseMatrix.float:1
+msgid "Convert to float32."
+msgstr ""
+
+#: d8d6eca491f14f3fb84105acd1b276fa of
+#: tensormesh.sparse.matrix.SparseMatrix.double:1
+msgid "Convert to float64."
+msgstr ""
+
+#: 30dd0d66ceca4e5cb00f09ae709efa68 of
+#: tensormesh.sparse.matrix.SparseMatrix.half:1
+msgid "Convert to float16."
+msgstr ""
+
+#: 9d354901f24245b5ae49a131e74d7a57 of
+#: tensormesh.sparse.matrix.SparseMatrix.detach:1
+msgid "Detach from computation graph. Preserves subclass type."
+msgstr ""
+
+#: e240b4b918d346d18ac45b2cbe3bba90 of
+#: tensormesh.sparse.matrix.SparseMatrix.has_same_layout:1
+msgid "Check if two matrices have the same sparsity pattern."
+msgstr ""
+
+#: d1fe23007753499e8cb9942776af2e63 of
+#: tensormesh.sparse.matrix.SparseMatrix.has_same_layout:3
+msgid ""
+"Useful for FEM assembly where multiple matrices share the same mesh "
+"topology."
+msgstr ""
+
+#: 41b2a641414f4ff9a57945d991a5983d of
+#: tensormesh.sparse.matrix.SparseMatrix.degree:1
+msgid "Count non-zero elements per row (axis=0) or column (axis=1)."
+msgstr ""
+
+#: cd6e229a4fc34e97995300ec33a8c83a of
+#: tensormesh.sparse.matrix.SparseMatrix.degree:3
+msgid "Useful for graph-based operations in FEM."
+msgstr ""
+
+#: 9edd980ff1464a4f8c29cb1d175131e0 of
+#: tensormesh.sparse.matrix.SparseMatrix.transpose:1
+msgid "Transpose the sparse matrix."
+msgstr ""
+
+#: 7bd2a051336d421892cdd9a034168ce6 of tensormesh.sparse.SparseMatrix.T:1
+msgid "Transpose property."
+msgstr ""
+
+#: 5d835ef995c24758bab94f8cdad56058 of
+#: tensormesh.sparse.matrix.SparseMatrix.to_scipy_coo:1
+msgid "Convert to scipy COO matrix."
+msgstr ""
+
+#: cedb6c6360584529a54185e968cec639 of
+#: tensormesh.sparse.matrix.SparseMatrix.to_sparse_coo:1
+msgid "Convert to torch.sparse_coo_tensor."
+msgstr ""
+
+#: 8e843da504804b8280854f4aabc4a5ae of
+#: tensormesh.sparse.matrix.SparseMatrix.from_scipy_coo:1
+msgid "Create from scipy COO matrix."
+msgstr ""
+
+#: 989a55ff1201401387ac60f7fe1e15fb of
+#: tensormesh.sparse.matrix.SparseMatrix.from_sparse_coo:1
+msgid "Create from torch.sparse_coo_tensor."
+msgstr ""
+
+#: a8a64c3a0969417e9f29a56137b4e8e8 of
+#: tensormesh.sparse.matrix.SparseMatrix.from_dense:1
+msgid "Create from dense tensor."
+msgstr ""
+
+#: 1acb6ac295f14c399d19f116d76874c1 of
+#: tensormesh.sparse.matrix.SparseMatrix.from_block_coo:1
+msgid "Create from block COO format (common in FEM element assembly)."
+msgstr ""
+
+#: 142815b53ff44f7ab15c8d7f986c9d2f of
+#: tensormesh.sparse.matrix.SparseMatrix.from_block_coo:3
+msgid "Block data of shape [n_elements, block_size, block_size]"
+msgstr ""
+
+#: 575a0e1f44814239a555131760452a33 ba2e2bd43d2c4c80ab4d47d025f6d094 of
+#: tensormesh.sparse.matrix.SparseMatrix.from_block_coo:5
+#: tensormesh.sparse.matrix.SparseMatrix.from_block_coo:7
+msgid "Block indices of shape [n_elements]"
+msgstr ""
+
+#: 9c288e872ef84c04a895f37bd02b11b4 of
+#: tensormesh.sparse.matrix.SparseMatrix.from_block_coo:9
+msgid "Number of block rows and columns"
+msgstr ""
+
+#: c5e947fc6bed4dd4895a92936c109d6c of
+#: tensormesh.sparse.matrix.SparseMatrix.from_block_coo:12
+msgid ""
+"Assembled sparse matrix of shape [shape[0]*block_size, "
+"shape[1]*block_size]"
+msgstr ""
+
+#: 33bbbce5fadc420381168c44ab146f8e of
+#: tensormesh.sparse.matrix.SparseMatrix.random:1
+msgid "Generate a random sparse matrix."
+msgstr ""
+
+#: 657ef15ac0464cca8f0c458dd6634f0e of
+#: tensormesh.sparse.matrix.SparseMatrix.random_layout:1
+msgid "Generate a random sparse layout (row, col, shape)."
+msgstr ""
+
+#: 43ea90862f204b3e89e6ab457462a9e4 of
+#: tensormesh.sparse.matrix.SparseMatrix.random_from_layout:1
+msgid "Generate random values with given layout."
+msgstr ""
+
+#: 4a55efec3b184b5a8826aea0f735ea9c of
+#: tensormesh.sparse.matrix.SparseMatrix.eye:1
+msgid "Generate a sparse identity matrix."
+msgstr ""
+
+#: 3de36bda808a4f4aa64aaaf3bb096c0e of
+#: tensormesh.sparse.matrix.SparseMatrix.full:1
+msgid "Generate a dense matrix filled with a value (stored as sparse)."
+msgstr ""
+
+#: fd3aa4d9a12a4b1da62a7c00f16abd97 of
+#: tensormesh.sparse.matrix.SparseMatrix.combine_vector:1
+msgid "Stack sparse matrices along an axis."
+msgstr ""
+
+#: 74db0e81537b4b6c9c8a29c917cb44c2 of
+#: tensormesh.sparse.matrix.SparseMatrix.combine_matrix:1
+msgid "Combine sparse matrices in a 2D block layout."
+msgstr ""
+
+#: 16011fa8b1e44795ab2d425257146b5f of
+#: tensormesh.sparse.matrix.SparseMatrix.combine:1
+msgid "Dispatch to combine_vector or combine_matrix based on input structure."
+msgstr ""
+
+#: ../../source/api_reference/sparse.rst:18 229fabd55faa45d9aefabc7493f05f67
+msgid "NonLinearSolve"
+msgstr ""
+
+#: 8ab7148fec5d440db636437171979055 of
+#: tensormesh.sparse.nonlinear_solve.nonlinear_solve:1
+msgid ""
+"Solve F(u, params) = 0 for u using Newton-Raphson method with implicit "
+"differentiation support."
+msgstr ""
+
+#: ef644f39d18b4dc8ae174bd077ce24f2 of
+#: tensormesh.sparse.nonlinear_solve.nonlinear_solve:3
+msgid ""
+"Function F(u, *params) -> residual (Tensor). Should support autograd for "
+"params if gradients are needed."
+msgstr ""
+
+#: 609cb659336e419196868efd12b150f8 of
+#: tensormesh.sparse.nonlinear_solve.nonlinear_solve:6
+msgid ""
+"Function J(u, *params) -> Jacobian (SparseMatrix). The Jacobian dF/du at "
+"u."
+msgstr ""
+
+#: 9be6e3fcd9664972b629b888a9893261 of
+#: tensormesh.sparse.nonlinear_solve.nonlinear_solve:9
+msgid "Initial guess for u."
+msgstr ""
+
+#: a0efedb1cacc4be389be69e4e5608c90 of
+#: tensormesh.sparse.nonlinear_solve.nonlinear_solve:11
+msgid "Parameters passed to f and j. These can be optimized."
+msgstr ""
+
+#: 37b3fbd52f7c49d6862f0feb6de11944 of
+#: tensormesh.sparse.nonlinear_solve.nonlinear_solve:13
+msgid "Maximum number of Newton iterations. Default 100."
+msgstr ""
+
+#: a96573eaf6ba4e9998dcdd366cc45cd3 of
+#: tensormesh.sparse.nonlinear_solve.nonlinear_solve:15
+msgid "Convergence tolerance for residual norm. Default 1e-6."
+msgstr ""
+
+#: 82345154c91048f9872252376b1e4a0c of
+#: tensormesh.sparse.nonlinear_solve.nonlinear_solve:17
+msgid "Whether to print solver progress. Default False."
+msgstr ""
+
+#: b6f24e1a33074029ad53e51e5fb08cd5 of
+#: tensormesh.sparse.nonlinear_solve.nonlinear_solve:20
+msgid ""
+"The solution u such that F(u, params) approx 0. Gradients can be "
+"backpropagated through u to params."
+msgstr ""
+

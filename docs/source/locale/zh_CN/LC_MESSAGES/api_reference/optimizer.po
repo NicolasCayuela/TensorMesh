@@ -1,0 +1,164 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, TensorMesh Contributors
+# This file is distributed under the same license as the TensorMesh package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: TensorMesh 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-29 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/api_reference/optimizer.rst:2 36f54f85cac0436c8c299fab6d71700c
+msgid "tensormesh.optimizer"
+msgstr ""
+
+#: ../../source/api_reference/optimizer.rst:5 5d42b02ca56342cfa905f5aea67b2dd1
+msgid "contents"
+msgstr ""
+
+#: ../../source/api_reference/optimizer.rst:8 6044c1ce38d4461381d210a3a3709946
+msgid "OC Optimizer"
+msgstr ""
+
+#: 8b3ee520347448f5ae77f67fabebd9ce of tensormesh.optimizer.oc.OCOptimizer:1
+msgid "Optimality Criteria (OC) optimizer for topology optimization."
+msgstr ""
+
+#: 0c554eb63bfd4492ad80f1b0a64deea4 of tensormesh.optimizer.oc.OCOptimizer:3
+msgid ""
+"Similar interface to :obj:`torch.optim.Optimizer`, but specifically "
+"designed for density-based topology optimization with volume constraints."
+msgstr ""
+
+#: 81c95d91c2304931ba1c9b247c3f9d10 of tensormesh.optimizer.oc.OCOptimizer:6
+msgid "The OC update rule is:"
+msgstr ""
+
+#: 4336ed4f32d746ffa71977771a04c1d5 of tensormesh.optimizer.oc.OCOptimizer:8
+msgid ""
+"\\rho_{\\text{new}} = \\rho \\cdot B_e^{\\eta}\n"
+"\n"
+msgstr ""
+
+#: 58b4bd0e8e9d4b48918144933dd2e588 of tensormesh.optimizer.oc.OCOptimizer:11
+msgid "where:"
+msgstr ""
+
+#: 1bfd95eb05bd4e23abde387a62bc3e1d of tensormesh.optimizer.oc.OCOptimizer:13
+msgid ""
+"B_e = \\sqrt{\\frac{-\\frac{\\partial C}{\\partial \\rho}}{\\lambda "
+"\\cdot \\frac{\\partial V}{\\partial \\rho}}}\n"
+"\n"
+msgstr ""
+
+#: bf9638026b0b43f489f65760417d888f of tensormesh.optimizer.oc.OCOptimizer:16
+msgid ""
+":math:`\\lambda`: Lagrange multiplier (found by bisection to satisfy "
+"volume constraint)"
+msgstr ""
+
+#: e92d0be6829d46b2a81af36d5eff7d87 of tensormesh.optimizer.oc.OCOptimizer:17
+msgid ":math:`\\eta = 0.5`: damping exponent"
+msgstr ""
+
+#: ../../source/api_reference/optimizer.rst 947307175fe6493198160e4896c0ce10
+msgid "Parameters"
+msgstr ""
+
+#: a371ce8f00d24f6f987c198905df0b3b of tensormesh.optimizer.oc.OCOptimizer:19
+msgid "Tensor or list of tensors (design variables)"
+msgstr ""
+
+#: 5d0cd5ecb0ce4caf9b55bfd34e85c2c8 of tensormesh.optimizer.oc.OCOptimizer:21
+msgid "Target volume fraction"
+msgstr ""
+
+#: ea4ecdfbe9c440aaa2f0482c515b52c3 of tensormesh.optimizer.oc.OCOptimizer:23
+msgid "Maximum density change per iteration default: :obj:`0.2`"
+msgstr ""
+
+#: 0af03febedff45db8e167aad46f21d92 of tensormesh.optimizer.oc.OCOptimizer:26
+msgid "Minimum density default: :obj:`1e-3`"
+msgstr ""
+
+#: 5f12c99c950841e1992b7888304c2bc3 of tensormesh.optimizer.oc.OCOptimizer:29
+msgid "Maximum density default: :obj:`1.0`"
+msgstr ""
+
+#: 6db1cbd2e0024a1d9eadecc9831e6c44 of tensormesh.optimizer.oc.OCOptimizer:32
+msgid "Damping exponent default: :obj:`0.5`"
+msgstr ""
+
+#: 45dbf2ec6f364eb5bc4ffc6ed71bd812 of tensormesh.optimizer.oc.OCOptimizer:35
+msgid "Tolerance for bisection default: :obj:`1e-4`"
+msgstr ""
+
+#: 832a239c403d4c26beb9835c1367fa9b of tensormesh.optimizer.oc.OCOptimizer:38
+msgid "Maximum bisection iterations default: :obj:`50`"
+msgstr ""
+
+#: 828a1c0b1407482783e26d08ad38d2af of tensormesh.optimizer.oc.OCOptimizer:43
+msgid "Examples"
+msgstr ""
+
+#: 79886950756a4da8a5a7e69c5440eddd of
+#: tensormesh.optimizer.oc.OCOptimizer.zero_grad:1
+msgid "Clear gradients of all parameters."
+msgstr ""
+
+#: 9f89c86ef51f4779be074532407e2cab of
+#: tensormesh.optimizer.oc.OCOptimizer.step:1
+msgid "Perform OC update step."
+msgstr ""
+
+#: cecafc06008840c79e324e520f16f9fe of
+#: tensormesh.optimizer.oc.OCOptimizer.step:3
+msgid "Args:"
+msgstr ""
+
+#: b55f1ae2577241f09653740e68ae84b0 of
+#: tensormesh.optimizer.oc.OCOptimizer.step:4
+msgid "dc: Compliance sensitivity (dC/dρ). If None, uses param.grad."
+msgstr ""
+
+#: 853bc1df327f49c2bac05d0a4f38d363 of
+#: tensormesh.optimizer.oc.OCOptimizer.step:5
+msgid "Note: dc should be negative for compliance minimization."
+msgstr ""
+
+#: 9824d39e6fbd48aaa7a02f719fa80db3 of
+#: tensormesh.optimizer.oc.OCOptimizer.step:6
+msgid "dv: Volume sensitivity (dV/dρ). If None, uses uniform 1/n_elem."
+msgstr ""
+
+#: fd2bc7cd802d4530b34aafa60b96ced8 of
+#: tensormesh.optimizer.oc.OCOptimizer.step:8
+msgid "Returns:"
+msgstr ""
+
+#: 241502be731a4512aa284c7bb59f9f6a of
+#: tensormesh.optimizer.oc.OCOptimizer.step:9
+msgid "dict: Step info including 'lambda' and 'volume'"
+msgstr ""
+
+#: 6bf101182ad140198e29265e274f63da of
+#: tensormesh.optimizer.oc.OCOptimizer.get_volume:1
+msgid "Get current volume fraction."
+msgstr ""
+
+#: 8f61b509304349a5ba80be199381c93c of
+#: tensormesh.optimizer.oc.OCOptimizer.get_stats:1
+msgid "Get optimizer statistics."
+msgstr ""
+
