@@ -7,8 +7,6 @@ tensormesh.optimizer
 OC Optimizer
 ------------
 
-.. currentmodule:: tensormesh.optimizer
-
-.. autoclass:: tensormesh.optimizer.oc.OCOptimizer
+.. autoclass:: tensormesh.optimizer.OCOptimizer
     :members:
     :show-inheritance:

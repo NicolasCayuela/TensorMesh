@@ -8,9 +8,7 @@ tensormesh.dataset
 mesh
 ----
 
-.. currentmodule:: tensormesh.dataset
-
-.. autoclass:: tensormesh.dataset.mesh.MeshGen
+.. autoclass:: tensormesh.MeshGen
     :members:
     :show-inheritance:
 
@@ -18,16 +16,14 @@ mesh
 equation
 --------
 
-.. currentmodule:: tensormesh.dataset 
-
-.. autoclass:: tensormesh.dataset.equation.PoissonMultiFrequency
+.. autoclass:: tensormesh.dataset.PoissonMultiFrequency
     :members:
     :show-inheritance:
 
-.. autoclass:: tensormesh.dataset.equation.HeatMultiFrequency
+.. autoclass:: tensormesh.dataset.HeatMultiFrequency
     :members:
     :show-inheritance:
 
-.. autoclass:: tensormesh.dataset.equation.WaveMultiFrequency
+.. autoclass:: tensormesh.dataset.WaveMultiFrequency
     :members:
     :show-inheritance:

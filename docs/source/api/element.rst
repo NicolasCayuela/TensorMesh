@@ -8,50 +8,47 @@ tensormesh.element
 Elements
 --------
 
-.. currentmodule:: tensormesh.element
-
-.. autoclass:: tensormesh.element.element.Element
-    :members:
-    :show-inheritance:
-    
-.. autoclass:: tensormesh.element.element.Line
+.. autoclass:: tensormesh.Element
     :members:
     :show-inheritance:
 
-.. autoclass:: tensormesh.element.element.Triangle
+.. autoclass:: tensormesh.Line
     :members:
     :show-inheritance:
 
-.. autoclass:: tensormesh.element.element.Tetrahedron
+.. autoclass:: tensormesh.Triangle
     :members:
     :show-inheritance:
 
-.. autoclass:: tensormesh.element.element.Quadrilateral
+.. autoclass:: tensormesh.Tetrahedron
     :members:
     :show-inheritance:
 
-.. autoclass:: tensormesh.element.element.Hexahedron
+.. autoclass:: tensormesh.Quadrilateral
     :members:
     :show-inheritance:
 
-.. autoclass:: tensormesh.element.element.Prism
+.. autoclass:: tensormesh.Hexahedron
     :members:
     :show-inheritance:
 
-.. autoclass:: tensormesh.element.element.Pyramid
+.. autoclass:: tensormesh.Prism
+    :members:
+    :show-inheritance:
+
+.. autoclass:: tensormesh.Pyramid
     :members:
     :show-inheritance:
 
 Transformation
 --------------
-.. autoclass:: tensormesh.element.transformation.Transformation
+.. autoclass:: tensormesh.Transformation
     :members:
     :show-inheritance:
+    :exclude-members: basis_order, element, elements, points, quadrature_order
 
 Polynomial
 ----------
-
-.. currentmodule:: tensormesh.element
 
 .. autoclass:: tensormesh.element.polynomial.Polynomial
     :members:
@@ -60,6 +57,7 @@ Polynomial
 .. autoclass:: tensormesh.element.polynomial.Polynomials
     :members:
     :show-inheritance:
+    :exclude-members: device, dtype, n_polys, n_terms, n_vars, shape
 
 
 Basis

@@ -7,44 +7,45 @@ tensormesh.assemble
 Element Assembler
 -----------------
 
-.. autoclass:: tensormesh.assemble.element_assembler.ElementAssembler
+.. autoclass:: tensormesh.ElementAssembler
     :members:
     :show-inheritance:
-  
+    :exclude-members: dimension, edges, element_types, elements, n_points, projector, transformation
+
 
 Facet Assembler
 ---------------
 
-.. autoclass:: tensormesh.assemble.facet_assembler.FacetAssembler
+.. autoclass:: tensormesh.FacetAssembler
     :members:
     :show-inheritance:
+    :exclude-members: dimension, edges, element_types, elements, n_points, projector, transformation, facet_mask
 
 Node Assembler
 --------------
-.. currentmodule:: tensormesh.assemble
 
-.. autoclass:: tensormesh.assemble.node_assembler.NodeAssembler
+.. autoclass:: tensormesh.NodeAssembler
     :members:
     :show-inheritance:
+    :exclude-members: dimension, edges, element_types, elements, n_points, projector, transformation
 
 
 Built-in Assemblers
 -------------------
-.. currentmodule:: tensormesh.assemble
 
-.. autoclass:: tensormesh.assemble.builtin.LaplaceElementAssembler
+.. autoclass:: tensormesh.LaplaceElementAssembler
     :members:
     :show-inheritance:
 
-.. autoclass:: tensormesh.assemble.builtin.MassElementAssembler
+.. autoclass:: tensormesh.MassElementAssembler
     :members:
     :show-inheritance:
 
-.. autoclass:: tensormesh.assemble.builtin.LinearElasticityElementAssembler
+.. autoclass:: tensormesh.LinearElasticityElementAssembler
     :members:
     :show-inheritance:
 
-.. autoclass:: tensormesh.assemble.builtin.NeoHookeanModel
+.. autoclass:: tensormesh.assemble.NeoHookeanModel
     :members:
     :show-inheritance:
 
@@ -52,10 +53,10 @@ Built-in Assemblers
     :members:
     :show-inheritance:
 
-.. autoclass:: tensormesh.assemble.builtin.ContactAssembler
+.. autoclass:: tensormesh.assemble.ContactAssembler
     :members:
     :show-inheritance:
 
-.. autofunction:: tensormesh.assemble.builtin.const_node_assembler
+.. autofunction:: tensormesh.const_node_assembler
 
-.. autofunction:: tensormesh.assemble.builtin.func_node_assembler
+.. autofunction:: tensormesh.func_node_assembler
