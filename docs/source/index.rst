@@ -174,6 +174,35 @@ License
 TensorMesh is released under the `GNU General Public License v3.0
 <https://github.com/camlab-ethz/TensorMesh/blob/main/LICENSE>`_.
 
+.. grid:: 3
+   :gutter: 3
+   :class-container: affiliations
+   :margin: 2 0 0 0
+
+   .. grid-item::
+      :child-align: center
+
+      .. image:: _static/affiliations/CAMLab_logo.png
+         :target: https://camlab.ethz.ch/
+         :alt: CAMLab — Computational and Applied Mathematics Laboratory, ETH Zürich
+         :class: affiliation-logo
+
+   .. grid-item::
+      :child-align: center
+
+      .. image:: _static/affiliations/eth_ai_center_logo.png
+         :target: https://ai.ethz.ch/
+         :alt: ETH AI Center
+         :class: affiliation-logo
+
+   .. grid-item::
+      :child-align: center
+
+      .. image:: _static/affiliations/eth-logo-pos.png
+         :target: https://ethz.ch/
+         :alt: ETH Zürich
+         :class: affiliation-logo eth-wordmark
+
 
 .. toctree::
    :maxdepth: 2

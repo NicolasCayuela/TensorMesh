@@ -1,12 +1,13 @@
-import pyvista as pv
 import torch
 import numpy as np
-from .utils import mesh_to_pyvista, setup_headless
+from .utils import mesh_to_pyvista, setup_headless, pv, HAS_PYVISTA, _PYVISTA_INSTALL_HINT
 
-def animate_deformation(mesh, displacement: torch.Tensor, file_name: str, 
-                       frames: int = 30, fps: int = 10, 
+def animate_deformation(mesh, displacement: torch.Tensor, file_name: str,
+                       frames: int = 30, fps: int = 10,
                        scale_factor: float = 1.0,
                        scalars: str = 'displacement'):
+    if not HAS_PYVISTA:
+        raise ImportError(_PYVISTA_INSTALL_HINT)
     """
     Generate an MP4 animation of the mesh deformation.
     

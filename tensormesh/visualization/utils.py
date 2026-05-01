@@ -1,14 +1,28 @@
-from re import T
 from matplotlib.pyplot import isinteractive
-import torch 
+import torch
 import numpy as np
-import pyvista as pv
 import meshio
 import os
 from functools import lru_cache
 from typing import Sequence, Union, TypeVar,Generic
 from scipy.sparse import coo_matrix, csr_matrix, csc_matrix, dia_matrix, dok_matrix, lil_matrix, issparse
 from ..sparse import SparseMatrix
+
+# pyvista is an optional dependency — only required for 3D rendering and
+# pyvista-backed exports. The 2D matplotlib path does not need it. Mirrors
+# the try/except pattern used elsewhere in tensormesh (see e.g.
+# tensormesh.sparse.solve.torch_sla_solve).
+try:
+    import pyvista as pv
+    HAS_PYVISTA = True
+except ImportError:
+    pv = None
+    HAS_PYVISTA = False
+
+_PYVISTA_INSTALL_HINT = (
+    "pyvista is required for this function. Install it with:\n"
+    "    pip install pyvista"
+)
 
 ScipySparseMatrix = Union[coo_matrix, csr_matrix, csc_matrix, dia_matrix, dok_matrix, lil_matrix]
 def as_sparse_matrix(x:Union[SparseMatrix,ScipySparseMatrix])->SparseMatrix:
@@ -84,6 +98,8 @@ def grid(dim:int, min_vals:Sequence[float], max_vals:Sequence[float], density:in
 
 def setup_headless():
     """Start xvfb for headless rendering if needed."""
+    if not HAS_PYVISTA:
+        raise ImportError(_PYVISTA_INSTALL_HINT)
     try:
         pv.start_xvfb()
     except Exception:
@@ -107,6 +123,8 @@ def mesh_to_pyvista(mesh, point_data=None, cell_data=None, linearize=False):
     -------
     pyvista.DataSet
     """
+    if not HAS_PYVISTA:
+        raise ImportError(_PYVISTA_INSTALL_HINT)
     # 1. Get meshio object
     # mesh_to_pyvista ultimately writes VTU, so we must export connectivity in Gmsh/VTK ordering
     m_io = mesh.to_meshio(reorder=True)

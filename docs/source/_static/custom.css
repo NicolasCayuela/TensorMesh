@@ -60,3 +60,30 @@
    The roles are declared in conf.py:rst_prolog. */
 .tensor-blue { color: var(--tm-brand-blue); font-weight: inherit; }
 .mesh-teal   { color: var(--tm-brand-teal); font-weight: inherit; }
+
+/* "Developed at" affiliation logos on the index page. Each <img> keeps its
+   native aspect ratio but is normalized to the same height so the row reads
+   as a single visual band regardless of the source asset's dimensions. */
+.affiliation-logo {
+  height: 60px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+/* eth-logo-pos.png is the "positive" ETH wordmark — black ink on transparent.
+   It disappears in dark mode, so flip it to white. The CAMLab and AI Center
+   logos contain brand colors, so we leave those untouched. */
+[data-theme="dark"] .affiliation-logo.eth-wordmark {
+  filter: invert(1) brightness(1.05);
+}
+/* Furo's grid-item adds card-like padding by default; strip it for logos
+   so the row sits flush. */
+.affiliations .sd-card,
+.affiliations .sd-col {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0.25rem 0.5rem;
+}

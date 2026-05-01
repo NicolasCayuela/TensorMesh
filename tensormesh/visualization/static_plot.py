@@ -1,14 +1,15 @@
-import pyvista as pv
 import torch
 import numpy as np
-from .utils import mesh_to_pyvista, setup_headless
+from .utils import mesh_to_pyvista, setup_headless, pv, HAS_PYVISTA, _PYVISTA_INSTALL_HINT
 
-def plot_deformation(mesh, displacement: torch.Tensor, file_name: str, 
+def plot_deformation(mesh, displacement: torch.Tensor, file_name: str,
                      scale_factor: float = 1.0,
                      camera_position = 'isometric',
                      fixed_nodes = None,
                      force_vectors = None,
                      linearize: bool = True):
+    if not HAS_PYVISTA:
+        raise ImportError(_PYVISTA_INSTALL_HINT)
     """
     Save a static comparison plot of undeformed (wireframe) vs deformed (solid) mesh,
     optionally showing boundary conditions (fixed nodes and force vectors).
