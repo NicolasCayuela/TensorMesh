@@ -12,7 +12,7 @@ BUILDDIR      = _build
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-.PHONY: help Makefile gettext intl-update zh html-all
+.PHONY: help Makefile gettext intl-update intl-update-prose zh html-all
 
 # Extract translatable strings to _build/gettext/*.pot
 gettext:
@@ -20,6 +20,14 @@ gettext:
 
 # Refresh source/locale/<lang>/LC_MESSAGES/*.po from the latest .pot files
 intl-update: gettext
+	@sphinx-intl update -p $(BUILDDIR)/gettext -l zh_CN
+
+# Same as intl-update, but skips api_reference/ (autodoc docstrings).
+# Use this when you only want to refresh translations for prose pages
+# (get_started/, examples/, index.rst); the Chinese site will then fall
+# back to English for the API reference. See docs/TRANSLATION_GUIDE.md.
+intl-update-prose: gettext
+	@rm -rf "$(BUILDDIR)/gettext/api_reference"
 	@sphinx-intl update -p $(BUILDDIR)/gettext -l zh_CN
 
 # Build the Chinese site into _build/html/zh/

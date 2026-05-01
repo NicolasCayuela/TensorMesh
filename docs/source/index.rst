@@ -1,8 +1,7 @@
 :github_url: https://github.com/camlab-ethz/TensorMesh
 
-TensorMesh Documentation
-========================
-
+:tensor-blue:`Tensor`\ :mesh-teal:`Mesh` Documentation
+======================================================
 
 .. code-block:: none
 
@@ -13,47 +12,69 @@ TensorMesh Documentation
        ██║   ███████╗██║ ╚████║███████║╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗███████║██║  ██║
        ╚═╝   ╚══════╝╚═╝  ╚═══╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝
 
-TensorMesh: The Modern FEM Library 🚀
--------------------------------------
+A fast, differentiable, JIT-free, and debugging-friendly finite element
+library — bringing modern PyTorch ergonomics to scientific computing.
 
-A fast 🚀, differentiable 🎯, cross-platform 💻, JIT-free 📌, and debugging-friendly 🚨 finite element library that prioritizes user experience through clean, Pythonic APIs 🤗
-
-TensorMesh is a modern finite element method (FEM) library built on PyTorch, designed to solve partial differential equations (PDEs) with elegance and efficiency. By seamlessly integrating with PyTorch's ecosystem, it provides automatic differentiation and GPU acceleration while maintaining an intuitive, Pythonic interface.
+TensorMesh is a finite element method (FEM) library built on PyTorch,
+designed to solve partial differential equations (PDEs) with elegance and
+efficiency. By integrating natively with the PyTorch ecosystem, it provides
+automatic differentiation, GPU acceleration, and an intuitive Pythonic
+interface — without sacrificing the rigor of classical FEM.
 
 
 Core Strengths
 --------------
 
-- **Easy to Use**: Clean, intuitive Pythonic APIs that make FEM accessible to both beginners and experts
-- **Easy to Debug**: Clear error messages and straightforward execution flow for painless debugging
-- **Cross Platform**: Works seamlessly across Windows, Linux, and macOS without complex dependencies
-- **Seamless PyTorch Integration**: Leverage PyTorch's powerful automatic differentiation and GPU acceleration
-- **Comprehensive Element Support**: Work with a wide range of elements including triangular, tetrahedral, pyramid, and prismatic types
-- **High-Performance Assembly**: Optimized element assembly operations for both CPU and GPU architectures
-- **Advanced Solvers**: Efficient sparse matrix solvers with flexible backend options (PETSc, PyTorch)
-- **Rich Visualization**: Integrated tools for mesh and solution visualization
-- **Smart Mesh Generation**: Automated mesh generation for common geometries with intelligent defaults
+- **GPU-Native & Differentiable**: Built on PyTorch from the ground up.
+  Native autograd flows seamlessly through assembly and solve, enabling
+  end-to-end differentiable PDE pipelines with GPU acceleration.
+
+- **High-Performance Tensorized Assembly**: A fully tensorized Map-Reduce
+  algorithm fuses element-wise operations into monolithic GPU kernels,
+  eliminating Python-level loops and delivering order-of-magnitude
+  speedups over CPU-based FEM stacks.
+
+- **JIT-Free & Debugging-Friendly**: Eager execution with no compilation
+  overhead. Dynamic meshes, adaptive refinement, and interactive
+  workflows just work — no recompilation latency, no opaque traces.
+
+- **Comprehensive Element & Mesh Support**: Triangular, tetrahedral,
+  pyramid, and prismatic elements with automated mesh generation for
+  common geometries and seamless Gmsh / VTK-HDF5 I/O.
+
+- **Flexible Solvers**: Powered by `torch-sla <https://www.torchsla.com/>`_,
+  our companion library for differentiable sparse linear algebra. Linear,
+  nonlinear, and eigenvalue solvers run across multiple backends on CPU and
+  GPU, with full autograd support, batched solves, and distributed multi-GPU
+  scaling.
+
+- **Pythonic API**: Custom weak forms in pure Python — no separate DSL,
+  no form compiler. If you can write PyTorch, you can write FEM.
+
 
 Feature Comparison
 ------------------
 
 .. list-table::
    :header-rows: 1
-   :widths: 20 15 15 15 15
+   :widths: 32 12 14 12 12 14
 
    * - Feature
      - FEniCS
      - scikit-fem
      - JAX-FEM
-     - TensorMesh
-   * - Flexibility
-     - ❌
+     - torch-fem
+     - **TensorMesh**
+   * - Custom Weak Forms (Pythonic)
+     - ⚠️
      - ✅
+     - ❌
      - ❌
      - ✅
    * - Easy Install
      - ❌
      - ✅
+     - ⚠️
      - ✅
      - ✅
    * - Easy Debug
@@ -61,7 +82,9 @@ Feature Comparison
      - ✅
      - ❌
      - ✅
+     - ✅
    * - Easy IO
+     - ❌
      - ❌
      - ❌
      - ❌
@@ -70,56 +93,97 @@ Feature Comparison
      - ✅
      - ✅
      - ❌
+     - ❌
      - ✅
    * - GPU Support
      - ✅
      - ❌
      - ✅
      - ✅
+     - ✅
    * - Efficiency
      - ✅
      - ❌
      - ✅
+     - ⚠️
      - ✅
-   * - Auto-diff
-     - ✅
+   * - End-to-End Autograd
+     - ⚠️
      - ❌
      - ✅
      - ✅
-   * - DL Integration
+     - ✅
+   * - DL Integration (PyTorch)
      - ❌
      - ❌
+     - ⚠️
      - ✅
      - ✅
+   * - Maturity
+     - ✅
+     - ✅
+     - ⚠️
+     - ⚠️
+     - ⚠️
+
+.. note::
+
+   **Custom Weak Forms (Pythonic)** — supports user-defined bilinear / linear
+   forms directly in Python, without a separate DSL such as UFL.
+   **End-to-End Autograd** — gradients flow natively through the entire
+   pipeline; FEniCS supports this via the external ``dolfin-adjoint`` package.
+   **Maturity** — reflects project age, ecosystem size, and production
+   deployments.
 
 
 Citation
 --------
 
-If you use TensorMesh in your research, please cite:
+TensorMesh is the FEM solver component of the **TensorGalerkin** framework.
+If you use TensorMesh in your research, please cite the TensorGalerkin paper:
 
 .. code-block:: bibtex
 
    @article{wen2026tensorgalerkin,
-     title={Learning, Solving and Optimizing PDEs with TensorGalerkin:
-            an Efficient High-Performance Galerkin Assembly Algorithm},
-     author={Wen, Shizheng and Chi, Mingyuan and Yu, Tianwei and Moseley, Ben and
-             Michelis, Mike Yan and Ren, Pu and Sun, Hao and Mishra, Siddhartha},
-     journal={arXiv preprint arXiv:2602.05052},
-     year={2026}
+     title   = {Learning, Solving and Optimizing PDEs with {TensorGalerkin}:
+                an Efficient High-Performance Galerkin Assembly Algorithm},
+     author  = {Wen, Shizheng and Chi, Mingyuan and Yu, Tianwei and
+                Moseley, Ben and Michelis, Mike Yan and Ren, Pu and
+                Sun, Hao and Mishra, Siddhartha},
+     journal = {arXiv preprint arXiv:2602.05052},
+     year    = {2026}
+   }
+
+If your work also relies on torch-sla (TensorMesh's solver backend),
+please additionally cite:
+
+.. code-block:: bibtex
+
+   @article{chi2026torchsla,
+     title   = {torch-sla: Differentiable Sparse Linear Algebra with Adjoint
+                Solvers and Sparse Tensor Parallelism for PyTorch},
+     author  = {Chi, Mingyuan and Wen, Shizheng},
+     journal = {arXiv preprint arXiv:2601.13994},
+     year    = {2026}
    }
 
 
 License
 -------
 
-TensorMesh is released under the `GNU General Public License v3.0 <https://github.com/camlab-ethz/TensorMesh/blob/main/LICENSE>`_.
+TensorMesh is released under the `GNU General Public License v3.0
+<https://github.com/camlab-ethz/TensorMesh/blob/main/LICENSE>`_.
 
 
 .. toctree::
    :maxdepth: 2
    :hidden:
+   :caption: Documentation
 
-   get_started/index
-   examples/index
-   api_reference/index
+   getting_started/index
+   user_guide/index
+   example_gallery/index
+   api/index
+   performance/index
+   community/index
+   develop/index
