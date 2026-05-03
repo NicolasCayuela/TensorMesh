@@ -1,9 +1,6 @@
 tensormesh.visualization
 ========================
 
-.. contents:: contents
-    :local:
-
 Draw Graph
 ----------
 

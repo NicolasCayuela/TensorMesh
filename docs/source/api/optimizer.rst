@@ -1,9 +1,6 @@
 tensormesh.optimizer
 ====================
 
-.. contents:: contents
-    :local:
-
 OC Optimizer
 ------------
 

@@ -1,9 +1,6 @@
 tensormesh.assemble
 ===================
 
-.. contents:: contents
-    :local:
-
 Element Assembler
 -----------------
 

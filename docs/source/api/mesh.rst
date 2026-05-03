@@ -1,10 +1,6 @@
 tensormesh.mesh
 ===============
 
-.. contents:: contents
-    :local:
-
-
 .. autoclass:: tensormesh.Mesh
     :members:
     :show-inheritance:

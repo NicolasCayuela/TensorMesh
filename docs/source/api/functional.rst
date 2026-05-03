@@ -1,9 +1,6 @@
 tensormesh.functional
 =====================
 
-.. contents:: contents
-    :local:
-
 ops
 ---
 

@@ -1,9 +1,6 @@
 tensormesh.nn
 =============
 
-.. contents:: contents
-    :local:
-
 BufferUtils
 -----------
 

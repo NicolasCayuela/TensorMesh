@@ -1,10 +1,6 @@
 tensormesh.dataset
 ==================
 
-.. contents:: Contents
-    :local:
-    :depth: 1
-
 mesh
 ----
 

@@ -1,10 +1,6 @@
 tensormesh.element
 ==================
 
-.. contents:: Contents
-    :local:
-    :depth: 5
-
 Elements
 --------
 

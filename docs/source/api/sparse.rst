@@ -1,11 +1,7 @@
-tensormesh.sparse 
+tensormesh.sparse
 =================
 
-.. contents:: Contents
-    :local:
-    :depth: 1
-
-SparseMatrix 
+SparseMatrix
 -------------
 
 .. currentmodule:: tensormesh.sparse

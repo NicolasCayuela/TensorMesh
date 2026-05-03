@@ -1,8 +1,5 @@
-tensormesh.operator 
+tensormesh.operator
 ===================
-
-.. contents:: contents
-    :local:
 
 Condenser
 ---------

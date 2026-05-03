@@ -1,9 +1,6 @@
 tensormesh.ode
 ==============
 
-.. contents:: contents
-    :local:
-
 Runge-Kutta methods
 -------------------
 
