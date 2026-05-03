@@ -43,6 +43,37 @@ Transformation
     :show-inheritance:
     :exclude-members: basis_order, element, elements, points, quadrature_order
 
+
+Element type registry
+---------------------
+
+Lookup tables and helpers that map between element type strings
+(``"triangle"``, ``"tetra10"``, …) and the corresponding element class,
+spatial dimension, and polynomial order.
+
+.. autofunction:: tensormesh.element_type2element
+
+.. py:data:: tensormesh.element_types
+   :type: list[str]
+
+   List of every element type string the library understands —
+   first-order shapes (``"line"``, ``"triangle"``, ``"quad"``,
+   ``"tetra"``, ``"hexahedron"``, ``"wedge"``, ``"pyramid"``) plus their
+   higher-order counterparts (``"triangle6"``, ``"quad9"``,
+   ``"tetra10"``, ``"hexahedron27"``, ``"triangle10"``, …).
+
+.. py:data:: tensormesh.element_type2dimension
+   :type: dict[str, int]
+
+   Map from element type string to spatial dimension
+   (``"line": 1``, ``"triangle": 2``, ``"tetra": 3``, …).
+
+.. py:data:: tensormesh.element_type2order
+   :type: dict[str, int]
+
+   Map from element type string to polynomial order
+   (``"triangle": 1``, ``"triangle6": 2``, ``"triangle10": 3``, …).
+
 Polynomial
 ----------
 

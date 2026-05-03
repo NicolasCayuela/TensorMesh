@@ -57,20 +57,39 @@ Solvers & Integration
    .. grid-item-card:: ODE
       :link: ode
       :link-type: doc
-      
+
       Time integration and ODE solvers.
 
    .. grid-item-card:: Functional
       :link: functional
       :link-type: doc
-      
+
       Functional forms and variational methods.
 
    .. grid-item-card:: Optimizer
       :link: optimizer
       :link-type: doc
-      
+
       Optimization algorithms for inverse problems.
+
+
+Physics & Parallelism
+---------------------
+
+.. grid:: 1 2 3 3
+   :gutter: 4
+
+   .. grid-item-card:: Material
+      :link: material
+      :link-type: doc
+
+      Isotropic material model and library presets.
+
+   .. grid-item-card:: Distributed
+      :link: distributed
+      :link-type: doc
+
+      Multi-GPU mesh partitioning and parallel assembly.
 
 
 Deep Learning & Data
@@ -117,6 +136,8 @@ Visualization
    ode
    functional
    optimizer
+   material
+   distributed
    nn
    dataset
    visualization

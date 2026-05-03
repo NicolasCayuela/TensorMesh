@@ -84,7 +84,8 @@ What lives in each module:
   stress, and other tensor utilities used inside ``forward`` methods.
 * :mod:`tensormesh.dataset` — :class:`~tensormesh.MeshGen` and pre-built
   multi-frequency equation classes for generating training datasets.
-* :mod:`tensormesh.material` — ``IsotropicMaterial`` and library
+* :mod:`tensormesh.material` —
+  :class:`~tensormesh.material.IsotropicMaterial` and library
   presets (Steel, Aluminum, Rubber, Glass).
 * :mod:`tensormesh.optimizer` — :class:`~tensormesh.optimizer.OCOptimizer`
   (Optimality Criteria) for compliance-based topology optimization.
