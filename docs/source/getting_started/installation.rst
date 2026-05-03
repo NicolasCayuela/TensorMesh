@@ -60,17 +60,17 @@ the extras you need:
 
 .. list-table::
    :header-rows: 1
-   :widths: 22 78
+   :widths: 28 72
 
    * - Extra
      - Install command
-   * - PETSc solver backend
+   * - PETSc solver backend (``petsc4py``)
      - ``pip install "tensor-mesh[petsc]"``
-   * - CuPy GPU sparse backend
+   * - CuPy GPU sparse backend (``cupy``)
      - ``pip install "tensor-mesh[cupy]"``
    * - Plotly for example notebooks
      - ``pip install "tensor-mesh[example]"``
-   * - Test suite (pytest)
+   * - Test suite (pytest, pytest-cov)
      - ``pip install "tensor-mesh[test]"``
 
 Two further packages are commonly useful but are *not* declared as extras —
@@ -80,6 +80,46 @@ install them directly when needed:
 
     pip install gmsh       # external mesh generation / .msh I/O
     pip install pyvista    # interactive 3D visualization
+
+
+Sparse solvers and GPU acceleration
+-----------------------------------
+
+The sparse linear-algebra layer that powers TensorMesh's solvers has been
+split out into a standalone library,
+`torch-sla <https://github.com/sparsexlab/torch-sla>`_, so that it can evolve
+independently and serve other projects. ``torch-sla`` is a required
+dependency of TensorMesh and ships all current and future solver
+improvements; it is the canonical entry point for both CPU and GPU sparse
+solves.
+
+The original solver code under ``tensormesh.sparse.solve`` (covering
+``scipy``, ``petsc``, ``cupy``, ``cudss``, ``amg``, and ``torch`` backends)
+is still present and used as a **fallback** when ``torch-sla`` is not
+available — :func:`~tensormesh.spsolve` will pick it up automatically. New
+features and performance work, however, land in ``torch-sla`` first; for
+production use, prefer the ``torch_sla`` backend.
+
+To enable GPU sparse solves, install ``torch-sla`` with the ``[cuda]``
+extra:
+
+.. code-block:: bash
+
+    pip install "torch-sla[cuda]"
+
+This pulls in ``cupy-cuda12x`` (CUDA 12 wheels of CuPy) and
+``nvmath-python`` (NVIDIA's cuDSS bindings), which together give
+``torch-sla`` access to its CuPy and cuDSS GPU solvers.
+
+The TensorMesh-side extras serve the in-tree fallback path:
+
+* ``tensor-mesh[cupy]`` — installs the generic ``cupy`` package, enabling
+  the fallback ``cupy`` and ``cudss`` backends when ``torch-sla`` is not
+  installed or unavailable.
+* ``tensor-mesh[petsc]`` — installs ``petsc4py`` for the direct PETSc
+  backend. This is independent of ``torch-sla`` and is useful for very
+  large problems or when interoperating with an existing PETSc
+  installation.
 
 
 Next steps
