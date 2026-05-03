@@ -46,7 +46,7 @@ Built-in Assemblers
     :members:
     :show-inheritance:
 
-.. autoclass:: tensormesh.assemble.builtin.J2Plasticity
+.. autoclass:: tensormesh.assemble.J2Plasticity
     :members:
     :show-inheritance:
 

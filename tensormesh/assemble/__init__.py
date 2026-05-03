@@ -5,6 +5,7 @@ from .builtin import LaplaceElementAssembler, \
                         MassElementAssembler, \
                         LinearElasticityElementAssembler, \
                         NeoHookeanModel, \
+                        J2Plasticity, \
                         ContactAssembler, \
                         const_node_assembler,\
                         func_node_assembler

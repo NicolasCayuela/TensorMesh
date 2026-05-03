@@ -74,36 +74,36 @@ spatial dimension, and polynomial order.
    Map from element type string to polynomial order
    (``"triangle": 1``, ``"triangle6": 2``, ``"triangle10": 3``, …).
 
-Polynomial
-----------
+Polynomial (advanced)
+---------------------
 
-.. autoclass:: tensormesh.element.polynomial.Polynomial
+.. note::
+
+   :class:`~tensormesh.element.Polynomial` and
+   :class:`~tensormesh.element.Polynomials` are the low-level building
+   blocks used to construct shape functions for new element types. Most
+   users should subclass :class:`~tensormesh.Element` and override its
+   basis / quadrature hooks rather than calling these classes directly.
+   The interface here is **less stable** than the rest of the public
+   API and may evolve between releases.
+
+.. autoclass:: tensormesh.element.Polynomial
     :members:
     :show-inheritance:
 
-.. autoclass:: tensormesh.element.polynomial.Polynomials
+.. autoclass:: tensormesh.element.Polynomials
     :members:
     :show-inheritance:
     :exclude-members: device, dtype, n_polys, n_terms, n_vars, shape
 
 
-Basis
------
+Internal evaluators
+-------------------
 
-.. automodule:: tensormesh.element.basis
-    :members:
-    :show-inheritance:
-
-Quadrature
-----------
-
-.. automodule:: tensormesh.element.quadrature
-    :members:
-    :show-inheritance:
-
-Normal
-------
-
-.. automodule:: tensormesh.element.normal
-    :members:
-    :show-inheritance:
+The basis-, quadrature-, and normal-evaluation routines live under
+``tensormesh/element/{basis,quadrature,normal}.py``. They are
+implementation details of :class:`~tensormesh.Element` — the supported
+extension path is to subclass ``Element`` and override its hooks rather
+than calling these modules directly. They are **not** part of the
+public API and may change between releases. If you need them, read the
+source.
