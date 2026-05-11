@@ -201,8 +201,8 @@ def voigt_shape_grad(gradu:torch.Tensor)->torch.Tensor:
 
     return B 
 
-def voigt_stiffness(E:Union[float,torch.Tensor], 
-            nu:[float,torch.Tensor],
+def voigt_stiffness(E:Union[float,torch.Tensor],
+            nu:Union[float,torch.Tensor],
             dim:int = 2)->torch.Tensor:
     r"""
 
@@ -327,9 +327,4 @@ def voigt_shape_val(u:torch.Tensor, dim:int)->torch.Tensor:
     assert dim in (2, 3),f"dimension is only supported for 2, 3 for voigt shape val, but got {dim}"
 
     return u.repeat(dim).diag()
-
-# Aliases with links to original documented functions
-voigt_C = voigt_stiffness  # See :func:`~tensormesh.functional.elasticity.voigt_stiffness`
-voigt_B = voigt_shape_grad # See :func:`~tensormesh.functional.elasticity.voigt_shape_grad`
-voigt_N = voigt_shape_val  # See :func:`~tensormesh.functional.elasticity.voigt_shape_val`
 

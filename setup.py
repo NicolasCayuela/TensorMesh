@@ -41,8 +41,8 @@ def read_version():
 setup(
     name="tensormesh",
     version=read_version(),
-    author="Mingyuan Chi, Shizheng Wen",
-    author_email="walker.chi.000@gmail.com, shizheng.wen@sam.math.ethz.ch",
+    author="Shizheng Wen, Mingyuan Chi",
+    author_email="shizheng.wen@sam.math.ethz.ch, walker.chi.000@gmail.com",
     description="Differentiable Finite Element Method Library for PyTorch",
     long_description=open("README.md", encoding="utf-8").read(),
     long_description_content_type="text/markdown",

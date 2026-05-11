@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 import tensormesh    
 
 project = 'TensorMesh'
-author = 'Mingyuan Chi, Shizheng Wen'
+author = 'Shizheng Wen, Mingyuan Chi'
 copyright = f'{datetime.datetime.now().year}, TensorMesh Contributors'
 version = tensormesh.__version__
 release = version
@@ -105,6 +105,17 @@ templates_path = ['_templates']
 
 add_module_names = False
 autodoc_member_order = 'bysource'
+
+# Preserve source-level expressions for default argument values so
+# function-object defaults render as e.g. `strain_fn=strain` rather than
+# `strain_fn=<function strain>` (which is just repr() at doc-build time).
+autodoc_preserve_defaults = True
+
+# Render parameter type hints with their unqualified ("short") name —
+# e.g. `Tensor` instead of `~torch.Tensor` — and hyperlink them via
+# intersphinx. Without this, Sphinx 9 leaks the `~` short-name marker
+# into the rendered signature for parameters (return types are unaffected).
+python_use_unqualified_type_names = True
 
 suppress_warnings = ['autodoc.import_object']
 
