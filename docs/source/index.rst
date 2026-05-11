@@ -30,7 +30,8 @@ Core Strengths
   end-to-end differentiable PDE pipelines with GPU acceleration.
 
 - **High-Performance Tensorized Assembly**: A fully tensorized Map-Reduce
-  algorithm fuses element-wise operations into monolithic GPU kernels,
+  algorithm powered by `TensorGalerkin <https://arxiv.org/abs/2602.05052>`_,
+  which fuses element-wise operations into monolithic GPU kernels,
   eliminating Python-level loops and delivering order-of-magnitude
   speedups over CPU-based FEM stacks.
 
@@ -166,6 +167,13 @@ please additionally cite:
      journal = {arXiv preprint arXiv:2601.13994},
      year    = {2026}
    }
+
+
+Contact Us
+----------
+
+For collaborations and partnerships, please contact us at
+`tensormesh.dev@gmail.com <mailto:tensormesh.dev@gmail.com>`_.
 
 
 License
