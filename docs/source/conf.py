@@ -159,13 +159,6 @@ nitpick_ignore = [
     ('py:class', 'torch.float64'),
     ('py:obj',   'torch.float32'),
     ('py:obj',   'torch.float64'),
-    # tensormesh.element is intentionally NOT registered as a module: the
-    # api/element.rst file declares tensormesh.element_types at the
-    # top-level path, and adding a .. py:module:: directive would force
-    # everything under it to be prefixed (registering element_types as
-    # ``tensormesh.element.tensormesh.element_types`` and breaking
-    # references).
-    ('py:mod',   'tensormesh.element'),
     # SparseMatrix.solve is inherited from torch_sla.SparseTensor; not
     # registered in our inventory and not part of the public torch_sla docs.
     ('py:meth', 'tensormesh.sparse.SparseMatrix.solve'),

@@ -1,6 +1,8 @@
 tensormesh.element
 ==================
 
+.. py:module:: tensormesh.element
+
 Elements
 --------
 
@@ -51,9 +53,11 @@ Lookup tables and helpers that map between element type strings
 (``"triangle"``, ``"tetra10"``, …) and the corresponding element class,
 spatial dimension, and polynomial order.
 
+.. py:currentmodule:: tensormesh
+
 .. autofunction:: tensormesh.element_type2element
 
-.. py:data:: tensormesh.element_types
+.. py:data:: element_types
    :type: list[str]
 
    List of every element type string the library understands —
@@ -62,17 +66,19 @@ spatial dimension, and polynomial order.
    higher-order counterparts (``"triangle6"``, ``"quad9"``,
    ``"tetra10"``, ``"hexahedron27"``, ``"triangle10"``, …).
 
-.. py:data:: tensormesh.element_type2dimension
+.. py:data:: element_type2dimension
    :type: dict[str, int]
 
    Map from element type string to spatial dimension
    (``"line": 1``, ``"triangle": 2``, ``"tetra": 3``, …).
 
-.. py:data:: tensormesh.element_type2order
+.. py:data:: element_type2order
    :type: dict[str, int]
 
    Map from element type string to polynomial order
    (``"triangle": 1``, ``"triangle6": 2``, ``"triangle10": 3``, …).
+
+.. py:currentmodule:: tensormesh.element
 
 Polynomial (advanced)
 ---------------------
