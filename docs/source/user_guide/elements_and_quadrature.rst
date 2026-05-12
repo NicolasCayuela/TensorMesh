@@ -162,6 +162,22 @@ the same flag controls the behavior — pass ``reorder=True`` when the
 source uses Gmsh/VTK convention.
 
 
+Adding a new element type
+-------------------------
+
+Subclassing :class:`~tensormesh.Element` is the supported extension
+path. Override :meth:`~tensormesh.Element.get_polynomial` to declare the
+polynomial space, :meth:`~tensormesh.Element.get_basis` to lay out the
+interpolation nodes, :meth:`~tensormesh.Element.get_quadrature` /
+:meth:`~tensormesh.Element.get_facet_quadrature` for the quadrature
+rules, and :meth:`~tensormesh.Element.get_gmsh_permutation` if you want
+the element to round-trip through Gmsh / VTK files. The existing seven
+shapes in ``tensormesh/element/element.py`` are short, self-contained
+templates. The low-level helpers used inside those overrides
+(:class:`~tensormesh.element.Polynomial`, basis-node generators,
+quadrature factories) live under :ref:`api-element-internals`.
+
+
 What's next
 -----------
 

@@ -1621,6 +1621,13 @@ class Element:
         
 
 class Line(Element):
+    """1D line reference element on :math:`[0, 1]`.
+
+    The facet of every 2D element (edge of a triangle or quad) is a
+    :class:`Line`. Type strings: ``"line"`` (linear), ``"line3"``,
+    ``"line4"``, …, ``"line11"``.
+    """
+
     points = torch.tensor([[0.0],[1.0]]) # 2x1
     vertex = torch.tensor([[0], [1]]) # 2x1
     edge   = torch.tensor([[0, 1]]) # 1x2
@@ -1662,6 +1669,14 @@ class Line(Element):
         return lin_quadrature(order, dtype, device)
 
 class Triangle(Element):
+    """2D triangle reference element with vertices at
+    :math:`(0,0), (1,0), (0,1)`.
+
+    Simplex ordering: vertex nodes first, then edge nodes, then interior
+    nodes. The facets are line segments. Type strings: ``"triangle"``
+    (linear), ``"triangle6"``, ``"triangle10"``, …, ``"triangle66"``.
+    """
+
     points = torch.tensor([[0.0, 0.0],[1.0, 0.0],[0.0, 1.0]]) # 3x2
     vertex = torch.tensor([[0], [1], [2]]) # 3x1
     edge   = torch.tensor([[1, 2], [0, 2], [0, 1]]) # 3x2
@@ -1782,6 +1797,15 @@ class Triangle(Element):
         return perm
 
 class Quadrilateral(Element):
+    """2D quadrilateral reference element on :math:`[0, 1]^2`.
+
+    Tensor-product Lagrange nodes in **lexicographic** order — note this
+    differs from the Gmsh/VTK boundary-spiral order, so loading external
+    high-order quads must go through :meth:`Element.reorder`. The facets
+    are line segments. Type strings: ``"quad"`` (linear), ``"quad8"``,
+    ``"quad9"``, ``"quad16"``, …, ``"quad121"``.
+    """
+
     points = torch.tensor([[0.0, 0.0],[1.0, 0.0],[0.0, 1.0],[1.0, 1.0]]) # 4x2
     vertex = torch.tensor([[0], [1], [2], [3]]) # 4x1
     edge   = torch.tensor([[0, 1], [0, 2], [1, 3], [2, 3]]) # 4x2
@@ -1908,6 +1932,16 @@ class Quadrilateral(Element):
         return perm
 
 class Tetrahedron(Element):
+    """3D tetrahedron reference element with vertices at
+    :math:`(0,0,0), (1,0,0), (0,1,0), (0,0,1)`.
+
+    Simplex ordering: vertex / edge / face / interior groupings, with
+    indices within each group following the TensorMesh convention (see
+    :ref:`node-ordering-gallery`). The facets are triangles. Type
+    strings: ``"tetra"`` (linear), ``"tetra10"``, ``"tetra20"``, …,
+    ``"tetra286"``.
+    """
+
     points = torch.tensor([[0.0, 0.0, 0.0],[1.0, 0.0, 0.0],[0.0, 1.0, 0.0],[0.0, 0.0, 1.0]]) # 4x3
     vertex = torch.tensor([[0], [1], [2], [3]]) # 4x1
     edge   = torch.tensor([[2, 3], [1, 3], [1, 2], [0, 3], [0, 2], [0, 1]]) # 6x2
@@ -2052,6 +2086,15 @@ class Tetrahedron(Element):
         return perm
 
 class Hexahedron(Element):
+    """3D hexahedron reference element on :math:`[0, 1]^3`.
+
+    Tensor-product Lagrange nodes in **lexicographic** order — note this
+    differs substantially from Gmsh/VTK, which walks along edges. The
+    facets are quadrilaterals. Type strings: ``"hexahedron"`` (linear),
+    ``"hexahedron20"``, ``"hexahedron27"``, ``"hexahedron64"``, …,
+    ``"hexahedron1000"``.
+    """
+
     points = torch.tensor([[0.0, 0.0, 0.0],[1.0, 0.0, 0.0],[0.0, 1.0, 0.0],[1.0, 1.0, 0.0],[0.0, 0.0, 1.0],[1.0, 0.0, 1.0],[0.0, 1.0, 1.0],[1.0, 1.0, 1.0]]) # 8x3
     vertex = torch.tensor([[0], [1], [2], [3], [4], [5], [6], [7]]) # 8x1
     edge   = torch.tensor([[0, 1], [0, 2], [0, 4], [1, 3], [1, 5], [2, 3], [2, 6], [3, 7], [4, 5], [4, 6], [5, 7], [6, 7]]) # 12x2
@@ -2177,6 +2220,14 @@ class Hexahedron(Element):
         return torch.tensor([0, 1, 3, 2, 4, 5, 7, 6], device=device, dtype=torch.long)
 
 class Pyramid(Element):
+    """3D pyramid reference element with a unit square base and apex at
+    :math:`(0, 0, 1)`.
+
+    Mixed-facet element: one quadrilateral base + four triangular sides
+    (see :attr:`Element.is_mix_facet`). Type strings: ``"pyramid"``
+    (linear), ``"pyramid14"``.
+    """
+
     points = torch.tensor([[0.0, 0.0, 0.0],[1.0, 0.0, 0.0],[0.0, 1.0, 0.0],[1.0, 1.0, 0.0],[0.0, 0.0, 1.0]]) # 5x3
     vertex = torch.tensor([[0], [1], [2], [3], [4]]) # 5x1
     edge   = torch.tensor([[0, 1], [0, 2], [0, 4], [1, 3], [1, 4], [2, 3], [2, 4], [3, 4]]) # 8x2
@@ -2273,6 +2324,16 @@ class Pyramid(Element):
         return torch.tensor([0, 1, 3, 2, 4], device=device, dtype=torch.long)
 
 class Prism(Element):
+    """3D triangular prism (wedge) reference element — triangle base
+    :math:`\\times` line height.
+
+    Mixed-facet element: two triangular caps + three quadrilateral sides
+    (see :attr:`Element.is_mix_facet`). Note the *string* convention
+    ``"wedge"`` differs from the *class* name ``Prism`` (carried over from
+    meshio). Type strings: ``"wedge"`` (linear), ``"wedge18"``,
+    ``"wedge40"``, ``"wedge75"``, …, ``"wedge550"``.
+    """
+
     points = torch.tensor([[0.0, 0.0, 0.0],[1.0, 0.0, 0.0],[0.0, 1.0, 0.0],[0.0, 0.0, 1.0],[1.0, 0.0, 1.0],[0.0, 1.0, 1.0]]) # 5x3
     vertex = torch.tensor([[0], [1], [2], [3], [4], [5]]) # 6x1
     edge   = torch.tensor([[0, 1], [0, 2], [0, 3], [1, 2], [1, 4], [2, 5], [3, 4], [3, 5], [4, 5]]) # 9x2
