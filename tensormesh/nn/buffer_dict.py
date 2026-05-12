@@ -1,12 +1,75 @@
+"""Module-aware dict/list containers for non-trainable tensors (buffers).
+
+PyTorch ships :class:`torch.nn.ParameterDict` / :class:`torch.nn.ParameterList`
+(trainable parameters) and :class:`torch.nn.ModuleDict` / :class:`torch.nn.ModuleList`
+(submodules), but it does **not** ship a container for *buffers* — i.e.
+non-trainable tensors that still need to follow the parent module under
+:meth:`~torch.nn.Module.to`, appear in :meth:`~torch.nn.Module.state_dict`,
+and be checkpointed. :class:`BufferDict` (this module) and :class:`BufferList`
+(:mod:`tensormesh.nn.buffer_list`) fill that gap.
+
+In TensorMesh, every container of integer connectivity, point/field data, or
+precomputed quadrature/shape tables is a :class:`BufferDict` keyed by element
+type string — see e.g. :attr:`tensormesh.Mesh.cells`,
+:attr:`tensormesh.Mesh.point_data`, and the per-element-type buffers on each
+:class:`~tensormesh.assemble.ElementAssembler`.
+"""
 import re
 import torch
 import torch.nn as nn
 from itertools import chain
 from collections import OrderedDict
-from typing import Union, Sequence, Optional,Dict,Iterable, Tuple, Mapping
+from typing import Optional, Dict, Iterable, Tuple, Mapping
 
 
 class BufferDict(nn.Module):
+    r"""Module-aware dict of tensors stored as buffers (non-trainable).
+
+    Use it whenever you need a dict of plain tensors attached to a
+    :class:`~torch.nn.Module` — for example integer connectivity
+    ``[n_element, n_basis]``, vector point data ``[n_point, D]``, or
+    precomputed quadrature tables — keyed by element type or field name.
+    Tensors registered through :class:`BufferDict` follow the parent module
+    under ``.to(device)`` / ``.float()`` / ``.cuda()``, appear in
+    :meth:`~torch.nn.Module.state_dict`, and do not require gradients.
+
+    Two behaviours go beyond a plain :meth:`~torch.nn.Module.register_buffer`:
+
+    1. **Keys that aren't valid Python identifiers** (anything not matching
+       ``^[a-zA-Z_][a-zA-Z0-9_]*$``, e.g. ``"123x"`` or names with dashes)
+       are stored in an internal :class:`~collections.OrderedDict`
+       (:attr:`_data`) instead of being registered as buffers — Python's
+       ``register_buffer`` rejects such names. Their tensors are still moved
+       by :meth:`_apply`, so ``.to(device)`` and friends still work; they
+       just don't appear in :meth:`~torch.nn.Module.state_dict`.
+    2. **Buffer ↔ parameter promotion**: :meth:`as_parameter` turns a stored
+       buffer into a trainable :class:`~torch.nn.Parameter` in place, and
+       :meth:`as_buffer` reverses it. This lets the same container serve
+       both pure-FEM workflows (everything as buffers) and ML workflows
+       where some fields need gradients (e.g. learnable material parameters).
+
+    Parameters
+    ----------
+    data : Dict[str, torch.Tensor], optional
+        Initial key→tensor mapping. Keys matching
+        ``^[a-zA-Z_][a-zA-Z0-9_]*$`` are registered as buffers via
+        :meth:`~torch.nn.Module.register_buffer`; the rest are kept in the
+        fallback :attr:`_data` dict. Default: empty.
+
+    Examples
+    --------
+    >>> import torch
+    >>> from tensormesh.nn import BufferDict
+    >>> cells = BufferDict({
+    ...     "triangle": torch.zeros(10, 3, dtype=torch.long),
+    ...     "quad":     torch.zeros(5,  4, dtype=torch.long),
+    ... })
+    >>> cells.to("cuda")              # both tensors move to GPU
+    >>> list(cells.keys())
+    ['triangle', 'quad']
+    >>> cells["triangle"].device.type
+    'cuda'
+    """
     def __init__(self, data:Optional[Dict[str, torch.Tensor]] = None):
         super().__init__()
         if data is None:
@@ -24,22 +87,36 @@ class BufferDict(nn.Module):
                 raise TypeError(f"Cannot register a {type(value)} as a buffer or a parameter")
     
     def as_parameter(self, key:str):
-        """Convert a buffer to a parameter"""
-        buffer = self._buffers.pop(key) 
-        self.register_parameter(key, buffer) # type: ignore
-        
+        """Promote the buffer at ``key`` to a trainable :class:`torch.nn.Parameter` in place.
+
+        After this call, ``self[key]`` is a Parameter (gradient-tracking, will
+        appear in :meth:`~torch.nn.Module.parameters`); the same key must
+        currently live in :attr:`_buffers` or this will raise ``KeyError``.
+        Reverse with :meth:`as_buffer`.
+        """
+        buffer = self._buffers.pop(key)
+        self.register_parameter(key, nn.Parameter(buffer))
+
     def as_buffer(self, key:str):
-        """Convert a parameter to a buffer"""
+        """Demote the parameter at ``key`` back to a (non-trainable) buffer in place.
+
+        Inverse of :meth:`as_parameter`. The same key must currently live in
+        :attr:`_parameters`. The underlying storage is shared (via
+        :meth:`~torch.Tensor.detach`); the result no longer requires grad.
+        """
         parameter = self._parameters.pop(key)
-        self.register_buffer(key, parameter)
-        
+        self.register_buffer(key, parameter.detach())
+
     def keys(self)->Iterable[str]:
+        """Iterate over keys across all three backing stores (buffers, parameters, fallback)."""
         return chain(self._buffers.keys(), self._parameters.keys(), self._data.keys())
-    
+
     def items(self)->Iterable[Tuple[str, torch.Tensor]]:
+        """Iterate over ``(key, tensor)`` pairs across all three backing stores."""
         return chain(self._buffers.items(), self._parameters.items(), self._data.items()) # type: ignore
-    
+
     def values(self)->Iterable[torch.Tensor]:
+        """Iterate over tensors across all three backing stores."""
         return chain(self._buffers.values(), self._parameters.values(), self._data.values()) # type: ignore
     
     def __hash__(self):
@@ -75,20 +152,29 @@ class BufferDict(nn.Module):
         return key in self.keys()
 
     def is_floating_point(self)->bool:
+        """Return ``True`` if any stored tensor has a floating-point dtype."""
         return any(map(lambda x:x.is_floating_point(), self.values()))
 
     def is_complex(self)->bool:
+        """Return ``True`` if any stored tensor has a complex dtype."""
         return any(map(lambda x:x.is_complex(), self.values()))
 
     @property
     def dtype(self):
+        """:class:`torch.dtype` of the first registered buffer (representative)."""
         return next(iter(self.buffers().values())).dtype # type: ignore
 
     @property
     def device(self):
+        """:class:`torch.device` of the first registered buffer (representative)."""
         return next(iter(self.buffers().values())).device # type: ignore
-    
+
     def _apply(self, fn):
+        """Override of :meth:`torch.nn.Module._apply` so that fallback-stored
+        tensors in :attr:`_data` also follow ``.to(device)`` / ``.float()`` /
+        ``.cuda()`` — without this, only the entries in :attr:`_buffers` and
+        :attr:`_parameters` would be moved.
+        """
         self = super()._apply(fn)
         for key, value in self._data.items():
             self._data[key] = fn(value)
@@ -103,8 +189,10 @@ class BufferDict(nn.Module):
         return str(self)
     
     def to_dict(self)->Mapping[str, torch.Tensor|nn.Module]:
+        """Return a plain :class:`dict` view of the contents (no module wiring)."""
         return {key:value for key, value in self.items()}
 
     def clone(self)->'BufferDict':
+        """Return a deep copy: every stored tensor is cloned, then wrapped in a fresh :class:`BufferDict`."""
         data = {key:value.clone() for key, value in self.items()} # type: ignore
         return BufferDict(data)
