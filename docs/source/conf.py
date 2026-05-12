@@ -120,11 +120,46 @@ python_use_unqualified_type_names = True
 suppress_warnings = ['autodoc.import_object']
 
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/', None),
-    'numpy': ('http://docs.scipy.org/doc/numpy', None),
-    'pandas': ('http://pandas.pydata.org/pandas-docs/dev', None),
-    'torch': ('https://pytorch.org/docs/master', None),
+    'python':     ('https://docs.python.org/3', None),
+    'numpy':      ('https://numpy.org/doc/stable/', None),
+    'pandas':     ('https://pandas.pydata.org/pandas-docs/stable/', None),
+    'torch':      ('https://pytorch.org/docs/stable/', None),
+    'matplotlib': ('https://matplotlib.org/stable/', None),
+    'scipy':      ('https://docs.scipy.org/doc/scipy/', None),
 }
+
+# nitpicky mode is off in routine builds, but documentation authors should
+# run `sphinx-build -n -b html source _build/html` before merging to catch
+# broken cross-references. The ignore lists below cover targets that are
+# *expected* to fail resolution and are not worth fixing at source:
+#
+#   - ``optional``: napoleon parses ``x : float, optional`` as two types,
+#     emitting a cross-ref for ``optional`` that never resolves.
+#   - quoted forward references like ``'Element'``: PEP 484 string forms of
+#     a class name (`-> 'Element'`) that Sphinx fails to dereference.
+#   - ``np.ndarray``: ndarray is autodoc'd under the alias `np.` which is
+#     not in the numpy inventory; refactoring each docstring to
+#     ``numpy.ndarray`` would be noisy churn.
+#   - ``meshio*``: meshio has no public Sphinx documentation site, so its
+#     types cannot be cross-referenced.
+nitpick_ignore = [
+    ('py:class', 'optional'),
+    ('py:class', 'np.ndarray'),
+    ('py:class', 'meshio._mesh.Mesh'),
+    ('py:class', 'meshio.Mesh'),
+    ('py:mod',   'meshio'),
+    # torch.nn.Parameter is registered as torch.nn.parameter.Parameter in
+    # the upstream inventory; torch.float32 / torch.float64 are not
+    # cross-referenced by the torch docs at all.
+    ('py:class', 'torch.nn.Parameter'),
+    ('py:class', 'torch.float32'),
+    ('py:class', 'torch.float64'),
+]
+
+nitpick_ignore_regex = [
+    # Quoted forward references (PEP 484 string class names).
+    ('py:class', r"'[A-Za-z_][A-Za-z0-9_]*'"),
+]
 
 exclude_patterns = ['example_gallery/_archive/*']
 
