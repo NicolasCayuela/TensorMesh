@@ -189,6 +189,8 @@ script.
    per vertex.
 
 
+.. _node-ordering-gallery:
+
 Gmsh / VTK ↔ TensorMesh node ordering
 -------------------------------------
 
@@ -242,6 +244,8 @@ the same two-row layout; the full set lives in
    Gmsh's hex ordering walks along edges while TensorMesh's is
    plain lexicographic.
 
+
+.. _mesh-generation-gallery:
 
 Mesh generation gallery
 -----------------------

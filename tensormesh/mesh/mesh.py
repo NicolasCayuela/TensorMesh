@@ -23,11 +23,16 @@ def _get_visualization():
 
 
 class Mesh(nn.Module):
-    r"""FEM mesh — vertex coordinates, per-element-type connectivity, and
-    point/cell/field data attached to either. Mixed-element meshes are
-    supported via :attr:`cells` being a :class:`~tensormesh.nn.BufferDict`
-    keyed by element type string (e.g. ``"triangle"``, ``"quad"``,
-    ``"tetra"``).
+    r"""FEM mesh — interpolation-node coordinates, per-element-type
+    connectivity, and point/cell/field data attached to either.
+    Mixed-element meshes are supported via :attr:`cells` being a
+    :class:`~tensormesh.nn.BufferDict` keyed by element type string
+    (e.g. ``"triangle"``, ``"quad"``, ``"tetra"``).
+
+    A "point" throughout the API means an interpolation node / degree of
+    freedom — for ``order=1`` this is the corner vertex of an element,
+    for ``order>=2`` it also includes mid-edge, mid-face, and interior
+    nodes.
 
     Parameters
     ----------
@@ -42,8 +47,9 @@ class Mesh(nn.Module):
     ----------
     points: torch.Tensor
         2D tensor of shape :math:`[|\mathcal V|, D]`, where :math:`|\mathcal V|`
-        is the number of points and :math:`D` is the spatial dimension —
-        vertex coordinates.
+        is the number of interpolation nodes and :math:`D` is the spatial
+        dimension. Includes high-order nodes (mid-edge / mid-face /
+        interior) when the mesh uses ``order >= 2`` elements.
     cells: BufferDict[str, torch.Tensor]
         Each key is an ``element_type`` string (see
         :mod:`tensormesh.element`); the value is a 2D tensor of shape
@@ -139,15 +145,18 @@ class Mesh(nn.Module):
         )
 
     def register_point_data(self, key:str, value:torch.Tensor):
-        """Add key-value pair to :attr:`point_data` buffer,
-        since the :attr:`point_data` is a :class:`tensormesh.nn.BufferDict`, you are recommended to use this method instead of :obj:`__setitem__`
-        
+        """Register a per-point field on :attr:`point_data`.
+
+        :attr:`point_data` is a :class:`tensormesh.nn.BufferDict`, so prefer
+        this method over ``__setitem__`` to make sure the tensor is tracked
+        as a buffer of the underlying :class:`torch.nn.Module`.
+
         Parameters
         ----------
         key: str
             the key of the value
         value: torch.Tensor
-            1D tensor of shape :math:`[|\\mathcal V|,...]`, where :math:`\\mathcal V` is the number of nodes/vertices/points, the value to be registered
+            tensor of shape :math:`[|\\mathcal V|, ...]`, where :math:`|\\mathcal V|` is the number of interpolation nodes (``mesh.n_points``)
 
         Returns
         -------
@@ -161,7 +170,11 @@ class Mesh(nn.Module):
         return self
       
     def register_element_data(self, key:str, value:Union[Dict[str,torch.Tensor],torch.Tensor]):
-        """Add key-value pair to :attr:`cell_data`
+        """Register a per-element field on :attr:`cell_data`.
+
+        For homogeneous meshes ``value`` may be a single tensor; for
+        mixed-element meshes pass a dict keyed by element type with one
+        tensor per type.
         """
         if isinstance(value, torch.Tensor):
             assert isinstance(self.elements(), torch.Tensor), f"Only for homogenous elements, value can be passed as torch.Tensor, else it should be Dict[element_type,torch.Tensor]"
@@ -212,11 +225,19 @@ class Mesh(nn.Module):
         )
 
     def to_meshio(self, reorder: bool = False)->meshio.Mesh:
-        """
+        """Export this mesh as an in-memory ``meshio.Mesh``.
+
+        Parameters
+        ----------
+        reorder : bool, default=False
+            If :obj:`True`, convert connectivity from the internal ordering
+            back to Gmsh/VTK ordering before returning (delegates to
+            :meth:`tensormesh.Element.reorder`).
+
         Returns
         -------
         meshio.Mesh
-            the meshio mesh object
+            The meshio mesh object.
         """
         
         # Build cells (optionally reorder to Gmsh/VTK for export)
@@ -240,10 +261,17 @@ class Mesh(nn.Module):
 
     @property
     def dim(self)->int:
+        """Spatial dimension of the mesh (``2`` for surface meshes, ``3`` for volume meshes)."""
         return self.points.shape[1]
 
     def save(self, file_name:str, file_format:Optional[str]=None):
-        """
+        """Write this mesh to disk via ``meshio.write``.
+
+        Boolean point/cell/field arrays are cast to ``float`` before writing
+        (meshio does not support ``bool``). For ``.vtk`` / ``.vtu`` outputs
+        2-D meshes are padded to 3-D and connectivity is reordered to the
+        Gmsh/VTK convention.
+
         Parameters
         ----------
         file_name: str
@@ -251,6 +279,7 @@ class Mesh(nn.Module):
         file_format: str
             the format of the file, e.g., 'msh', 'vtk', 'obj'
             default is the file extension
+
         Returns
         -------
         tensormesh.Mesh
@@ -308,7 +337,7 @@ class Mesh(nn.Module):
         Returns
         -------
         SparseMatrix 
-            the adjacency matrix of nodes :math:`[|\\mathcal V|,|\\mathcal V|]`, where :math:`|\\mathcal V|` is the number of nodes
+            the adjacency matrix of points :math:`[|\\mathcal V|,|\\mathcal V|]`, where :math:`|\\mathcal V|` is the number of interpolation nodes
         """
         elements = self.elements(element_type)
         if isinstance(elements, dict):
@@ -457,11 +486,18 @@ class Mesh(nn.Module):
             raise Exception(f"element_type must be str or Iterable[str], but got {element_type}")
     
     def clone(self)->'Mesh':
-        """The gradient will vanish if you use :obj:`torch.Tensor.clone` to clone the mesh, so we provide this method to clone the mesh
+        """Return a deep copy of the mesh that preserves the autograd graph.
+
+        Calling :obj:`torch.Tensor.clone` on the underlying buffers detaches
+        them from the computation graph, so gradients flowing through
+        ``points`` / ``cell_data`` would vanish. This method round-trips
+        through ``meshio`` to reconstruct the mesh while keeping the
+        connectivity and metadata intact.
+
         Returns
         -------
         tensormesh.Mesh
-            the cloned mesh
+            The cloned mesh.
         """
         return Mesh(self.to_meshio())
 
@@ -472,13 +508,19 @@ class Mesh(nn.Module):
                    fix_clim:bool =False,
                    show:bool = False,
                    **kwargs):
-        """
+        """Plot the mesh, optionally overlaying scalar fields or animations.
+
+        With no ``values`` only the mesh wireframe is drawn. Passing
+        ``Dict[str, torch.Tensor]`` produces a static multi-panel figure;
+        passing ``Dict[str, List[torch.Tensor]]`` produces an mp4/gif
+        animation (one frame per list element).
+
         Parameters
         ----------
         values: None or Dict[str, torch.Tensor] or Dict[str, List[torch.Tensor]]
             the values to plot, if None, only plot the mesh
-            if ``Dict[str, torch.Tensor]``, a static subplots will be plotted, the key is the name of the subplot, the value is of shape :math:`[|\\mathcal V|]`, where :math:`|\\mathcal V|` is the number of points
-            if ``Dict[str, List[torch.Tensor]]``, a mp4/gif will be plotted, the key is the name of the subplot, each item in the list is of shape :math:`[|\\mathcal V|]`, where :math:`|\\mathcal V|` is the number of points
+            if ``Dict[str, torch.Tensor]``, a static subplots will be plotted, the key is the name of the subplot, the value is of shape :math:`[|\\mathcal V|]`, where :math:`|\\mathcal V|` is the number of interpolation nodes
+            if ``Dict[str, List[torch.Tensor]]``, a mp4/gif will be plotted, the key is the name of the subplot, each item in the list is of shape :math:`[|\\mathcal V|]`, where :math:`|\\mathcal V|` is the number of interpolation nodes
             default: None
         save_path: str or None
             the path to save the plot, if None, it will not be saved
@@ -488,7 +530,9 @@ class Mesh(nn.Module):
             the time interval between each frame, only used when ``values`` is passed in as ``Dict[str, List[torch.Tensor]]``
             default: None
         show_mesh: bool
-            whether to show the mesh, when ``values`` is passed in as ``Dict[str, List[torch.Tensor]]`` or ``Dict[str, torch.Tensor]``
+            whether to overlay the mesh wireframe (and, at ``order >= 2``,
+            the interpolation nodes) on top of the colour-filled field.
+            Only takes effect when ``values`` is given.
             default: False
         fix_clim: bool
             whether to fix the color limits across all frames, only used when ``values`` is passed in as ``Dict[str, List[torch.Tensor]]``.
@@ -556,17 +600,26 @@ class Mesh(nn.Module):
 
     @property
     def n_points(self)->int:
-        """
+        """Number of interpolation nodes :math:`|\\mathcal V|` in the mesh.
+
+        Equals ``mesh.points.shape[0]``. For ``order >= 2`` this counts
+        high-order nodes (mid-edge, mid-face, interior) as well, not
+        only corner vertices.
+
         Returns
         -------
         int
-            the number of nodes/vertices/points :math:`|\\mathcal V|`
+            the number of interpolation nodes :math:`|\\mathcal V|`
         """
         return self.points.shape[0]
 
-    @property 
+    @property
     def n_elements(self)->int:
-        """
+        """Number of elements :math:`|\\mathcal C|` of the :attr:`default_element_type`.
+
+        For mixed-element meshes this sums element counts across every
+        type in ``default_element_type``.
+
         Returns
         -------
         int
@@ -579,12 +632,17 @@ class Mesh(nn.Module):
 
     @property
     def boundary_mask(self)->torch.Tensor:
-        r"""
+        r"""Boolean mask flagging boundary points.
+
+        Looked up from :attr:`point_data` under the key ``"is_boundary"``
+        (preferred) or ``"boundary_mask"``. Mesh generators in
+        :mod:`tensormesh.dataset` populate this automatically.
+
         Returns
         -------
-        torch.Tensor 
-            1D tensor of shape :math:`[|\mathcal V|]`, where  :math:`|\mathcal V|` is the number of points
-            the mask of the boundary points, ``"is_boundary"`` key or ``"boundary_mask"`` key is required in :attr:`point_data`
+        torch.Tensor
+            1D bool tensor of shape :math:`[|\mathcal V|]`, where  :math:`|\mathcal V|` is the number of interpolation nodes;
+            requires ``"is_boundary"`` or ``"boundary_mask"`` to live in :attr:`point_data`
         """
         if "is_boundary" in self.point_data.keys():
             return self.point_data["is_boundary"]
@@ -595,11 +653,15 @@ class Mesh(nn.Module):
 
     @property
     def default_element_type(self)->str:
-        """
+        """Element type(s) of the highest-dimensional cells in the mesh.
+
+        Methods like :meth:`elements`, :meth:`n_elements`, and the FEM
+        assemblers fall back to this when no ``element_type`` is given.
+
         Returns
         -------
         str or List[str]
-            the default element type, if the mesh is composed of mixed elements, it will return List[str],  
+            the default element type, if the mesh is composed of mixed elements, it will return List[str],
             otherwise it will return str
 
         :noindex:
@@ -608,17 +670,19 @@ class Mesh(nn.Module):
 
     @property
     def dtype(self)->torch.dtype:
-        """
+        """Floating-point dtype of :attr:`points` (and, by convention, of every buffer in the mesh).
+
         Returns
         -------
         torch.dtype
             the data type of the points, e.g., torch.float32, torch.float64
         """
         return self.points.dtype
-    
-    @property 
+
+    @property
     def device(self)->torch.device:
-        """
+        """Device on which the mesh tensors live.
+
         Returns
         -------
         torch.device
@@ -628,9 +692,10 @@ class Mesh(nn.Module):
 
     @classmethod
     def from_meshio(cls,
-                    mesh:meshio.Mesh, 
+                    mesh:meshio.Mesh,
                     reorder:bool=False):
-        """
+        """Build a :class:`Mesh` from an in-memory ``meshio.Mesh``.
+
         Parameters
         ----------
         mesh: meshio.Mesh
@@ -639,6 +704,7 @@ class Mesh(nn.Module):
             whether to convert connectivity from Gmsh/VTK ordering to
             TensorMesh internal ordering (delegates to
             :meth:`tensormesh.Element.reorder`).
+
         Returns
         -------
         tensormesh.Mesh
@@ -647,10 +713,11 @@ class Mesh(nn.Module):
         return cls(mesh, reorder)
     
     @classmethod
-    def read(cls, file_name:str, 
-             file_format:Optional[str] = None, 
+    def read(cls, file_name:str,
+             file_format:Optional[str] = None,
              reorder:bool = False):
-        """
+        """Read a mesh from disk via ``meshio.read``.
+
         Parameters
         ----------
         file_name: str
@@ -681,7 +748,12 @@ class Mesh(nn.Module):
              bottom:float      = 0.0, top:float    =  1.0,
              visualize:bool=False,
              cache_path:Optional[str]=None)->'Mesh':
-        """
+        """Generate a 2-D mesh of an axis-aligned rectangle.
+
+        Delegates to :func:`~tensormesh.dataset.gen_rectangle`, which calls
+        Gmsh under the hood and caches the result if ``cache_path`` is
+        given.
+
         Parameters
         ----------
         chara_length: float, optional
@@ -711,6 +783,7 @@ class Mesh(nn.Module):
         cache_path: str, optional
             the path to save the mesh, if :obj:`None`, it will be decided by :func:`~tensormesh.dataset.gen_rectangle`,
             default: :obj:`None`
+
         Returns
         -------
         tensormesh.Mesh
@@ -731,12 +804,15 @@ class Mesh(nn.Module):
         visualize:bool=False,
         cache_path:Optional[str]=None,
     )->'Mesh':
-        """
+        """Generate a 2-D mesh of a rectangle with a rectangular hole cut out.
+
+        Delegates to :func:`~tensormesh.dataset.gen_hollow_rectangle`.
+
         Parameters
         ----------
         chara_length: float, optional
             the characteristic length of the mesh,
-            default: ``0.1`` 
+            default: ``0.1``
         order: int, optional
             the order of the basis function,
             default: ``1``
@@ -796,7 +872,10 @@ class Mesh(nn.Module):
             cx:float=0.0, cy:float=0.0, r:float=1.0,
             visualize:bool=False,
             cache_path:Optional[str]=None)->'Mesh':
-        """
+        """Generate a 2-D mesh of a disk (filled circle).
+
+        Delegates to :func:`~tensormesh.dataset.gen_circle`.
+
         Parameters
         ----------
         chara_length: float, optional
@@ -839,7 +918,10 @@ class Mesh(nn.Module):
              r_inner:float=1.0, r_outer:float=2.0,
              visualize:bool=False,
              cache_path:Optional[str]=None)->'Mesh':
-        """
+        """Generate a 2-D mesh of an annulus (disk with a circular hole).
+
+        Delegates to :func:`~tensormesh.dataset.gen_hollow_circle`.
+
         Parameters
         ----------
         chara_length: float, optional
@@ -892,7 +974,10 @@ class Mesh(nn.Module):
              right_inner:float=0.5,
              visualize:bool=False,
              cache_path:Optional[str]=None)->'Mesh':
-        """
+        """Generate a 2-D mesh of an L-shaped domain (re-entrant corner benchmark).
+
+        Delegates to :func:`~tensormesh.dataset.gen_L`.
+
         Parameters
         ----------
         chara_length: float, optional
@@ -944,7 +1029,10 @@ class Mesh(nn.Module):
              front:float=0.0, back:float=1.0,
              visualize:bool=False,
              cache_path:Optional[str]=None)->'Mesh':
-        """
+        """Generate a 3-D mesh of an axis-aligned cuboid.
+
+        Delegates to :func:`~tensormesh.dataset.gen_cube`.
+
         Parameters
         ----------
         chara_length: float, optional
@@ -996,7 +1084,10 @@ class Mesh(nn.Module):
              inner_front:float=0.25, inner_back:float=0.75,
              visualize:bool=False,
              cache_path:Optional[str]=None)->'Mesh':
-        """
+        """Generate a 3-D mesh of a cuboid with a cuboidal hole.
+
+        Delegates to :func:`~tensormesh.dataset.gen_hollow_cube`.
+
         Parameters
         ----------
         chara_length: float, optional
@@ -1071,7 +1162,10 @@ class Mesh(nn.Module):
                 cx:float=0.0, cy:float=0.0, cz:float=0.0, r:float=1.0,
                 visualize:bool=False,
                 cache_path:Optional[str]=None)->'Mesh':
-        """
+        """Generate a 3-D mesh of a solid ball (filled sphere).
+
+        Delegates to :func:`~tensormesh.dataset.gen_sphere`.
+
         Parameters
         ----------
         chara_length: float, optional
@@ -1113,7 +1207,10 @@ class Mesh(nn.Module):
              r_inner:float=1.0, r_outer:float=2.0,
              visualize:bool=False,
              cache_path:Optional[str]=None)->'Mesh':
-        """
+        """Generate a 3-D mesh of a spherical shell (ball with a concentric spherical cavity).
+
+        Delegates to :func:`~tensormesh.dataset.gen_hollow_sphere`.
+
         Parameters
         ----------
         chara_length: float, optional
