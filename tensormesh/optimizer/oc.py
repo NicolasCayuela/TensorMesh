@@ -28,22 +28,22 @@ class OCOptimizer:
         Target volume fraction
     move_limit : float, optional
         Maximum density change per iteration
-        default: :obj:`0.2`
+        default: ``0.2``
     rho_min : float, optional
         Minimum density
         default: :obj:`1e-3`
     rho_max : float, optional
         Maximum density
-        default: :obj:`1.0`
+        default: ``1.0``
     eta : float, optional
         Damping exponent
-        default: :obj:`0.5`
+        default: ``0.5``
     bisection_tol : float, optional
         Tolerance for bisection
         default: :obj:`1e-4`
     bisection_max_iter : int, optional
         Maximum bisection iterations
-        default: :obj:`50`
+        default: ``50``
     
     Examples
     --------

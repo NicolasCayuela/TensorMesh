@@ -45,14 +45,14 @@ class Mesh(nn.Module):
         is the number of points and :math:`D` is the spatial dimension —
         vertex coordinates.
     cells: BufferDict[str, torch.Tensor]
-        Each key is an :obj:`element_type` string (see
+        Each key is an ``element_type`` string (see
         :mod:`tensormesh.element`); the value is a 2D tensor of shape
         :math:`[|\mathcal C|, B]`, where :math:`|\mathcal C|` is the number
         of elements and :math:`B` is the number of basis functions.
     point_data: BufferDict[str, torch.Tensor], optional
         Per-point fields, keyed by name.
     cell_data: ModuleDict[str, BufferDict[str, torch.Tensor]], optional
-        Per-element fields. The outer key is an :obj:`element_type`; the
+        Per-element fields. The outer key is an ``element_type``; the
         inner key is the field name.
     field_data: BufferDict[str, torch.Tensor], optional
         Global named fields.
@@ -302,7 +302,7 @@ class Mesh(nn.Module):
         ----------
         element_type : str or Iterable[str] or None
             the type of the elements
-            if :obj:`None` is the :obj:`default_element_type`
+            if :obj:`None` is the ``default_element_type``
             default : :obj:`None`
 
         Returns
@@ -322,7 +322,7 @@ class Mesh(nn.Module):
         ----------
         element_type : str or Iterable[str] or None
             the type of the elements, should be of same dimension
-            if :obj:`None` is the :obj:`default_element_type`
+            if :obj:`None` is the ``default_element_type``
             default : :obj:`None`
 
         Returns
@@ -421,18 +421,18 @@ class Mesh(nn.Module):
             - if :obj:`all`, return dict of all elements
             - if :obj:`int`, return dict of elements of that dimension
             - if :obj:`str`, return elements of that type
-            - if :obj:`Iterable[str]`, return elements of those types
+            - if ``Iterable[str]``, return elements of those types
             - if :obj:`None`, use :obj:`default_eletyp` (default)
 
         Returns
         -------
         torch.Tensor or Dict[str, torch.Tensor] 
 
-            - if :obj:`element_type` is :obj:`str`, return the corresponding elements connections of shape :math:`[|\\mathcal C|, B]`, where :math:`|\\mathcal C|` is the number of elements and :math:`B` is the number of basis functions
-            - if :obj:`element_type` is :obj:`int`, return dict of elements of that dimension
-            - if :obj:`element_typs` is :obj:`Iterable[str]`, return the mapping of corresponding elements connections of shape :math:`[|\\mathcal C|, B]`, where :math:`|\\mathcal C|` is the number of elements and :math:`B` is the number of basis functions 
-            - if :obj:`element_type` is :obj:`None`, the :obj:`element_type` will be the :obj:`default_element_type` and do as above
-            - if :obj:`element_type` is :obj:`"all"`, return all elements as a dictionary
+            - if ``element_type`` is :obj:`str`, return the corresponding elements connections of shape :math:`[|\\mathcal C|, B]`, where :math:`|\\mathcal C|` is the number of elements and :math:`B` is the number of basis functions
+            - if ``element_type`` is :obj:`int`, return dict of elements of that dimension
+            - if :obj:`element_typs` is ``Iterable[str]``, return the mapping of corresponding elements connections of shape :math:`[|\\mathcal C|, B]`, where :math:`|\\mathcal C|` is the number of elements and :math:`B` is the number of basis functions 
+            - if ``element_type`` is :obj:`None`, the ``element_type`` will be the ``default_element_type`` and do as above
+            - if ``element_type`` is ``"all"``, return all elements as a dictionary
 
         """
 
@@ -477,21 +477,21 @@ class Mesh(nn.Module):
         ----------
         values: None or Dict[str, torch.Tensor] or Dict[str, List[torch.Tensor]]
             the values to plot, if None, only plot the mesh
-            if :obj:`Dict[str, torch.Tensor]`, a static subplots will be plotted, the key is the name of the subplot, the value is of shape :math:`[|\\mathcal V|]`, where :math:`|\\mathcal V|` is the number of points
-            if :obj:`Dict[str, List[torch.Tensor]]`, a mp4/gif will be plotted, the key is the name of the subplot, each item in the list is of shape :math:`[|\\mathcal V|]`, where :math:`|\\mathcal V|` is the number of points
+            if ``Dict[str, torch.Tensor]``, a static subplots will be plotted, the key is the name of the subplot, the value is of shape :math:`[|\\mathcal V|]`, where :math:`|\\mathcal V|` is the number of points
+            if ``Dict[str, List[torch.Tensor]]``, a mp4/gif will be plotted, the key is the name of the subplot, each item in the list is of shape :math:`[|\\mathcal V|]`, where :math:`|\\mathcal V|` is the number of points
             default: None
         save_path: str or None
             the path to save the plot, if None, it will not be saved
-            if the :obj:`values` is passed in as :obj:`Dict[str, List[torch.Tensor]]`, the :obj:`save_path` must endswith '.mp4' or '.gif'
+            if the ``values`` is passed in as ``Dict[str, List[torch.Tensor]]``, the ``save_path`` must endswith '.mp4' or '.gif'
             default: None
         dt: float or None
-            the time interval between each frame, only used when :obj:`values` is passed in as :obj:`Dict[str, List[torch.Tensor]]`
+            the time interval between each frame, only used when ``values`` is passed in as ``Dict[str, List[torch.Tensor]]``
             default: None
         show_mesh: bool
-            whether to show the mesh, when :obj:`values` is passed in as :obj:`Dict[str, List[torch.Tensor]]` or :obj:`Dict[str, torch.Tensor]`
+            whether to show the mesh, when ``values`` is passed in as ``Dict[str, List[torch.Tensor]]`` or ``Dict[str, torch.Tensor]``
             default: False
         fix_clim: bool
-            whether to fix the color limits across all frames, only used when :obj:`values` is passed in as :obj:`Dict[str, List[torch.Tensor]]`.
+            whether to fix the color limits across all frames, only used when ``values`` is passed in as ``Dict[str, List[torch.Tensor]]``.
             If True, the color limits are determined by the global min and max across all frames, ensuring a consistent colorbar throughout the animation.
             default: False
         show: bool
@@ -584,7 +584,7 @@ class Mesh(nn.Module):
         -------
         torch.Tensor 
             1D tensor of shape :math:`[|\mathcal V|]`, where  :math:`|\mathcal V|` is the number of points
-            the mask of the boundary points, :obj:`"is_boundary"` key or :obj:`"boundary_mask"` key is required in :attr:`point_data`
+            the mask of the boundary points, ``"is_boundary"`` key or ``"boundary_mask"`` key is required in :attr:`point_data`
         """
         if "is_boundary" in self.point_data.keys():
             return self.point_data["is_boundary"]
@@ -686,25 +686,25 @@ class Mesh(nn.Module):
         ----------
         chara_length: float, optional
             the characteristic length of the mesh,
-            default: :obj:`0.1`
+            default: ``0.1``
         order: int, optional
             the order of the basis function,
-            default: :obj:`1`
+            default: ``1``
         element_type: str, optional
             the type of the element,
-            default: :obj:`"tri"`
+            default: ``"tri"``
         left: float, optional
             the left boundary of the rectangle,
-            default: :obj:`0.0`
+            default: ``0.0``
         right: float, optional
             the right boundary of the rectangle,
-            default: :obj:`1.0`
+            default: ``1.0``
         bottom: float, optional
             the bottom boundary of the rectangle,
-            default: :obj:`0.0`
+            default: ``0.0``
         top: float, optional
             the top boundary of the rectangle,
-            default: :obj:`1.0`
+            default: ``1.0``
         visualize: bool, optional
             whether to visualize the mesh,
             default: :obj:`False`
@@ -736,37 +736,37 @@ class Mesh(nn.Module):
         ----------
         chara_length: float, optional
             the characteristic length of the mesh,
-            default: :obj:`0.1` 
+            default: ``0.1`` 
         order: int, optional
             the order of the basis function,
-            default: :obj:`1`
+            default: ``1``
         element_type: str, optional
             the type of the element,
-            default: :obj:`"quad"`
+            default: ``"quad"``
         outer_left: float, optional
             the left boundary of the outer rectangle,
-            default: :obj:`0.0`
+            default: ``0.0``
         outer_right: float, optional
             the right boundary of the outer rectangle,
-            default: :obj:`1.0`
+            default: ``1.0``
         outer_bottom: float, optional
             the bottom boundary of the outer rectangle,
-            default: :obj:`0.0`
+            default: ``0.0``
         outer_top: float, optional
             the top boundary of the outer rectangle,
-            default: :obj:`1.0`
+            default: ``1.0``
         inner_left: float, optional
             the left boundary of the inner rectangle,
-            default: :obj:`0.25`
+            default: ``0.25``
         inner_right: float, optional
             the right boundary of the inner rectangle,
-            default: :obj:`0.75`
+            default: ``0.75``
         inner_bottom: float, optional
             the bottom boundary of the inner rectangle,
-            default: :obj:`0.25`
+            default: ``0.25``
         inner_top: float, optional
             the top boundary of the inner rectangle,
-            default: :obj:`0.75`
+            default: ``0.75``
         visualize: bool, optional
             whether to visualize the mesh,
             default: :obj:`False`
@@ -801,22 +801,22 @@ class Mesh(nn.Module):
         ----------
         chara_length: float, optional
             the characteristic length of the mesh,
-            default: :obj:`0.1`
+            default: ``0.1``
         order: int, optional
             the order of the basis function,
-            default: :obj:`1`
+            default: ``1``
         element_type: str, optional
             the type of the element,
-            default: :obj:`"tri"`
+            default: ``"tri"``
         cx: float, optional
             the x coordinate of the center of the circle,
-            default: :obj:`0.0`
+            default: ``0.0``
         cy: float, optional
             the y coordinate of the center of the circle,
-            default: :obj:`0.0`
+            default: ``0.0``
         r: float, optional
             the radius of the circle,
-            default: :obj:`1.0`
+            default: ``1.0``
         visualize: bool, optional
             whether to visualize the mesh,
             default: :obj:`False`
@@ -844,25 +844,25 @@ class Mesh(nn.Module):
         ----------
         chara_length: float, optional
             the characteristic length of the mesh,
-            default: :obj:`0.1`
+            default: ``0.1``
         order: int, optional
             the order of the basis function,
-            default: :obj:`1`
+            default: ``1``
         element_type: str, optional
             the type of the element,
-            default: :obj:`"quad"`
+            default: ``"quad"``
         cx: float, optional
             the x coordinate of the center of the circle,
-            default: :obj:`0.0`
+            default: ``0.0``
         cy: float, optional
             the y coordinate of the center of the circle,
-            default: :obj:`0.0`
+            default: ``0.0``
         r_inner: float, optional
             the inner radius of the circle,
-            default: :obj:`1.0`
+            default: ``1.0``
         r_outer: float, optional
             the outer radius of the circle,
-            default: :obj:`2.0`
+            default: ``2.0``
         visualize: bool, optional
             whether to visualize the mesh,
             default: :obj:`False`
@@ -897,31 +897,31 @@ class Mesh(nn.Module):
         ----------
         chara_length: float, optional
             the characteristic length of the mesh,
-            default: :obj:`0.1`
+            default: ``0.1``
         order: int, optional
             the order of the basis function,
-            default: :obj:`1`
+            default: ``1``
         element_type: str, optional
             the type of the element,
-            default: :obj:`"quad"`
+            default: ``"quad"``
         left: float, optional
             the left boundary of the rectangle,
-            default: :obj:`0.0`
+            default: ``0.0``
         right: float, optional
             the right boundary of the rectangle,
-            default: :obj:`1.0`
+            default: ``1.0``
         bottom: float, optional
             the bottom boundary of the rectangle,
-            default: :obj:`0.0`
+            default: ``0.0``
         top: float, optional
             the top boundary of the rectangle,
-            default: :obj:`1.0`
+            default: ``1.0``
         top_inner: float, optional
             the top inner boundary of the rectangle,
-            default: :obj:`0.5`
+            default: ``0.5``
         right_inner: float, optional
             the right inner boundary of the rectangle,
-            default: :obj:`0.5`
+            default: ``0.5``
         visualize: bool, optional
             whether to visualize the mesh,
             default: :obj:`False`
@@ -949,28 +949,28 @@ class Mesh(nn.Module):
         ----------
         chara_length: float, optional
             the characteristic length of the mesh,
-            default: :obj:`0.1`
+            default: ``0.1``
         order: int, optional
             the order of the basis function,
-            default: :obj:`1`
+            default: ``1``
         left: float, optional
             the left boundary of the cube,
-            default: :obj:`0.0`
+            default: ``0.0``
         right: float, optional
             the right boundary of the cube,
-            default: :obj:`1.0`
+            default: ``1.0``
         bottom: float, optional
             the bottom boundary of the cube,
-            default: :obj:`0.0`
+            default: ``0.0``
         top: float, optional
             the top boundary of the cube,
-            default: :obj:`1.0`
+            default: ``1.0``
         front: float, optional
             the front boundary of the cube,
-            default: :obj:`0.0`
+            default: ``0.0``
         back: float, optional
             the back boundary of the cube,
-            default: :obj:`1.0`
+            default: ``1.0``
         visualize: bool, optional
             whether to visualize the mesh,
             default: :obj:`False`
@@ -1001,46 +1001,46 @@ class Mesh(nn.Module):
         ----------
         chara_length: float, optional
             the characteristic length of the mesh,
-            default: :obj:`0.1`
+            default: ``0.1``
         order: int, optional
             the order of the basis function,
-            default: :obj:`1`
+            default: ``1``
         outer_left: float, optional
             the left boundary of the outer cube,
-            default: :obj:`0.0`
+            default: ``0.0``
         outer_right: float, optional
             the right boundary of the outer cube,
-            default: :obj:`1.0`
+            default: ``1.0``
         outer_bottom: float, optional
             the bottom boundary of the outer cube,
-            default: :obj:`0.0`
+            default: ``0.0``
         outer_top: float, optional
             the top boundary of the outer cube,
-            default: :obj:`1.0`
+            default: ``1.0``
         outer_front: float, optional
             the front boundary of the outer cube,
-            default: :obj:`0.0`
+            default: ``0.0``
         outer_back: float, optional
             the back boundary of the outer cube,
-            default: :obj:`1.0`
+            default: ``1.0``
         inner_left: float, optional
             the left boundary of the inner cube,
-            default: :obj:`0.25`
+            default: ``0.25``
         inner_right: float, optional
             the right boundary of the inner cube,
-            default: :obj:`0.75`
+            default: ``0.75``
         inner_bottom: float, optional
             the bottom boundary of the inner cube,
-            default: :obj:`0.25`
+            default: ``0.25``
         inner_top: float, optional
             the top boundary of the inner cube,
-            default: :obj:`0.75`
+            default: ``0.75``
         inner_front: float, optional
             the front boundary of the inner cube,
-            default: :obj:`0.25`
+            default: ``0.25``
         inner_back: float, optional
             the back boundary of the inner cube,
-            default: :obj:`0.75`
+            default: ``0.75``
         visualize: bool, optional
             whether to visualize the mesh,
             default: :obj:`False`
@@ -1076,22 +1076,22 @@ class Mesh(nn.Module):
         ----------
         chara_length: float, optional
             the characteristic length of the mesh,
-            default: :obj:`0.1`
+            default: ``0.1``
         order: int, optional
             the order of the basis function,
-            default: :obj:`1`
+            default: ``1``
         cx: float, optional
             the x coordinate of the center of the sphere,
-            default: :obj:`0.0`
+            default: ``0.0``
         cy: float, optional
             the y coordinate of the center of the sphere,
-            default: :obj:`0.0`
+            default: ``0.0``
         cz: float, optional
             the z coordinate of the center of the sphere,
-            default: :obj:`0.0`
+            default: ``0.0``
         r: float, optional
             the radius of the sphere,
-            default: :obj:`1.0`
+            default: ``1.0``
         visualize: bool, optional
             whether to visualize the mesh,
             default: :obj:`False`
@@ -1118,25 +1118,25 @@ class Mesh(nn.Module):
         ----------
         chara_length: float, optional
             the characteristic length of the mesh,
-            default: :obj:`0.1`
+            default: ``0.1``
         order: int, optional
             the order of the basis function,
-            default: :obj:`1`
+            default: ``1``
         cx: float, optional
             the x coordinate of the center of the sphere,
-            default: :obj:`0.0`
+            default: ``0.0``
         cy: float, optional
             the y coordinate of the center of the sphere,
-            default: :obj:`0.0`
+            default: ``0.0``
         cz: float, optional
             the z coordinate of the center of the sphere,
-            default: :obj:`0.0`
+            default: ``0.0``
         r_inner: float, optional
             the inner radius of the sphere,
-            default: :obj:`1.0`
+            default: ``1.0``
         r_outer: float, optional
             the outer radius of the sphere,
-            default: :obj:`2.0`
+            default: ``2.0``
         visualize: bool, optional
             whether to visualize the mesh,
             default: :obj:`False`

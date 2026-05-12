@@ -102,19 +102,19 @@ class ElementAssembler(nn.Module):
     -----------
     quadrature_weights : BufferDict[str, torch.Tensor]
         The element type is the key, which should be one of :meth:`tensormesh.shape.element_types`.
-        Each :obj:`element_type` corresponds to a 1D tensor of shape :math:`[Q]`, where :math:`Q` is the number of quadrature points
-        the quadrature weights of each element type, e.g. :obj:`{"triangle6": torch.tensor([0.5, 0.5])}`
+        Each ``element_type`` corresponds to a 1D tensor of shape :math:`[Q]`, where :math:`Q` is the number of quadrature points
+        the quadrature weights of each element type, e.g. ``{"triangle6": torch.tensor([0.5, 0.5])}``
     quadrature_points : BufferDict[str, torch.Tensor]
         The element type is the key, which should be one of :meth:`tensormesh.shape.element_types`.
-        Each :obj:`element_type` corresponds to a 2D tensor of shape :math:`[Q, D]`, where :math:`Q` is the number of quadrature points, :math:`D` is the dimension of the domain
-        the quadrature points of each element type, e.g. :obj:`{"triangle6": torch.tensor([[0.5, 0.5], [0.5, 0.0]])}`
+        Each ``element_type`` corresponds to a 2D tensor of shape :math:`[Q, D]`, where :math:`Q` is the number of quadrature points, :math:`D` is the dimension of the domain
+        the quadrature points of each element type, e.g. ``{"triangle6": torch.tensor([[0.5, 0.5], [0.5, 0.0]])}``
     shape_val : BufferDict[str, torch.Tensor]
         The element type is the key, which should be one of :meth:`tensormesh.shape.element_types`.
-        Each :obj:`element_type` corresponds to a 2D tensor of shape :math:`[Q, B]`, where :math:`Q` is the number of quadrature points, :math:`B` is the number of basis
-        the shape value of each element type, e.g. :obj:`{"triangle6": torch.tensor([[0.5, 0.5, 0.0], [0.0, 0.5, 0.5]])}`
+        Each ``element_type`` corresponds to a 2D tensor of shape :math:`[Q, B]`, where :math:`Q` is the number of quadrature points, :math:`B` is the number of basis
+        the shape value of each element type, e.g. ``{"triangle6": torch.tensor([[0.5, 0.5, 0.0], [0.0, 0.5, 0.5]])}``
     projector : BufferDict[str, Projector]
         The element type is the key, which should be one of :meth:`tensormesh.shape.element_types`.
-        ach :obj:`element_type` corresponds to a projector from element to edge,
+        ach ``element_type`` corresponds to a projector from element to edge,
         each  projector is a :meth:`tensormesh.assemble.Projector` object, could be considered as a sparse matrix
         
         .. math::
@@ -125,17 +125,17 @@ class ElementAssembler(nn.Module):
 
     elements : BufferDict[str, torch.Tensor]
         The element type is the key, which should be one of :meth:`tensormesh.shape.element_types`.
-        Each :obj:`element_type` corresponds to a 2D tensor of shape :math:`[\vert\mathcal C\vert, B]`, where :math:`\mathcal C` is the set of elements, :math:`B` is the number of basis
-        the element connectivity of each element type, e.g. :obj:`{"triangle6": torch.tensor([[0, 1, 2], [1, 2, 3]])}`
+        Each ``element_type`` corresponds to a 2D tensor of shape :math:`[\vert\mathcal C\vert, B]`, where :math:`\mathcal C` is the set of elements, :math:`B` is the number of basis
+        the element connectivity of each element type, e.g. ``{"triangle6": torch.tensor([[0, 1, 2], [1, 2, 3]])}``
     edges : torch.Tensor
         2D tensor of shape :math:`[2, \vert\mathcal E\vert]`, where :math:`\mathcal E` is the set of edges
-        edge connectivity considering all element_types, e.g. :obj:`torch.tensor([[0, 1, 2], [1, 2, 3]])`
+        edge connectivity considering all element_types, e.g. ``torch.tensor([[0, 1, 2], [1, 2, 3]])``
     n_points : int
         number of points
     dimension : int
         dimension of the mesh, either :math:`1` or :math:`2` or :math:`3`
     element_types : list[str]
-        element types, e.g. :obj:`["triangle6", "quad9"]`
+        element types, e.g. ``["triangle6", "quad9"]``
     """
 
     projector:nn.ModuleDict      # Dict[str, Projector]
@@ -186,7 +186,7 @@ class ElementAssembler(nn.Module):
         Returns
         -------
         torch.device
-            the device of the assembler, either :obj:`torch.device("cpu")` or :obj:`torch.device(f"cuda:{x}")`
+            the device of the assembler, either ``torch.device("cpu")`` or ``torch.device(f"cuda:{x}")``
         """
         return next(iter(self.transformation.values())).device # type: ignore
 
@@ -265,16 +265,16 @@ class ElementAssembler(nn.Module):
         point_data: Dict[str, torch.Tensor], optional
             tensor of shape :math:`[\vert\mathcal V\vert, ...]`, where :math:`\mathcal V` is the set of nodes/vertices/points
         element_data: Dict[str, torch.Tensor], optional 
-            dict of :obj:`{key:{element_type:tensor}}`
+            dict of ``{key:{element_type:tensor}}``
             tensor of shape :math:`[\vert\mathcal C\vert, ...]` where :math:`\mathcal C` is the set of elements/cells
-            if there is only one kinds of elements, you could simply passed as :obj:`{key:tensor}`  
+            if there is only one kinds of elements, you could simply passed as ``{key:tensor}``  
         scalar_data: Dict[str, Union[torch.Tensor, float, int], optional
             scalar data that should not be broadcasted, will be directly passed to forward
         batch_size: int or None, optional
             the batch size of quadrature points
             if :obj:`int` is given, the quadrature points will be divided into batches
             if :obj:`None` is given, the quadrature points will not be divided into batches
-            default is :obj:`1`
+            default is ``1``
         Returns
         -------
         SparseMatrix
@@ -708,9 +708,9 @@ class ElementAssembler(nn.Module):
             2D tensor shape :math:`[D, D]`, :math:`D` is the dimension of the dimension
         **point_data : Dict[str, torch.Tensor], optional
             The point_data are passed by __call__
-            if the point data :obj:`"example_key"` passed in is of shape :math:`[\vert\mathcal V\vert, ...]`, 
-            then the point data :obj:`"example_key"` passed in will be of shape :math:`[...]`,
-            and the point data :obj:`"gradexample_key"` passed in will be of shape :math:`[..., D]`,
+            if the point data ``"example_key"`` passed in is of shape :math:`[\vert\mathcal V\vert, ...]`, 
+            then the point data ``"example_key"`` passed in will be of shape :math:`[...]`,
+            and the point data ``"gradexample_key"`` passed in will be of shape :math:`[..., D]`,
             where :math:`B` is the number of basis, :math:`D` is the dimension of the dimension
 
         Returns
@@ -781,9 +781,9 @@ class ElementAssembler(nn.Module):
         mesh: tensormesh.mesh.mesh.Mesh
             a meth:`tensormesh.mesh.Mesh` object
         quadrature_order: int
-            the order should be poisitive integer, default is :obj:`2`
+            the order should be poisitive integer, default is ``2``
         project: str
-            the projection method, either 'reduce' or 'sparse', default is :obj:`'reduce'`
+            the projection method, either 'reduce' or 'sparse', default is ``'reduce'``
         args: tuple
             additional positional arguments passed to the constructor
         kwargs: dict 

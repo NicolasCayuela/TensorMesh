@@ -24,28 +24,28 @@ def gen_cube(chara_length=0.1,
     ----------
     chara_length: float, optional
         the characteristic length of the mesh,
-        default: :obj:`0.1`
+        default: ``0.1``
     order: int, optional
         the order of the basis function,
-        default: :obj:`1`
+        default: ``1``
     left: float, optional
         the left boundary of the cube,
-        default: :obj:`0.0`
+        default: ``0.0``
     right: float, optional
         the right boundary of the cube,
-        default: :obj:`1.0`
+        default: ``1.0``
     bottom: float, optional
         the bottom boundary of the cube,
-        default: :obj:`0.0`
+        default: ``0.0``
     top: float, optional
         the top boundary of the cube,
-        default: :obj:`1.0`
+        default: ``1.0``
     front: float, optional
         the front boundary of the cube,
-        default: :obj:`0.0`
+        default: ``0.0``
     back: float, optional
         the back boundary of the cube,
-        default: :obj:`1.0`
+        default: ``1.0``
     visualize: bool, optional
         whether to visualize the mesh,
         default: :obj:`False`
@@ -132,46 +132,46 @@ def gen_hollow_cube(chara_length=0.1,
     ----------
     chara_length: float, optional
         the characteristic length of the mesh,
-        default: :obj:`0.1`
+        default: ``0.1``
     order: int, optional
         the order of the basis function,
-        default: :obj:`1`
+        default: ``1``
     outer_left: float, optional
         the left boundary of the outer cube,
-        default: :obj:`0.0`
+        default: ``0.0``
     outer_right: float, optional
         the right boundary of the outer cube,
-        default: :obj:`1.0`
+        default: ``1.0``
     outer_bottom: float, optional
         the bottom boundary of the outer cube,
-        default: :obj:`0.0`
+        default: ``0.0``
     outer_top: float, optional
         the top boundary of the outer cube,
-        default: :obj:`1.0`
+        default: ``1.0``
     outer_front: float, optional
         the front boundary of the outer cube,
-        default: :obj:`0.0`
+        default: ``0.0``
     outer_back: float, optional
         the back boundary of the outer cube,
-        default: :obj:`1.0`
+        default: ``1.0``
     inner_left: float, optional
         the left boundary of the inner cube,
-        default: :obj:`0.25`
+        default: ``0.25``
     inner_right: float, optional
         the right boundary of the inner cube,
-        default: :obj:`0.75`
+        default: ``0.75``
     inner_bottom: float, optional
         the bottom boundary of the inner cube,
-        default: :obj:`0.25`
+        default: ``0.25``
     inner_top: float, optional
         the top boundary of the inner cube,
-        default: :obj:`0.75`
+        default: ``0.75``
     inner_front: float, optional
         the front boundary of the inner cube,
-        default: :obj:`0.25`
+        default: ``0.25``
     inner_back: float, optional
         the back boundary of the inner cube,
-        default: :obj:`0.75`
+        default: ``0.75``
     visualize: bool, optional
         whether to visualize the mesh,
         default: :obj:`False`
