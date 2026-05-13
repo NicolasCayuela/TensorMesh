@@ -677,11 +677,11 @@ class ElementAssembler(nn.Module):
         r"""Define the integrand of the bilinear form at a single quadrature point.
 
         Subclasses must override this method. The library uses
-        :func:`~tensormesh.vmap.vmap` to lift the per-quadrature-point function
-        over all quadrature points and all elements, so write it as if you
-        were evaluating at *one* point. Parameters are dispatched by name;
-        return values are integrated against ``JxW`` and scattered by
-        :meth:`__call__`.
+        :func:`torch.vmap` to lift the per-quadrature-point function over
+        all quadrature points and all elements, so write it as if you were
+        evaluating at *one* point. Parameters are dispatched by name;
+        return values are integrated against ``JxW`` and scattered by the
+        caller (see ``ElementAssembler.__call__``).
 
         Parameters
         ----------

@@ -551,9 +551,9 @@ class NodeAssembler(nn.Module):
         r"""Define the integrand of the linear form at a single quadrature point.
 
         Subclasses must override this method. The library uses
-        :func:`~tensormesh.vmap.vmap` to lift the per-quadrature-point
-        function over all quadrature points and all elements, so write it
-        as if you were evaluating at *one* point.
+        :func:`torch.vmap` to lift the per-quadrature-point function over
+        all quadrature points and all elements, so write it as if you were
+        evaluating at *one* point.
 
         Parameters
         ----------

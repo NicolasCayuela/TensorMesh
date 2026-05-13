@@ -233,6 +233,11 @@ nitpick_ignore_regex = [
     ('py:class', r"Polynomial(s)?( n_vars=.*)?"),
     # `dim+1`, `int int`, `**n_vars`, `n_point` — assorted shape/type-column noise.
     ('py:class', r"(dim\+1|int int|\*\*n_vars|n_point)"),
+    # NumPy-style choice annotation `param : {'a', 'b'}, optional` is split
+    # by napoleon on the comma — the resulting tokens `{'a'` and `'b'}` are
+    # not types we want to cross-reference.
+    ('py:class', r"\{'[^']+'"),
+    ('py:class', r"'[^']+'\}"),
     # torch.nn.Module.type's inherited signature uses dst_type as its
     # parameter name; autodoc carries the parent's type annotation onto
     # subclasses that don't override the docstring.

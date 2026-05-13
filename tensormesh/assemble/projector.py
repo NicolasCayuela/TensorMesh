@@ -14,9 +14,9 @@ class Projector(nn.Module):
     A :class:`Projector` consumes a tensor with leading shape ``from_shape``
     (per-element / per-facet quantities) and returns a tensor with leading
     shape ``to_shape`` (global edge / node indexing), summing duplicates.
-    The two concrete implementations are :class:`ReduceProjector` (uses
-    :meth:`torch.Tensor.index_add_`) and :class:`SparseProjector` (uses a
-    sparse mat-vec product).
+    The two concrete implementations are ``ReduceProjector`` (uses
+    :meth:`torch.Tensor.index_add_`) and ``SparseProjector`` (uses a sparse
+    mat-vec product).
     """
     pass
 
@@ -24,9 +24,8 @@ class Projector(nn.Module):
 class ReduceProjector(Projector):
     """Element-to-global scatter backed by :meth:`torch.Tensor.index_add_`.
 
-    More widely compatible than :class:`SparseProjector` because it only
-    relies on the dense ``index_add_`` kernel that PyTorch ships for every
-    backend.
+    More widely compatible than ``SparseProjector`` because it only relies
+    on the dense ``index_add_`` kernel that PyTorch ships for every backend.
 
     Attributes
     ----------
@@ -132,7 +131,7 @@ class ReduceProjector(Projector):
 class SparseProjector(Projector):
     """Element-to-global scatter backed by a CSR sparse mat-vec product.
 
-    Faster than :class:`ReduceProjector` for large meshes on backends that
+    Faster than ``ReduceProjector`` for large meshes on backends that
     optimize sparse mat-vec, at the cost of materializing the projection
     matrix.
 
