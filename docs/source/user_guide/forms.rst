@@ -303,6 +303,8 @@ Call signature:
 Note that ``element_data`` is *not* accepted (linear forms rarely need
 per-element scratch data), and that the default ``batch_size`` is ``1``
 rather than the ``-1`` used by :class:`~tensormesh.ElementAssembler`.
+To disable batching here pass ``batch_size=None`` (not ``-1``); see
+:ref:`forms-batching` for the constraints.
 
 End-to-end check: combining mass + load to project a function into the
 FE space. The mass matrix :math:`M` is SPD, so we can invert it without
@@ -399,11 +401,11 @@ the basis itself". The decision tree:
      - material coefficient defined at nodes, displacement field from a previous solve
    * - per element (one value per cell)
      - ``element_data={"E": E}`` or ``element_data={"E": {"triangle": E_tri}}``
-     - ``E`` (shape ``[...]``, constant on the cell)
-     - per-cell Young's modulus, history variables, marker labels
-   * - per (element, quadrature point)
+     - the whole per-element slice (shape ``[...]``); same value at every quadrature point inside that cell
+     - per-cell Young's modulus, marker labels, any quantity constant on the element
+   * - per (element, quadrature point) — ``.energy()`` path only
      - ``element_data={"eps_p": eps_p}`` with shape ``[n_elem, n_quad, ...]``
-     - the matching ``[n_quad, ...]`` slice at each quadrature point
+     - the value at the current quadrature point (shape ``[...]``)
      - plastic strain history in :class:`~tensormesh.assemble.J2Plasticity`
    * - global scalar
      - ``scalar_data={"dt": dt}``
@@ -415,6 +417,87 @@ the same name must not collide with a built-in (``u``, ``v``, ``gradu``,
 ``gradv``, ``x``, ``gradx``). For ``point_data`` keys, you can also
 request the gradient by prefixing ``"grad"`` to the name — no extra
 plumbing is needed.
+
+.. caution::
+
+   Per-(element, quadrature) ``element_data`` is auto-detected only by
+   ``ElementAssembler.energy`` (see :ref:`forms-energy`), not by the
+   matrix-assembling ``ElementAssembler.__call__`` path. If you pass a
+   tensor of shape ``[n_elem, n_quad, ...]`` to ``__call__``, the *whole*
+   ``[n_quad, ...]`` slice is handed to ``forward`` for each element —
+   not the per-quadrature value. For matrix assembly today, keep
+   ``element_data`` strictly per-element.
+
+
+Feature matrix
+~~~~~~~~~~~~~~
+
+The four call paths do not all support every plumbing knob. Use this
+table when you're unsure whether a feature is available on the assembler
+you have:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 28 14 14 14 16 14
+
+   * - Feature
+     - ``Element``
+       ``__call__``
+     - ``Element``
+       ``.energy()``
+     - ``Node``
+       ``__call__``
+     - ``Facet``
+       ``__call__``
+     - Notes
+   * - ``points`` override
+     - ✓
+     - ✓
+     - ✓
+     - ✓
+     - all paths re-cache the :class:`~tensormesh.Transformation` on new ``points``
+   * - ``func`` override
+     - ✓
+     - ✓
+     - ✓ (forces vmap path)
+     - ✓
+     - ``Node`` with ``compile()`` falls back to vmap when ``func`` is set
+   * - ``point_data`` keys + ``grad`` + key
+     - ✓
+     - ✓
+     - ✓
+     - ✓
+     - same nodal-interpolation contract everywhere
+   * - per-element ``element_data``
+     - ✓
+     - ✓
+     - ✗
+     - ✗
+     - ``Node`` / ``Facet`` ``__call__`` signatures don't take it
+   * - per-(element, quadrature) ``element_data``
+     - ✗ (whole slice)
+     - ✓ (auto-detect by ``shape[1] == n_quad``)
+     - ✗
+     - ✗
+     - only ``.energy()`` recognises the per-quadrature layout
+   * - ``scalar_data``
+     - ✓
+     - ✓
+     - ✓
+     - ✗
+     - facet integrals don't take it
+   * - ``batch_size``
+     - ✓ (default ``-1``)
+     - ✓ (default ``-1``)
+     - ✓ (default ``1``, disable with ``None``)
+     - ✗
+     - see :ref:`forms-batching` for the divisibility constraint
+   * - ``.compile()`` fast path
+     - ✗
+     - ✗
+     - ✓ (single element type, no ``func``)
+     - ✗
+     - falls back to vmap when conditions aren't met
 
 
 .. _forms-builtins:
@@ -474,6 +557,8 @@ applied; a factory returns a freshly minted subclass that bakes the
 constant or function into ``__post_init__``.
 
 
+.. _forms-energy:
+
 Energy-based assemblers (``element_energy`` + ``.energy()``)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -489,7 +574,7 @@ For nonlinear materials the most natural quantity to define is the
    \mathbf{K}_\text{tan} \;=\; \frac{\partial^2 \Pi}{\partial \mathbf{u}^2}.
 
 :class:`~tensormesh.ElementAssembler` supports this pattern via a
-parallel method, :meth:`~tensormesh.ElementAssembler.energy`, that
+parallel method, ``ElementAssembler.energy``, that
 integrates an ``element_energy`` override and returns a scalar
 :class:`torch.Tensor`. Because the entire pipeline is differentiable,
 ``E.backward()`` populates ``u.grad`` with the internal force vector,
@@ -563,24 +648,39 @@ Memory batching with ``batch_size``
 For very fine meshes or high-order elements, holding all per-element
 quadrature tensors in memory at once may not fit. The assembler
 ``__call__`` accepts a ``batch_size`` argument that splits the
-*quadrature* dimension into chunks, accumulates the contribution, and
-returns the same matrix as the un-chunked call:
+*quadrature* dimension into chunks and accumulates the contribution:
 
 .. code-block:: python
 
    K = LaplaceAssembler.from_mesh(mesh)(batch_size=4)
 
-This is purely a memory knob — the assembled result is bit-identical to
-the un-batched call. It is **not** problem-level vectorization; for
-that, see :doc:`batched_workflows`.
+This is a memory knob, not problem-level vectorisation; for the latter
+see :doc:`batched_workflows`.
 
-The default differs by class: ``-1`` for
-:class:`~tensormesh.ElementAssembler` (process all quadrature at once,
-fastest when memory allows) and ``1`` for
-:class:`~tensormesh.NodeAssembler` (one quadrature point at a time,
-gentler on memory). :class:`~tensormesh.FacetAssembler` does not expose
-``batch_size`` — facet integrals are small enough that batching has not
-been needed in practice.
+How to disable batching depends on the class:
+
+* :class:`~tensormesh.ElementAssembler` — pass ``batch_size=-1`` (also
+  the default), processes all quadrature at once.
+* :class:`~tensormesh.NodeAssembler` — pass ``batch_size=None``; the
+  default is ``1`` (one quadrature point at a time, gentler on memory).
+  Note that passing ``-1`` here is **not** the way to disable batching —
+  it will trip an internal assertion.
+* :class:`~tensormesh.FacetAssembler` — does not expose ``batch_size``;
+  facet integrals are small enough that batching has not been needed.
+
+.. warning::
+
+   The current implementation uses integer division
+   (``n_quadrature // batch_size``) to decide the number of batches.
+   When ``batch_size`` does *not* evenly divide the per-element
+   quadrature count, the tail quadrature points are **silently
+   dropped** and the assembled output is wrong (e.g. ``batch_size=2`` on
+   a 3-point rule integrates only 2 of 3 quadrature points, giving
+   ~2/3 of the correct integral); when ``batch_size > n_quadrature``
+   the call raises an ``AssertionError``. Until this is fixed, the safe
+   choices are: leave the default in place, pass a ``batch_size`` that
+   exactly divides ``n_quadrature`` per element type, or disable batching
+   via the sentinel above.
 
 
 Speeding up NodeAssembler with ``compile``
@@ -614,6 +714,18 @@ layered on top: ``"disable"`` (default) does the vmap bypass only,
 the default ``compile()`` (no ``torch.compile``) is already a large
 speedup with no warm-up cost. :meth:`~tensormesh.NodeAssembler.flat_mode`
 is a synonym for ``compile(mode="disable")``.
+
+The fast path only fires when **all three** of the following hold; if any
+of them fails the call falls back transparently to the vmap path:
+
+1. ``.compile()`` has been called on the assembler (``is_compiled``
+   returns ``True``).
+2. The mesh has exactly one element type
+   (``len(self.element_types) == 1``). Mixed-element meshes use the
+   vmap path even with compile enabled.
+3. No ``func=`` override is passed at call time. Calling
+   ``asm(func=alt_form)`` always goes through the vmap path so that you
+   can swap integrands without recompiling.
 
 .. note::
 
