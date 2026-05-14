@@ -48,9 +48,10 @@ class SparseSolveTorchSLA(Function):
         max_iter : int
             Max iterations
         backend : str
-            'scipy', 'pytorch', 'eigen', 'auto'
+            'auto', 'scipy', 'eigen', 'pytorch', 'cudss', 'cupy'
         method : str
-            'cg', 'bicgstab', 'superlu', etc.
+            Direct: 'lu', 'umfpack', 'cholesky', 'ldlt'. Iterative:
+            'cg', 'bicgstab', 'minres', 'gmres', 'lgmres', etc.
         preconditioner : str
             'jacobi', 'ilu', 'none'
         is_spd : bool
@@ -157,9 +158,10 @@ def sparse_solve_torch_sla(edata, row, col, shape, b, x0=None, tol=1e-5, max_ite
     max_iter : int
         Max iterations (default 10000)
     backend : str
-        'scipy', 'pytorch', 'eigen', 'auto'
+        'auto', 'scipy', 'eigen', 'pytorch', 'cudss', 'cupy'
     method : str
-        'cg', 'bicgstab', 'superlu', etc.
+        Direct: 'lu', 'umfpack', 'cholesky', 'ldlt'. Iterative:
+        'cg', 'bicgstab', 'minres', 'gmres', 'lgmres', etc.
     preconditioner : str
         'jacobi', 'ilu', 'none'
     is_spd : bool

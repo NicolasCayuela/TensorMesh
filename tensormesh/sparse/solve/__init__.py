@@ -15,6 +15,8 @@ become inert. Install ``torch-sla`` for the full feature set.
 
 import warnings
 
+import torch
+
 try:
     import torch_sla  # noqa: F401  (presence-only check)
     is_torch_sla_available = True
@@ -59,10 +61,12 @@ def spsolve(edata, row, col, shape, b,
         ``"cupy"`` — others are accepted but the method/preconditioner
         hints below are ignored.
     method : str, default ``"cg"``
-        Iterative algorithm; one of ``"cg"``, ``"bicgstab"``,
-        ``"minres"``, ``"gmres"``, ``"lgmres"``, or ``"superlu"`` for a
-        direct factorization. **Honoured only on the torch-sla path.**
-        On the fallback path, each wrapper uses a fixed algorithm.
+        Iterative algorithm — ``"cg"``, ``"bicgstab"``, ``"minres"``,
+        ``"gmres"``, ``"lgmres"`` — or one of the direct factorizations
+        ``"lu"``, ``"umfpack"``, ``"cholesky"``, ``"ldlt"``. See the
+        installed ``torch_sla.spsolve`` signature for the canonical
+        list. **Honoured only on the torch-sla path.** On the fallback
+        path, each wrapper uses a fixed algorithm.
     preconditioner : str, default ``"jacobi"``
         ``"jacobi"``, ``"ilu"``, or ``"none"``. Same caveat as
         ``method`` — torch-sla path only.
@@ -96,11 +100,11 @@ def spsolve(edata, row, col, shape, b,
     Examples
     --------
     >>> from tensormesh.sparse import spsolve
-    >>> x = spsolve(edata, row, col, (n, n), b)                       # auto
-    >>> x = spsolve(edata, row, col, (n, n), b, method="superlu")     # direct
-    >>> x = spsolve(edata, row, col, (n, n), b, backend="cudss")      # GPU direct
+    >>> x = spsolve(edata, row, col, (n, n), b)                   # auto
+    >>> x = spsolve(edata, row, col, (n, n), b, method="lu")      # direct
+    >>> x = spsolve(edata, row, col, (n, n), b, backend="cudss")  # GPU direct
     >>> x = spsolve(edata, row, col, (n, n), b,
-    ...             is_spd=False, method="bicgstab")                  # non-SPD
+    ...             is_spd=False, method="bicgstab")              # non-SPD
     """
     
     # Validate inputs
@@ -140,24 +144,26 @@ def _solve_torch_sla(edata, row, col, shape, b,
                      is_batched, verbose):
     """Solve via torch-sla; honours ``method`` / ``preconditioner`` / ``is_spd``.
 
-    Batched RHS (``b.ndim == 2``) auto-routes to SuperLU regardless of
-    the requested ``method`` (one factorization, ``n_batch``
-    back-substitutions).
+    Batched RHS (``b.ndim == 2``) auto-routes to an LU factorization
+    when the user did not request a direct method, since a single
+    factorization + ``n_batch`` back-substitutions beats running an
+    iterative solver per column.
     """
     from .torch_sla_solve import SparseSolveTorchSLA
-    
-    # Map 'auto' to appropriate torch-sla backend
+
+    # Map 'auto' to appropriate torch-sla backend.
     if backend == 'auto':
         if edata.device.type == 'cuda':
             backend = 'pytorch'
         else:
             backend = 'scipy'
-    
-    # For batched solve, use superlu (direct solver)
-    if is_batched and method not in ['superlu', 'lu']:
+
+    # For batched solve, route iterative requests to a direct factorization.
+    _DIRECT_METHODS = ('lu', 'umfpack', 'cholesky', 'ldlt')
+    if is_batched and method not in _DIRECT_METHODS:
         if verbose:
-            print(f"Using SuperLU for batched solve (batch_size={b.shape[1]})")
-        method = 'superlu'
+            print(f"Using LU for batched solve (batch_size={b.shape[1]})")
+        method = 'lu'
     
     if verbose:
         print(f"Solving with torch-sla: backend={backend}, method={method}, preconditioner={preconditioner}")

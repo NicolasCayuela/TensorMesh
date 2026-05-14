@@ -91,7 +91,7 @@ wrapper around it that you'll see in most quickstart-style code.
 
    K = LaplaceElementAssembler.from_mesh(mesh)()
    x = K.solve(b)                              # SPD CG via torch-sla
-   x = K.solve(b, method="superlu")            # direct
+   x = K.solve(b, method="lu")                 # direct factorization
    x = K.solve(b, backend="cudss")             # NVIDIA GPU direct
    x = K.solve(b, is_spd=False, method="bicgstab")
 
@@ -99,8 +99,9 @@ Key keyword arguments:
 
 * ``backend``: ``"auto"`` (default — SciPy on CPU, native PyTorch on
   CUDA) or one of the strings in the table above.
-* ``method``: ``"cg"``, ``"bicgstab"``, ``"minres"``, ``"gmres"``,
-  ``"lgmres"``, or ``"superlu"`` (direct factorization).
+* ``method``: iterative — ``"cg"``, ``"bicgstab"``, ``"minres"``,
+  ``"gmres"``, ``"lgmres"`` — or a direct factorization — ``"lu"``,
+  ``"umfpack"``, ``"cholesky"``, ``"ldlt"``.
 * ``preconditioner``: ``"jacobi"`` (default), ``"ilu"``, or ``"none"``.
 * ``is_spd=True`` (default) tells the solver it can use CG. Set
   ``False`` for indefinite / non-symmetric ``A`` and pair with
@@ -112,7 +113,7 @@ Batched right-hand sides
 ------------------------
 
 When ``b`` has shape ``[n_dof, n_batch]``, ``spsolve`` automatically
-routes to a SuperLU direct solve — one factorization,
+routes to an LU direct factorization — one factor pass,
 ``n_batch`` back-substitutions — instead of running iterative CG
 independently per column. This is the workhorse of the
 :mod:`tensormesh.dataset` ML workflow.
