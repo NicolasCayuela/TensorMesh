@@ -1,12 +1,23 @@
+"""PETSc-backed sparse iterative solvers (CPU only).
+
+Both wrappers run BiCGSTAB through PETSc's ``KSP`` framework:
+
+- :class:`SparseSolvePETSc` — single RHS, BCGS + ILU preconditioner;
+- :class:`SparseLUSolvePETSc` — batched RHS, loops over columns and
+  reuses the ``KSP`` object.
+
+PETSc is imported lazily on first use so it remains a soft dependency.
+"""
+
 from typing import Any
-import torch 
+import torch
 from torch.autograd import Function
 import scipy.sparse
-import warnings
 from ..utils import shapeT, is_petsc_available
 
-# Lazy import PETSc only when needed
+# Lazy import PETSc only when needed.
 PETSc = None
+
 
 def _get_petsc():
     global PETSc
@@ -19,19 +30,23 @@ def _get_petsc():
         from petsc4py import PETSc as _PETSc
         PETSc = _PETSc
     return PETSc
+
+
 def petscvec2tensor(petscvec):
-        """turn PETSc vector to torch.Tensor
-        
-        Parameters
-        ----------
-        petscvec : PETSc.Vec
-            the input PETSc vector
-        Returns
-        -------
-        torch.Tensor
-            the output tensor
-        """
-        return torch.from_numpy(petscvec.getArray())
+    """Copy a :class:`PETSc.Vec` payload into a torch :class:`torch.Tensor` (CPU).
+
+    Parameters
+    ----------
+    petscvec : PETSc.Vec
+        Source PETSc vector.
+
+    Returns
+    -------
+    torch.Tensor
+        1D CPU tensor; caller is responsible for moving it to the
+        original device / dtype.
+    """
+    return torch.from_numpy(petscvec.getArray())
 
 
 def _coo_arrays(edata, row, col):
@@ -44,6 +59,8 @@ def _coo_arrays(edata, row, col):
 
 
 class SparseSolvePETSc(Function):
+    """Differentiable ``A x = b`` via PETSc ``KSP`` BiCGSTAB + ILU."""
+
     @staticmethod
     def forward(ctx, edata, row, col, shape, b) -> Any:
         PETSc = _get_petsc()
@@ -85,6 +102,8 @@ class SparseSolvePETSc(Function):
 
 
 class SparseLUSolvePETSc(Function):
+    """Differentiable batched ``A x_i = b_i`` via PETSc ``KSP`` (column loop)."""
+
     @staticmethod
     def forward(ctx, edata, row, col, shape, b) -> Any:
         PETSc = _get_petsc()

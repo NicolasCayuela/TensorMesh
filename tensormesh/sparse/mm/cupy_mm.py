@@ -1,3 +1,4 @@
+"""CuPy-backed sparse matmul / matvec with custom autograd (CUDA only)."""
 
 import torch
 from torch.autograd import Function
@@ -9,7 +10,10 @@ if is_cupy_available:
     cp    = importlib.import_module('cupy')
     importlib.import_module('cupyx.scipy.sparse')
 
+
 class SparseMMCupy(Function):
+    """Differentiable ``A @ B`` via :class:`cupyx.scipy.sparse.coo_matrix`."""
+
     @staticmethod
     def forward(ctx, edata, row, col, shape, B):
         cp.cuda.Device(edata.device.index).use()
@@ -34,6 +38,8 @@ class SparseMMCupy(Function):
         return edata_grad, None, None, None, grad_B
        
 class SparseMVCupy(Function):
+    """Differentiable ``A @ b`` via :class:`cupyx.scipy.sparse.coo_matrix`."""
+
     @staticmethod
     def forward(ctx, edata, row, col, shape, B):
         cp.cuda.Device(edata.device.index).use()

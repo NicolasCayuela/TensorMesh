@@ -1,9 +1,27 @@
+"""Pure-PyTorch sparse-solve backends.
+
+Provides:
+
+- :func:`coo_diagonal`, :func:`jacobi_precond` — small utility primitives;
+- :func:`cg_py` — CG for SPD matrices;
+- :func:`bicgstab_py` — Jacobi-preconditioned BiCGSTAB for general
+  square systems;
+- :class:`SparseSolveTorch` — :class:`torch.autograd.Function` wrapping
+  ``lse_solver`` (BiCGSTAB) with an adjoint backward.
+
+If the C++ extension under :mod:`tensormesh.cpp.spsolve` is available and
+``TORCH_FEM_USE_CPP`` is unset or ``"true"``, ``lse_solver`` is replaced
+with the compiled BiCGSTAB / CG routines; otherwise it falls back to the
+Python implementations above.
+"""
+
 import os
 import math
 import torch
 from torch.autograd import Function
 import warnings
 from ..utils import shapeT
+
 try:
     from ...cpp.spsolve import spsolve_cpp
     is_cpp_backend_available = True
@@ -11,9 +29,22 @@ except ImportError:
     is_cpp_backend_available = False
 
 def coo_diagonal(A, at_least=1):
-    """
-    Returns the diagonal of a CSR matrix.
-    The matrix should be symmetric.
+    """Extract the diagonal of a sparse COO tensor.
+
+    Missing diagonal entries are filled with ``at_least`` (default 1).
+
+    Parameters
+    ----------
+    A : torch.sparse_coo_tensor
+        Square sparse tensor.
+    at_least : float, default 1
+        Fill value for diagonal positions absent from the sparsity
+        pattern (so Jacobi preconditioning does not divide by zero).
+
+    Returns
+    -------
+    torch.Tensor
+        1D tensor of length ``A.shape[0]``.
     """
     assert A.shape[0] == A.shape[1], f"Matrix is not square. Shape is {A.shape}"
     N = A.shape[0]
@@ -22,44 +53,53 @@ def coo_diagonal(A, at_least=1):
     mask  = edges[0] == edges[1]
     cand_value = value[mask]
     cand_index = edges[0][mask]
-    # cand_value = cand_value[torch.argsort(cand_index)]
-    # diag_mask  = torch.bincount(cand_index, minlength=N).bool()
     diag_value = torch.full(size=(N,), fill_value=at_least, dtype=cand_value.dtype, device=cand_value.device)
-    # diag_value = torch.fill(shape=(N,), fill_value=at_least).type(cand_value.dtype).to(cand_value.device)
-    # diag_value[diag_mask] = cand_value
     diag_value[cand_index] = cand_value
     return diag_value
 
-def jacobi_precond(A, x = None):
-    if x is None:
-        return 1.0/coo_diagonal(A, at_least=1.0)
-    else:
-        return x * (1.0/coo_diagonal(A, at_least=1.0))
 
-def identity_precond(A, x = None):
+def jacobi_precond(A, x=None):
+    """Jacobi (inverse-diagonal) preconditioner; returns ``M^{-1}`` or ``M^{-1} x``."""
+    if x is None:
+        return 1.0 / coo_diagonal(A, at_least=1.0)
+    else:
+        return x * (1.0 / coo_diagonal(A, at_least=1.0))
+
+
+def identity_precond(A, x=None):
+    """Identity preconditioner; returns ``1`` or ``x`` unchanged."""
     if x is None:
         return torch.ones(A.shape[0], dtype=A.dtype, device=A.device)
     else:
         return x
 
-def cg_py(indices, values, m, n, b, x0=None, atol=1e-5, max_iter=10000):
-    """
-    Solves Ax = b using the Conjugate Gradient method.
 
-    https://en.wikipedia.org/wiki/Conjugate_gradient_method
-    
+def cg_py(indices, values, m, n, b, x0=None, atol=1e-5, max_iter=10000):
+    """Conjugate-gradient solve of ``A x = b`` for symmetric positive-definite ``A``.
+
+    See https://en.wikipedia.org/wiki/Conjugate_gradient_method.
+
     Parameters
     ----------
-    A : torch.sparse_csr_matrix
-        2D Sparse tensor of shape [N, N], The matrix A in Ax = b.
+    indices : torch.Tensor
+        2D int tensor of shape ``[2, nnz]`` stacking ``(row, col)``.
+    values : torch.Tensor
+        1D tensor of shape ``[nnz]``: non-zero values of ``A``.
+    m, n : int
+        Shape of ``A``; must satisfy ``m == n``.
     b : torch.Tensor
-        1D tensor of shape [N] The right-hand side vector.
+        1D tensor of shape ``[n]``: right-hand side.
     x0 : torch.Tensor, optional
-        1D tensor of shape [N] Initial guess for the solution. The default is None.
-    tol : float, optional
-        Tolerance for convergence. The default is 1e-5.
-    max_iter : int, optional
-        Maximum number of iterations. The default is 1000.
+        1D tensor of shape ``[n]``: initial guess. Defaults to zeros.
+    atol : float, default 1e-5
+        Convergence tolerance on ``||r||``.
+    max_iter : int, default 10000
+        Iteration budget; emits a warning if exhausted.
+
+    Returns
+    -------
+    torch.Tensor
+        Solution ``x`` of shape ``[n]``.
     """
     A = torch.sparse_coo_tensor(indices, values, (m, n), is_coalesced =True)
 
@@ -95,20 +135,33 @@ def cg_py(indices, values, m, n, b, x0=None, atol=1e-5, max_iter=10000):
     return x.view(-1)
 
 def bicgstab_py(indices, values, m, n, b, x0=None, atol=1e-5, max_iter=10000):
-    """
-    Solves Ax = b using the Preconditioned Bi-Conjugate Gradient Stabilized method.
-    Uses Jacobi (diagonal) preconditioning.
+    """Jacobi-preconditioned BiCGSTAB solve of ``A x = b``.
 
-    Args:
-        indices, values: COO representation of A
-        m, n: Shape of A
-        b: The right-hand side vector.
-        x0: Initial guess for the solution.
-        atol: Tolerance for convergence.
-        max_iter: Maximum number of iterations.
+    Suited for non-SPD square systems where CG cannot be used.
 
-    Returns:
-        The approximate solution vector.
+    Parameters
+    ----------
+    indices : torch.Tensor
+        2D int tensor of shape ``[2, nnz]`` stacking ``(row, col)``.
+    values : torch.Tensor
+        1D tensor of shape ``[nnz]``: non-zero values of ``A``.
+    m, n : int
+        Shape of ``A``; must satisfy ``m == n``.
+    b : torch.Tensor
+        1D tensor of shape ``[n]``: right-hand side. Same dtype as
+        ``values``.
+    x0 : torch.Tensor, optional
+        1D tensor of shape ``[n]``: initial guess. Defaults to zeros.
+    atol : float, default 1e-5
+        Convergence tolerance on ``||r||``.
+    max_iter : int, default 10000
+        Iteration budget; emits a warning if final residual exceeds
+        ``sqrt(atol)``.
+
+    Returns
+    -------
+    torch.Tensor
+        Solution ``x`` of shape ``[n]``.
     """
     assert m == n, f"Matrix is not square. Shape is {m}x{n}"
     assert b.shape[0] == m, f"Shape mismatch. A is {m}x{n}, b is {b.shape}"

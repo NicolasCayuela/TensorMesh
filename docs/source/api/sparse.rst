@@ -15,6 +15,7 @@ SparseMatrix
 .. autoclass:: tensormesh.sparse.SparseMatrix
     :members:
     :show-inheritance:
+    :exclude-members: layout_hash
 
 .. py:class:: SparseTensor
 

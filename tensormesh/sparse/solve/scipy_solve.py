@@ -1,12 +1,26 @@
+"""SciPy-backed sparse direct solvers (CPU only).
+
+Two autograd-aware paths:
+
+- :class:`SparseSolveScipy` — single RHS, uses
+  :func:`scipy.sparse.linalg.spsolve`;
+- :class:`SparseLUSolveScipy` — batched RHS, uses
+  :func:`scipy.sparse.linalg.splu` (one factorization, ``n_batch``
+  back-substitutions).
+
+Both share an adjoint-solve backward.
+"""
+
 from typing import Any
-import torch 
+import torch
 from torch.autograd import Function
 import scipy.sparse.linalg
-import warnings
-from ..utils import tensor2cupy, cupy2tensor, shapeT
+from ..utils import shapeT
 
 
 class SparseSolveScipy(Function):
+    """Differentiable ``A x = b`` via :func:`scipy.sparse.linalg.spsolve`."""
+
     @staticmethod
     def forward(ctx, edata, row, col, shape, b) -> Any:
         # Ensure inputs are on CPU and converted to numpy
@@ -40,6 +54,12 @@ class SparseSolveScipy(Function):
 
 
 class SparseLUSolveScipy(Function):
+    """Differentiable batched solve via :func:`scipy.sparse.linalg.splu`.
+
+    Expects ``b`` of shape ``[n, n_batch]`` and performs a single LU
+    factorization followed by ``n_batch`` triangular solves.
+    """
+
     @staticmethod
     def forward(ctx, edata, row, col, shape, b) -> Any:
         edata_np = edata.detach().cpu().numpy()

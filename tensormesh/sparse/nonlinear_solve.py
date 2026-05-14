@@ -1,41 +1,43 @@
+"""Newton-Raphson solver for ``F(u, params) = 0`` with implicit-diff support."""
+
 import torch
 from torch.autograd import Function
-from typing import Callable, Optional, Tuple, Any, Dict
+from typing import Callable, Tuple
 from ..sparse.matrix import SparseMatrix
 
-def newton_solve(
+
+def _newton_solve(
     f: Callable[..., torch.Tensor],
     j: Callable[..., SparseMatrix],
     u0: torch.Tensor,
     params: Tuple[torch.Tensor, ...],
     max_iter: int = 100,
     tol: float = 1e-6,
-    verbose: bool = False
+    verbose: bool = False,
 ) -> torch.Tensor:
-    """
-    Newton-Raphson solver for F(u, params) = 0
-    
+    """Plain Newton iteration; consumed by :class:`NonLinearSolveFunction`.
+
     Parameters
     ----------
     f : Callable
-        Function F(u, *params) -> residual (Tensor)
+        ``F(u, *params) -> torch.Tensor`` returning the residual.
     j : Callable
-        Function J(u, *params) -> Jacobian (SparseMatrix)
+        ``J(u, *params) -> SparseMatrix`` returning ``dF/du`` at ``u``.
     u0 : torch.Tensor
-        Initial guess
-    params : Tuple
-        Parameters for f and j
-    max_iter : int
-        Maximum iterations
-    tol : float
-        Tolerance (residual norm)
-    verbose : bool
-        Print progress
-        
+        Initial guess.
+    params : Tuple[torch.Tensor, ...]
+        Forwarded to ``f`` and ``j``.
+    max_iter : int, default 100
+        Iteration budget; emits a verbose warning if exhausted.
+    tol : float, default 1e-6
+        Convergence tolerance on ``||F(u)||``.
+    verbose : bool, default False
+        Print residual norm at every step.
+
     Returns
     -------
     torch.Tensor
-        Solution u
+        Solution ``u``.
     """
     u = u0.clone()
     
@@ -63,17 +65,21 @@ def newton_solve(
     return u
 
 class NonLinearSolveFunction(Function):
+    """Autograd :class:`Function` wrapping :func:`_newton_solve`.
+
+    Forward runs Newton-Raphson in ``no_grad``. Backward applies the
+    implicit-function theorem: solve ``J^T lam = grad_output`` for the
+    adjoint state ``lam``, then VJP ``-lam`` against ``F`` to get the
+    parameter gradients in one extra linear solve.
+    """
+
     @staticmethod
     def forward(ctx, f, j, u0, solver_config, *params):
-        # 1. Newton Solve (detached)
         with torch.no_grad():
-            u = newton_solve(f, j, u0, params, **solver_config)
-            
-        # 2. Save for backward
+            u = _newton_solve(f, j, u0, params, **solver_config)
         ctx.save_for_backward(u, *params)
         ctx.f = f
         ctx.j = j
-        
         return u
 
     @staticmethod
@@ -112,35 +118,38 @@ def nonlinear_solve(
     params: Tuple[torch.Tensor, ...],
     max_iter: int = 100,
     tol: float = 1e-6,
-    verbose: bool = False
+    verbose: bool = False,
 ) -> torch.Tensor:
-    """
-    Solve F(u, params) = 0 for u using Newton-Raphson method with implicit differentiation support.
-    
+    """Solve ``F(u, params) = 0`` for ``u``, with implicit differentiation.
+
+    Drives Newton-Raphson on the forward pass and the implicit-function
+    theorem on the backward pass: gradients w.r.t. ``params`` cost
+    roughly one extra linear solve regardless of how many Newton
+    iterations were taken.
+
     Parameters
     ----------
     f : Callable
-        Function ``F(u, *params)`` -> residual (Tensor).
-        Should support autograd for params if gradients are needed.
+        ``F(u, *params) -> torch.Tensor``. Must support autograd in
+        ``params`` for gradients to flow.
     j : Callable
-        Function ``J(u, *params)`` -> Jacobian (SparseMatrix).
-        The Jacobian ``dF/du`` at u.
+        ``J(u, *params) -> SparseMatrix``: the Jacobian ``dF/du``.
     u0 : torch.Tensor
-        Initial guess for u.
+        Initial guess.
     params : Tuple[torch.Tensor, ...]
-        Parameters passed to f and j. These can be optimized.
-    max_iter : int, optional
-        Maximum number of Newton iterations. Default 100.
-    tol : float, optional
-        Convergence tolerance for residual norm. Default 1e-6.
-    verbose : bool, optional
-        Whether to print solver progress. Default False.
-        
+        Optimizable parameters forwarded to ``f`` / ``j``.
+    max_iter : int, default 100
+        Newton iteration budget.
+    tol : float, default 1e-6
+        Convergence tolerance on ``||F(u)||``.
+    verbose : bool, default False
+        Print residual norm each Newton step.
+
     Returns
     -------
     torch.Tensor
-        The solution u such that F(u, params) approx 0.
-        Gradients can be backpropagated through u to params.
+        Converged ``u``; gradients route back into ``params`` via the
+        adjoint solve inside ``NonLinearSolveFunction``.
     """
     solver_config = {
         'max_iter': max_iter,

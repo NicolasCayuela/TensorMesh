@@ -1,7 +1,17 @@
+"""CuPy-backed sparse direct solvers (CUDA only).
 
-import torch 
+Mirrors :mod:`tensormesh.sparse.solve.scipy_solve` on the GPU:
+
+- :class:`SparseSolveCupy` — single RHS, ``cupyx.scipy.sparse.linalg.spsolve``;
+- :class:`SparseLUSolveCupy` — batched RHS,
+  ``cupyx.scipy.sparse.linalg.splu``.
+
+Both interop with torch tensors via DLPack (see
+:func:`tensormesh.sparse.utils.tensor2cupy`).
+"""
+
+import torch
 from torch.autograd import Function
-import warnings
 import importlib
 from ..utils import tensor2cupy, cupy2tensor, shapeT, is_cupy_available
 
@@ -11,7 +21,10 @@ if is_cupy_available:
     importlib.import_module('cupyx.scipy.sparse')
     importlib.import_module('cupyx.scipy.sparse.linalg')
 
+
 class SparseSolveCupy(Function):
+    """Differentiable ``A x = b`` via ``cupyx.scipy.sparse.linalg.spsolve``."""
+
     @staticmethod
     def forward(ctx, edata, row, col, shape, b):
         cp.cuda.Device(edata.device.index).use()
@@ -39,6 +52,8 @@ class SparseSolveCupy(Function):
     
 
 class SparseLUSolveCupy(Function):
+    """Differentiable batched solve via ``cupyx.scipy.sparse.linalg.splu``."""
+
     @staticmethod
     def forward(ctx, edata, row, col, shape, b):
         cp.cuda.Device(edata.device.index).use()

@@ -1,88 +1,106 @@
-"""
-Sparse linear system solver for TensorMesh.
+"""Sparse linear system solvers for TensorMesh.
 
-The default solver is torch-sla, which provides:
-- Multiple backends: scipy, pytorch, eigen
-- Multiple methods: cg, bicgstab, minres, gmres, superlu
-- Preconditioners: jacobi, ilu, none
-- Automatic differentiation support
+The primary entry point is :func:`spsolve`. With ``torch-sla`` installed
+(the default and recommended path) it dispatches to one of the torch-sla
+backends — SciPy / native PyTorch / Eigen / cuDSS / CuPy — chosen by the
+``backend`` argument, honours ``method`` / ``preconditioner`` /
+``is_spd`` hints, and routes batched right-hand sides through SuperLU.
+
+Without ``torch-sla`` (the legacy fallback path) ``spsolve`` still works
+but the choice of algorithm collapses: each fallback wrapper picks a
+single hard-coded method (direct SuperLU on CPU / CUDA, BiCGSTAB for the
+pure-PyTorch path), and ``method`` / ``preconditioner`` / ``is_spd``
+become inert. Install ``torch-sla`` for the full feature set.
 """
 
-import torch
 import warnings
 
-# Check torch-sla availability
 try:
-    import torch_sla
+    import torch_sla  # noqa: F401  (presence-only check)
     is_torch_sla_available = True
 except ImportError:
     is_torch_sla_available = False
 
-# Fallback imports for when torch-sla is not available
 from ..utils import is_petsc_available, is_cupy_available
 
-# Export for backward compatibility
+# Re-exported from torch_solve so callers can gate on the C++ extension.
 from .torch_solve import is_cpp_backend_available
 
 
-def spsolve(edata, row, col, shape, b, 
+def spsolve(edata, row, col, shape, b,
             backend='auto', method='cg', preconditioner='jacobi',
             tol=1e-5, max_iter=10000, x0=None, is_spd=True,
             verbose=False):
-    """Solve sparse linear system Ax = b.
-    
-    This is the main entry point for solving sparse linear systems in TensorMesh.
-    By default, it uses torch-sla which provides differentiable sparse solvers.
-    
+    """Solve the sparse linear system ``A x = b``.
+
+    Main entry point of :mod:`tensormesh.sparse`. With ``torch-sla``
+    installed, dispatches to a differentiable sparse-linear-algebra
+    backend; without it, falls back to a curated mini-stack of
+    SciPy / SuperLU / CuPy / PETSc wrappers.
+
     Parameters
     ----------
     edata : torch.Tensor
-        1D tensor of matrix values, shape [nnz]
+        1D tensor of shape ``[nnz]``: non-zero values of ``A``.
     row : torch.Tensor
-        1D tensor of row indices, shape [nnz]
+        1D int tensor of shape ``[nnz]``: row indices of ``A``.
     col : torch.Tensor
-        1D tensor of column indices, shape [nnz]
-    shape : tuple
-        Matrix shape (m, n)
+        1D int tensor of shape ``[nnz]``: column indices of ``A``.
+    shape : Tuple[int, int]
+        Dense shape ``(m, n)`` of ``A``.
     b : torch.Tensor
-        Right-hand side vector, shape [n] or [n, batch]
-    backend : str, optional
-        Solver backend. Default 'auto' (uses torch-sla with best backend).
-        Options: 'auto', 'scipy', 'pytorch', 'eigen'
-        Legacy options (fallback): 'petsc', 'cupy'
-    method : str, optional
-        Solver method. Default 'cg' for SPD systems.
-        Options: 'cg', 'bicgstab', 'minres', 'gmres', 'lgmres', 'superlu'
-    preconditioner : str, optional
-        Preconditioner. Default 'jacobi'.
-        Options: 'jacobi', 'ilu', 'none'
-    tol : float, optional
-        Convergence tolerance. Default 1e-5.
-    max_iter : int, optional
-        Maximum iterations. Default 10000.
+        Right-hand side. Shape ``[n]`` for a single RHS, or
+        ``[n, n_batch]`` for batched RHS (auto-routed through SuperLU).
+    backend : str, default ``"auto"``
+        Torch-sla path: ``"auto"`` (CPU → ``"scipy"``, CUDA →
+        ``"pytorch"``), ``"scipy"``, ``"pytorch"``, ``"eigen"``,
+        ``"cudss"``, ``"cupy"``.
+        Fallback path (no torch-sla): ``"auto"``, ``"petsc"``,
+        ``"cupy"`` — others are accepted but the method/preconditioner
+        hints below are ignored.
+    method : str, default ``"cg"``
+        Iterative algorithm; one of ``"cg"``, ``"bicgstab"``,
+        ``"minres"``, ``"gmres"``, ``"lgmres"``, or ``"superlu"`` for a
+        direct factorization. **Honoured only on the torch-sla path.**
+        On the fallback path, each wrapper uses a fixed algorithm.
+    preconditioner : str, default ``"jacobi"``
+        ``"jacobi"``, ``"ilu"``, or ``"none"``. Same caveat as
+        ``method`` — torch-sla path only.
+    tol : float, default ``1e-5``
+        Convergence tolerance (iterative methods).
+    max_iter : int, default ``10000``
+        Iteration budget (iterative methods).
     x0 : torch.Tensor, optional
-        Initial guess. Default None.
-    is_spd : bool, optional
-        Hint that matrix is symmetric positive definite. Default True.
-    verbose : bool, optional
-        Print solver info. Default False.
-    
+        Initial guess. Currently consumed only by some fallback wrappers
+        and ignored by torch-sla.
+    is_spd : bool, default ``True``
+        Hint to the torch-sla path that ``A`` is symmetric positive
+        definite. Picks CG as the default ``method``; set ``False`` for
+        indefinite / non-symmetric ``A`` and combine with
+        ``method="bicgstab"`` or ``"gmres"``.
+    verbose : bool, default ``False``
+        Print which backend/method was picked.
+
     Returns
     -------
     torch.Tensor
-        Solution vector x, same shape as b.
-    
-    Examples
-    --------
-    >>> A = SparseMatrix(...)
-    >>> x = A.solve(b)  # Uses default torch-sla CG solver
-    >>> x = A.solve(b, method='superlu')  # Direct solver
-    >>> x = A.solve(b, backend='scipy', method='bicgstab')  # Scipy BiCGSTAB
-    
+        Solution ``x``, same shape and dtype as ``b``.
+
     Notes
     -----
-    torch-sla supports automatic differentiation through the solve operation,
-    enabling gradient-based optimization of systems involving sparse solves.
+    Both paths are autograd-aware: gradients of ``x`` flow back into
+    ``edata`` and ``b`` via an adjoint sparse solve. On the torch-sla
+    path this is built in to the library; on the fallback path each
+    wrapper supplies its own :class:`torch.autograd.Function` backward.
+
+    Examples
+    --------
+    >>> from tensormesh.sparse import spsolve
+    >>> x = spsolve(edata, row, col, (n, n), b)                       # auto
+    >>> x = spsolve(edata, row, col, (n, n), b, method="superlu")     # direct
+    >>> x = spsolve(edata, row, col, (n, n), b, backend="cudss")      # GPU direct
+    >>> x = spsolve(edata, row, col, (n, n), b,
+    ...             is_spd=False, method="bicgstab")                  # non-SPD
     """
     
     # Validate inputs
@@ -120,7 +138,12 @@ def _solve_torch_sla(edata, row, col, shape, b,
                      backend, method, preconditioner,
                      tol, max_iter, x0, is_spd,
                      is_batched, verbose):
-    """Solve using torch-sla."""
+    """Solve via torch-sla; honours ``method`` / ``preconditioner`` / ``is_spd``.
+
+    Batched RHS (``b.ndim == 2``) auto-routes to SuperLU regardless of
+    the requested ``method`` (one factorization, ``n_batch``
+    back-substitutions).
+    """
     from .torch_sla_solve import SparseSolveTorchSLA
     
     # Map 'auto' to appropriate torch-sla backend
@@ -149,7 +172,21 @@ def _solve_torch_sla(edata, row, col, shape, b,
 def _solve_fallback(edata, row, col, shape, b,
                     backend, tol, max_iter, x0,
                     is_batched, verbose):
-    """Fallback solver when torch-sla is not available."""
+    """Fallback dispatcher when torch-sla is unavailable.
+
+    Each branch picks a fixed algorithm:
+
+    - CPU + non-batched + ``backend="petsc"`` → PETSc BiCGSTAB + ILU;
+    - CPU + non-batched + otherwise → SciPy ``spsolve`` (direct);
+    - CPU + batched → SciPy SuperLU;
+    - CUDA + non-batched + CuPy available → CuPy ``spsolve`` (direct);
+    - CUDA + batched + CuPy available → CuPy SuperLU;
+    - CUDA + CuPy missing → pure-PyTorch BiCGSTAB (only path that
+      consults ``tol`` / ``max_iter`` / ``x0``).
+
+    ``method`` and ``preconditioner`` from :func:`spsolve` do not reach
+    this function; they are torch-sla-only knobs.
+    """
     
     # Import fallback solvers
     from .scipy_solve import SparseSolveScipy, SparseLUSolveScipy
