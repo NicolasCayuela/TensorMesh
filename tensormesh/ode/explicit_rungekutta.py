@@ -4,17 +4,38 @@ from tensormesh.sparse import SparseMatrix
 
 
 class ExplicitRungeKutta:
-    r"""
+    r"""Base class for explicit Runge-Kutta schemes.
+
+    Integrates the ODE
+
     .. math::
 
        \frac{\partial u}{\partial t} = f(t, u)
 
+    with a user-supplied right-hand side :meth:`forward`. The scheme is
+    encoded by its Butcher tableau ``(a, b)`` and a single :meth:`step`
+    advances one time step.
+
+    Parameters
+    ----------
+    a : torch.Tensor
+        2D tensor of shape ``[s, s]``; should be lower triangular.
+
+        .. math::
+
+            a = \begin{bmatrix}
+            0 & \cdots & 0 & 0 \\
+            a_{21} & \cdots & 0 & 0 \\
+            \vdots & \ddots & \vdots & \vdots \\
+            a_{s1} & \cdots & a_{s,s-1} & 0
+            \end{bmatrix}
+
+    b : torch.Tensor
+        1D tensor of shape ``[s]`` with :math:`\sum_i b_i = 1`.
+
     Examples
     --------
-
-    .. math::
-
-        \frac{\text{d}u}{\text{d}t} = u 
+    Solve :math:`\frac{\mathrm{d}u}{\mathrm{d}t} = u` with explicit Euler:
 
     .. code-block:: python
 
@@ -25,27 +46,11 @@ class ExplicitRungeKutta:
             def forward(self, t, u):
                 return u
 
+        a = torch.zeros(1, 1)
+        b = torch.ones(1)
         u0 = torch.rand(4)
         dt = 0.1
-        ut_my = MyExplicitRungeKutta(a, b).step(0, u0, dt)
-
-    Parameters
-    ----------
-    a : torch.Tensor
-        2D tensor of shape [s, s]
-        shoule be lower triangular
-
-        .. math::
-
-            a = \begin{bmatrix}
-            0 & \cdots &0& 0 \\
-            a_{21} & \cdots &0 & 0 \\
-            \vdots & \ddots & \vdots  &\vdots\\
-            a_{s1} & \cdots & a_{s{s-1}} &0
-            \end{bmatrix}
-
-    b : torch.Tensor
-        1D tensor of shape [s], :math:`\sum_{b_i} = 1`
+        ut = MyExplicitRungeKutta(a, b).step(0, u0, dt)
     """
     def __init__(self, a, b):
         assert a.dim() == 2, f"expected a to be 2D tensor, got {a.dim()}"
@@ -63,57 +68,59 @@ class ExplicitRungeKutta:
         self.__post_init__()
 
     def __post_init__(self):
-        """precompute something after the initialization of tensormesh.ode.builtin.ExplicitRungeKutta
+        """Hook for subclasses to precompute values after ``__init__``.
+
+        Default is a no-op. Subclasses that need to cache derived data
+        from ``a`` / ``b`` may override.
         """
         pass
 
 
     def forward(self, t, u):
-        r"""right side function :math:`f(t, u)`
+        r"""Right-hand side of the ODE.
 
         .. math::
 
-           \frac{\partial u}{\partial t} = \text{forward}(t, u)
+           \frac{\partial u}{\partial t} = f(t, u)
 
-        default :math:`f(t, u) = u`
+        Default returns ``u`` (i.e. :math:`f(t, u) = u`); subclasses are
+        expected to override.
 
         Parameters
         ----------
         t : float
-            time
+            Current time.
         u : torch.Tensor
-            value of shape :math:`[D]` where D is the dimension of the problem
-        
-        
+            State of shape ``[D]`` where ``D`` is the spatial dimension.
+
         Returns
         -------
         torch.Tensor
-            value of shape :math:`[D]` where D is the dimension of the problem
-            the value of the right side function :math:`f(t, u)`
+            :math:`f(t, u)`, same shape as ``u``.
         """
         return u
-    
+
     def step(self, t0, u0, dt):
-        """one step of explicit Runge-Kutta method
-        
+        r"""Advance one explicit Runge-Kutta step from ``t0`` to ``t0 + dt``.
+
         .. math::
 
-            \\textbf k_i =\\textbf f(t+c_i\\tau, \\textbf u +\\tau \\sum_{j=1}^s a_{ij}\\textbf k_j)\\quad \\Psi^{t,t+\\tau}\\textbf u = \\textbf u+\\tau\\sum_{i=1}^s b_i \\textbf  k_i
+            k_i &= f\!\left(t_0 + c_i\,\tau,\ u_0 + \tau \sum_{j=1}^{s} a_{ij}\,k_j\right) \\
+            \Psi^{t_0,\,t_0 + \tau} u_0 &= u_0 + \tau \sum_{i=1}^{s} b_i\,k_i
 
         Parameters
         ----------
         t0 : float
-            initial time
+            Initial time.
         u0 : torch.Tensor
-            initial value of shape :math:`[D]` where D is the dimension of the problem
+            Initial state of shape ``[D]``.
         dt : float
-            time step
+            Time step :math:`\tau`.
 
         Returns
         -------
         torch.Tensor
-            value of shape :math:`[D]` where D is the dimension of the problem
-            the value of the solution at time :math:`t_0 + \\text{d}t`
+            State at time :math:`t_0 + \mathrm{d}t`, same shape as ``u0``.
         """
         assert u0.dim() == 1, f"expected u0 to be 1D tensor, got {u0.dim()}"
         a = self.a.type(u0.dtype).to(u0.device)

@@ -4,47 +4,43 @@ from tensormesh.sparse import SparseMatrix
 
 
 class ImplicitLinearRungeKutta:
-    r"""
-    
+    r"""Base class for implicit linear Runge-Kutta schemes.
+
+    Integrates the linear (in :math:`u`) system
+
     .. math::
+
         M(t) \frac{\partial u}{\partial t} = A(t) u + B(t)
 
-    * :math:`M\in \mathbb R^{n\times n}`
-    * :math:`A\in \mathbb R^{n\times n}`
-    * :math:`B\in \mathbb R^{n}`
-    * :math:`u\in \mathbb R^n`
+    where :math:`M(t),\,A(t) \in \mathbb{R}^{n \times n}` and
+    :math:`B(t) \in \mathbb{R}^{n}`. Each :meth:`step` assembles and
+    solves the block system
 
     .. math::
 
         \begin{bmatrix}
-        M_0 - A_0\tau a_{0,0}& - A_0\tau a_{0,1}&\cdots  & - A_{0}\tau a_{0,{n-1}}\\
-        -A_1\tau a_{1,0}& M_1-A_1\tau a_{1,1} & \cdots & - A_{1}\tau a_{1,{n-1}}\\
-        \vdots & \vdots &\ddots & \vdots \\
-        -A_{n-1}\tau a_{{n-1},0} & -A_{n-1}\tau a_{{n-1},1} & \cdots &  M_{n-1} - A_{n-1}\tau a_{n-1,n-1}
+        M_0 - A_0\tau a_{0,0} & -A_0\tau a_{0,1} & \cdots & -A_0\tau a_{0,s-1} \\
+        -A_1\tau a_{1,0} & M_1 - A_1\tau a_{1,1} & \cdots & -A_1\tau a_{1,s-1} \\
+        \vdots & \vdots & \ddots & \vdots \\
+        -A_{s-1}\tau a_{s-1,0} & -A_{s-1}\tau a_{s-1,1} & \cdots & M_{s-1} - A_{s-1}\tau a_{s-1,s-1}
         \end{bmatrix}
-        \begin{bmatrix}
-        \textbf k_0\\ \textbf k_1 \\\vdots \\\textbf k_{n-1}
-        \end{bmatrix}= 
-        \begin{bmatrix}
-        B_0 + A_0 u \\
-        B_1 + A_1 u \\
-        \vdots\\
-        B_{n-1} + A_{n-1} u 
-        \end{bmatrix}
+        \begin{bmatrix} k_0 \\ k_1 \\ \vdots \\ k_{s-1} \end{bmatrix}
+        =
+        \begin{bmatrix} B_0 + A_0 u \\ B_1 + A_1 u \\ \vdots \\ B_{s-1} + A_{s-1} u \end{bmatrix}
+
+    for the stage values :math:`k_i`, then advances
+    :math:`u_{n+1} = u_n + \tau \sum_i b_i\,k_i`.
 
     Parameters
     ----------
     a : torch.Tensor
-        2D tensor of shape [s, s]
+        2D tensor of shape ``[s, s]``.
     b : torch.Tensor
-        1D tensor of shape [s], :math:`\sum_{b_i} = 1`
+        1D tensor of shape ``[s]`` with :math:`\sum_i b_i = 1`.
 
     Examples
     --------
-
-    .. math::
-
-        M \frac{\text{d}u}{\text{d}t} = Au + B
+    Solve :math:`\frac{\mathrm{d}u}{\mathrm{d}t} = u` with backward Euler:
 
     .. code-block:: python
 
@@ -54,17 +50,18 @@ class ImplicitLinearRungeKutta:
         class MyImplicitLinearRungeKutta(ImplicitLinearRungeKutta):
             def forward_M(self, t):
                 return torch.eye(4)
-            
+
             def forward_A(self, t):
                 return torch.eye(4)
-            
+
             def forward_B(self, t):
                 return torch.zeros(4)
 
-        u0 = torch.rand(4)
+        a = torch.ones(1, 1)
+        b = torch.ones(1)
+        u0 = torch.rand(4).double()
         dt = 0.1
-        ut_my = MyImplicitLinearRungeKutta(a, b).step(0, u0, dt)
-
+        ut = MyImplicitLinearRungeKutta(a, b).step(0, u0, dt)
     """
     def __init__(self, a, b):
         assert a.dim() == 2, f"expected a to be 2D tensor, got {a.dim()}"
@@ -82,128 +79,158 @@ class ImplicitLinearRungeKutta:
         self.__post_init__()
 
     def __post_init__(self):
-        """precompute something after the initialization of tensormesh.ode.builtin.ImplicitLinearRungeKutta
+        """Hook for subclasses to precompute values after ``__init__``.
+
+        Default is a no-op. Subclasses that need to cache derived data
+        from ``a`` / ``b`` may override.
         """
         pass
 
     def forward_M(self, t):
-        r"""left side matrix 
+        r"""Mass-like operator :math:`M(t)`.
 
         .. math::
 
-            M \frac{\partial u}{\partial t} = A(t)u + B(t)
+            M(t) \frac{\partial u}{\partial t} = A(t) u + B(t)
 
         Parameters
         ----------
         t : float
-            time
+            Current time.
+
         Returns
         -------
-        tensormesh.sparse.SparseMatrix or torch.Tensor or float
-            normally, 2D :class:`torch.Tensor` or :meth:`tensormesh.sparse.SparseMatrix` of shape :math:`[D, D]` where :math:`D` is the dimension of the problem;
-            if return :obj:`int` or :obj:`float`, the left side matrix :math:`M` is assumed to be a diagonal matrix with the same value
+        :class:`tensormesh.sparse.SparseMatrix` or torch.Tensor or float
+            2D operator of shape ``[D, D]``. If returned as ``int`` /
+            ``float``, :math:`M` is taken to be that scalar multiple of
+            the identity. Default returns ``1.0`` (i.e. :math:`M = I`).
         """
         return 1.0
 
     def forward_A(self, t):
-        r"""compute the linear mapping term :math:`A(t)`
+        r"""Linear operator :math:`A(t)` on the right-hand side.
 
         .. math::
-            
-            M \frac{\partial u}{\partial t} = A(t)u + B(t)
+
+            M(t) \frac{\partial u}{\partial t} = A(t) u + B(t)
 
         Parameters
         ----------
         t : float
-            time
+            Current time.
+
         Returns
         -------
-        tensormesh.sparse.SparseMatrix or torch.Tensor or float
-            2D :class:`torch.Tensor` or :meth:`tensormesh.sparse.SparseMatrix` of shape :math:`[D, D]` where :math:`D` is the dimension of the problem;
-            if return :obj:`int` or :obj:`float`, the linear mapping term is assumed to be a diagonal matrix with the same value
+        :class:`tensormesh.sparse.SparseMatrix` or torch.Tensor or float
+            2D operator of shape ``[D, D]``. If returned as ``int`` /
+            ``float``, :math:`A` is taken to be that scalar multiple of
+            the identity. Default returns ``1.0`` (i.e. :math:`A = I`).
         """
         return 1.0
 
     def forward_B(self, t):
-        r"""compute the linear mapping term :math:`B(t)`
+        r"""Source / forcing term :math:`B(t)`.
 
         .. math::
-            
-            M \frac{\partial u}{\partial t} = A(t)u + B(t)
+
+            M(t) \frac{\partial u}{\partial t} = A(t) u + B(t)
 
         Parameters
         ----------
         t : float
-            time
+            Current time.
+
         Returns
         -------
         torch.Tensor or float
-            1D :class:`torch.Tensor` of shape :math:`[D]` where :math:`D` is the dimension of the problem;
-            if return :obj:`int` or :obj:`float`, the linear mapping term is assumed to be a vector with the same value
+            1D vector of shape ``[D]``. If ``int`` / ``float``, :math:`B`
+            is taken to be that scalar broadcast to all components.
+            Default returns ``0.0``.
         """
         return 0.0
-    
+
     def pre_solve_lhs(self, K):
-        r"""precompute something before solving the linear system,
-        for example, do the condensation
+        r"""Preprocess the assembled block matrix before solving.
+
+        Hook for boundary-condition condensation (or similar). Called
+        once per ``[i][j]`` block.
 
         Parameters
         ----------
-        K : torch.Tensor or tensormesh.sparse.SparseMatrix
-            the left side matrix
+        K : torch.Tensor or :class:`tensormesh.sparse.SparseMatrix`
+            One block of the left-hand-side matrix.
 
         Returns
         -------
-        torch.Tensor or tensormesh.sparse.SparseMatrix
-            the left side matrix after precompute
+        torch.Tensor or :class:`tensormesh.sparse.SparseMatrix`
+            The (possibly condensed) block. Default returns ``K``
+            unchanged.
         """
         return K
-    
+
     def pre_solve_rhs(self, f):
-        r"""precompute something before solving the linear system,
-        for example, do the condensation
+        r"""Preprocess each stage right-hand side before solving.
+
+        Hook for boundary-condition condensation (or similar). Called
+        once per stage.
 
         Parameters
         ----------
         f : torch.Tensor
-            the right hand side vector
+            One stage of the right-hand-side vector.
 
         Returns
         -------
         torch.Tensor
-            the right hand side vector after precompute
+            The (possibly condensed) vector. Default returns ``f``
+            unchanged.
         """
         return f
 
     def post_solve(self, u):
-        r"""postprocess after solving the linear system,
-        for example, do the condensation recovery
+        r"""Postprocess the combined solution after the linear solve.
+
+        Hook for boundary-condition recovery (or similar).
 
         Parameters
         ----------
-        u: torch.Tensor
-            the solution of the linear system
+        u : torch.Tensor
+            Solution of shape ``[D]``.
 
         Returns
         -------
         torch.Tensor
-            the solution after postprocess
+            The (possibly recovered) solution. Default returns ``u``
+            unchanged.
         """
         return u
 
     def step(self, t0, u0, dt):
-        """
+        r"""Advance one implicit-linear Runge-Kutta step from ``t0`` to ``t0 + dt``.
+
+        Builds the block system described in the class docstring, applies
+        :meth:`pre_solve_lhs` / :meth:`pre_solve_rhs` to each block,
+        solves it (via :meth:`tensormesh.sparse.SparseMatrix.solve` when
+        the operators are sparse, otherwise :func:`torch.linalg.solve`),
+        applies :meth:`post_solve`, and combines the stage values:
 
         .. math::
+
+            u_{n+1} = u_0 + \tau \sum_{i=1}^{s} b_i\,k_i
 
         Parameters
         ----------
         t0 : float
-            initial time
+            Initial time.
         u0 : torch.Tensor
-            initial value of shape :math:`[D]` where D is the dimension of the problem
+            Initial state of shape ``[D]``.
         dt : float
-            time step
+            Time step :math:`\tau`.
+
+        Returns
+        -------
+        torch.Tensor
+            State at time :math:`t_0 + \mathrm{d}t`, same shape as ``u0``.
         """
         assert u0.dim() == 1, f"expected u0 to be 1D tensor, got {u0.dim()}"
         a = self.a.type(u0.dtype).to(u0.device)
