@@ -303,8 +303,8 @@ Call signature:
 Note that ``element_data`` is *not* accepted (linear forms rarely need
 per-element scratch data), and that the default ``batch_size`` is ``1``
 rather than the ``-1`` used by :class:`~tensormesh.ElementAssembler`.
-To disable batching here pass ``batch_size=None`` (not ``-1``); see
-:ref:`forms-batching` for the constraints.
+To disable batching here pass ``batch_size=-1`` or ``batch_size=None``;
+see :ref:`forms-batching` for details.
 
 End-to-end check: combining mass + load to project a function into the
 FE space. The mass matrix :math:`M` is SPD, so we can invert it without
@@ -489,9 +489,9 @@ you have:
    * - ``batch_size``
      - ✓ (default ``-1``)
      - ✓ (default ``-1``)
-     - ✓ (default ``1``, disable with ``None``)
+     - ✓ (default ``1``, disable with ``-1`` or ``None``)
      - ✗
-     - see :ref:`forms-batching` for the divisibility constraint
+     - see :ref:`forms-batching` for the per-class disable sentinels
    * - ``.compile()`` fast path
      - ✗
      - ✗
@@ -657,30 +657,21 @@ quadrature tensors in memory at once may not fit. The assembler
 This is a memory knob, not problem-level vectorisation; for the latter
 see :doc:`batched_workflows`.
 
-How to disable batching depends on the class:
+How to disable batching:
 
-* :class:`~tensormesh.ElementAssembler` — pass ``batch_size=-1`` (also
-  the default), processes all quadrature at once.
-* :class:`~tensormesh.NodeAssembler` — pass ``batch_size=None``; the
-  default is ``1`` (one quadrature point at a time, gentler on memory).
-  Note that passing ``-1`` here is **not** the way to disable batching —
-  it will trip an internal assertion.
+* :class:`~tensormesh.ElementAssembler` — default ``batch_size=-1``
+  processes all quadrature at once.
+* :class:`~tensormesh.NodeAssembler` — default ``batch_size=1`` processes
+  one quadrature point at a time; pass ``-1`` or ``None`` to disable
+  batching and process all quadrature points at once.
 * :class:`~tensormesh.FacetAssembler` — does not expose ``batch_size``;
   facet integrals are small enough that batching has not been needed.
 
-.. warning::
-
-   The current implementation uses integer division
-   (``n_quadrature // batch_size``) to decide the number of batches.
-   When ``batch_size`` does *not* evenly divide the per-element
-   quadrature count, the tail quadrature points are **silently
-   dropped** and the assembled output is wrong (e.g. ``batch_size=2`` on
-   a 3-point rule integrates only 2 of 3 quadrature points, giving
-   ~2/3 of the correct integral); when ``batch_size > n_quadrature``
-   the call raises an ``AssertionError``. Until this is fixed, the safe
-   choices are: leave the default in place, pass a ``batch_size`` that
-   exactly divides ``n_quadrature`` per element type, or disable batching
-   via the sentinel above.
+Any positive integer ``batch_size`` produces the same assembled result as
+the un-batched call. When ``batch_size`` does not evenly divide the
+per-element quadrature count, the loop runs one extra (shorter) batch on
+the tail; values larger than ``n_quadrature`` simply collapse to a single
+full batch.
 
 
 Speeding up NodeAssembler with ``compile``

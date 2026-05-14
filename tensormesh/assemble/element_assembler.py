@@ -1,5 +1,6 @@
 from abc import abstractmethod
 import inspect
+import math
 from typing import Optional, Callable, List, Mapping, Union
 
 import numpy as np
@@ -389,12 +390,16 @@ class ElementAssembler(nn.Module):
         for element_type in self.element_types:
             element_integral = None
             
-            trans:Transformation  = self.transformation[element_type] # type:ignore 
+            trans:Transformation  = self.transformation[element_type] # type:ignore
             proj:Projector        = self.projector[element_type] # type:ignore
             n_quadrature          = trans.n_quadrature
 
-            n_batch      = n_quadrature // batch_size if batch_size != -1 else 1
-            n_batch_size = batch_size if batch_size != -1 else n_quadrature
+            if batch_size in (-1, None):
+                n_batch      = 1
+                n_batch_size = n_quadrature
+            else:
+                n_batch_size = batch_size
+                n_batch      = math.ceil(n_quadrature / batch_size)
             elements:torch.Tensor = self.elements[element_type]
             ele_point_data = {k:v[elements] for k,v in point_data.items()}
 
@@ -614,8 +619,12 @@ class ElementAssembler(nn.Module):
         for element_type in self.element_types:
             trans = self.transformation[element_type]
             n_quadrature = trans.n_quadrature
-            n_batch = n_quadrature // batch_size if batch_size != -1 else 1
-            n_batch_size = batch_size if batch_size != -1 else n_quadrature
+            if batch_size in (-1, None):
+                n_batch      = 1
+                n_batch_size = n_quadrature
+            else:
+                n_batch_size = batch_size
+                n_batch      = math.ceil(n_quadrature / batch_size)
             elements = self.elements[element_type]
             ele_point_data = {k:v[elements] for k,v in point_data.items()}
 

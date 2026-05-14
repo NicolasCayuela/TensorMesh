@@ -1,5 +1,6 @@
 from abc import abstractmethod
 import inspect
+import math
 from typing import Dict, Optional, Callable, Literal
 
 import torch
@@ -364,8 +365,12 @@ class NodeAssembler(nn.Module):
             trans:Transformation = self.transformation[element_type] # type:ignore
             proj:ReduceProjector       = self.projector[element_type]      # type:ignore
             element_integral:Optional[torch.Tensor] = None           # [n_element, n_basis, ...]
-            n_batch      = trans.n_quadrature // batch_size if batch_size is not None else 1
-            n_batch_size = batch_size if batch_size is not None else trans.n_quadrature
+            if batch_size in (-1, None):
+                n_batch      = 1
+                n_batch_size = trans.n_quadrature
+            else:
+                n_batch_size = batch_size
+                n_batch      = math.ceil(trans.n_quadrature / batch_size)
             ele_point_data = {k:v[self.elements[element_type]] for k,v in point_data.items()}
 
             for i in range(n_batch):
