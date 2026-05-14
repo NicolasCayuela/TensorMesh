@@ -33,17 +33,28 @@ Runge-Kutta methods
     c_i = \sum_j a_{ij}
 
 
-Built-in Methods 
+Base classes
+------------
+
+.. autoclass:: tensormesh.ode.ExplicitRungeKutta
+    :members:
+    :show-inheritance:
+
+.. autoclass:: tensormesh.ode.ImplicitLinearRungeKutta
+    :members:
+    :show-inheritance:
+
+Built-in schemes
 ----------------
 
-.. autoclass:: tensormesh.ode.builtin.ExplicitRungeKutta
+.. autoclass:: tensormesh.ode.ExplicitEuler
     :members:
     :show-inheritance:
 
-.. autoclass:: tensormesh.ode.builtin.ImplicitLinearRungeKutta
+.. autoclass:: tensormesh.ode.ImplicitLinearEuler
     :members:
     :show-inheritance:
-  
-.. automodule:: tensormesh.ode.builtin
+
+.. autoclass:: tensormesh.ode.MidPointLinearEuler
     :members:
     :show-inheritance:
