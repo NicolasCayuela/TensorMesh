@@ -2,44 +2,47 @@ Linear Solvers
 ==============
 
 After assembly and boundary-condition condensation you have a sparse
-linear system to solve. TensorMesh delegates this work to a separate
-package, `torch-sla <https://pypi.org/project/torch-sla/>`_, which
-ships a portable set of sparse-linear-algebra backends with autograd
-support. The same FEM code therefore retargets between CPU and GPU,
-and between iterative and direct solvers, by changing one keyword
-argument.
+linear system to solve. TensorMesh delegates this work to
+`torch-sla <https://pypi.org/project/torch-sla/>`_, a standalone
+differentiable sparse-linear-algebra library. The same FEM code
+retargets between CPU and GPU, and between iterative and direct
+solvers, by changing one keyword argument.
 
 
-The ``torch-sla`` package
--------------------------
+Install ``torch-sla``
+---------------------
 
-``torch-sla`` is the engine behind every sparse solve in TensorMesh.
-It provides:
+.. important::
 
-* :class:`~tensormesh.sparse.SparseTensor` — the data type that
-  :class:`~tensormesh.sparse.SparseMatrix` extends.
-* A unified ``solve`` op with a custom backward pass (an adjoint
-  sparse solve), so gradients flow through the linear system.
-* A pluggable backend layer that dispatches the solve to one of
-  several sparse-linear-algebra implementations.
-
-Install or upgrade with:
+   ``torch-sla`` is a **hard, import-time** dependency of
+   :mod:`tensormesh.sparse`. The module will not import without it.
+   It is also the library where all current and future solver work
+   lands — TensorMesh tracks ``torch-sla`` releases as the canonical
+   sparse-linear-algebra layer and we recommend keeping it up to date.
 
 .. code-block:: bash
 
-   pip install "torch-sla>=0.1.4"
+   pip install "torch-sla>=0.2.0"
 
-Without ``torch-sla`` installed, :func:`tensormesh.sparse.spsolve`
-falls back to a built-in mini-stack inside :mod:`tensormesh.sparse`
-that wraps SciPy / SciPy + ILU / SuperLU / CuPy / PETSc directly. The
-fallback path works but lacks the autograd guarantees and unified
-backend interface — install ``torch-sla`` for serious use.
+For GPU sparse solves install the CUDA extra, which pulls in CuPy and
+the NVIDIA cuDSS bindings:
+
+.. code-block:: bash
+
+   pip install "torch-sla[cuda]>=0.2.0"
+
+What ``torch-sla`` gives TensorMesh:
+
+* :class:`~tensormesh.sparse.SparseTensor` — the COO data type that
+  :class:`~tensormesh.sparse.SparseMatrix` extends.
+* A unified ``solve`` op with a custom backward pass (an adjoint
+  sparse solve), so gradients flow through every linear system.
+* A pluggable backend layer covering CPU, GPU, iterative and direct
+  solvers behind a single dispatch entry point.
 
 
 Supported backends
 ------------------
-
-``torch-sla`` ships five backends today:
 
 .. list-table::
    :header-rows: 1
@@ -64,7 +67,7 @@ Supported backends
      - ``"pytorch"``
      - CPU / GPU
      - iterative
-     - Pure-torch CG / BiCGSTAB / GMRES. GPU-friendly, autograd-clean.
+     - Pure-torch CG / BiCGSTAB / GMRES. Default for CUDA.
    * - cuDSS
      - ``"cudss"``
      - GPU
@@ -76,45 +79,13 @@ Supported backends
      - both
      - CuPy's iterative solvers and SuperLU.
 
-PETSc and Hypre are on the ``torch-sla`` roadmap. Until they ship
-inside ``torch-sla``, the legacy fallback paths in
-:mod:`tensormesh.sparse` provide best-effort PETSc and CuPy support
-for users who already have those libraries installed locally — see
-the ``[petsc]`` and ``[cupy]`` extras in :doc:`../getting_started/installation`.
-
 
 The ``spsolve`` entry point
 ---------------------------
 
-:func:`tensormesh.sparse.spsolve` is the dispatch entry point. The
-quickstart-style :meth:`~tensormesh.sparse.SparseMatrix.solve` is a thin convenience
-wrapper around it.
-
-.. code-block:: python
-
-   from tensormesh.sparse import spsolve
-
-   x = spsolve(edata, row, col, shape, b,
-               backend="auto", method="cg",
-               preconditioner="jacobi",
-               tol=1e-5, max_iter=10000,
-               x0=None, is_spd=True)
-
-Key options:
-
-* ``backend``: ``"auto"`` (the default — picks SciPy on CPU, PyTorch
-  on CUDA) or one of the strings in the table above.
-* ``method``: iterative algorithm — ``"cg"``, ``"bicgstab"``,
-  ``"minres"``, ``"gmres"``, ``"lgmres"`` — or ``"superlu"`` for a
-  direct factorization.
-* ``preconditioner``: ``"jacobi"`` (default), ``"ilu"``, or ``"none"``.
-* ``tol`` and ``max_iter`` control iterative convergence.
-* ``is_spd=True`` (default) is a hint that lets the solver pick CG;
-  set ``False`` for indefinite or non-symmetric systems.
-
-For most TensorMesh code you don't call :func:`~tensormesh.sparse.spsolve`
-directly:
-:meth:`~tensormesh.sparse.SparseMatrix.solve` does it for you, taking the same kwargs:
+:func:`tensormesh.sparse.spsolve` is the dispatch entry point;
+:meth:`~tensormesh.sparse.SparseMatrix.solve` is a thin convenience
+wrapper around it that you'll see in most quickstart-style code.
 
 .. code-block:: python
 
@@ -124,15 +95,27 @@ directly:
    x = K.solve(b, backend="cudss")             # NVIDIA GPU direct
    x = K.solve(b, is_spd=False, method="bicgstab")
 
+Key keyword arguments:
+
+* ``backend``: ``"auto"`` (default — SciPy on CPU, native PyTorch on
+  CUDA) or one of the strings in the table above.
+* ``method``: ``"cg"``, ``"bicgstab"``, ``"minres"``, ``"gmres"``,
+  ``"lgmres"``, or ``"superlu"`` (direct factorization).
+* ``preconditioner``: ``"jacobi"`` (default), ``"ilu"``, or ``"none"``.
+* ``is_spd=True`` (default) tells the solver it can use CG. Set
+  ``False`` for indefinite / non-symmetric ``A`` and pair with
+  ``method="bicgstab"`` or ``"gmres"``.
+* ``tol``, ``max_iter`` control iterative convergence.
+
 
 Batched right-hand sides
 ------------------------
 
 When ``b`` has shape ``[n_dof, n_batch]``, ``spsolve`` automatically
-routes to a SuperLU direct solve — one factorization, ``n_batch``
-back-substitutions — instead of running iterative CG independently
-per column. The speedup over a Python loop is typically large; this
-is the workhorse of the ``tensormesh.dataset`` ML workflow.
+routes to a SuperLU direct solve — one factorization,
+``n_batch`` back-substitutions — instead of running iterative CG
+independently per column. This is the workhorse of the
+:mod:`tensormesh.dataset` ML workflow.
 
 .. code-block:: python
 
@@ -153,50 +136,15 @@ For problems where the residual ``F(u, params) = 0`` is nonlinear in
 
    from tensormesh.sparse import nonlinear_solve
 
-   def residual(u, *params):
-       ...
-       return F                              # torch.Tensor [n_dof]
-
-   def jacobian(u, *params):
-       ...
-       return J                              # SparseMatrix [n_dof, n_dof]
+   def residual(u, *params):  ...   # torch.Tensor [n_dof]
+   def jacobian(u, *params):  ...   # SparseMatrix [n_dof, n_dof]
 
    u = nonlinear_solve(residual, jacobian, u0, params=(p1, p2),
-                       max_iter=100, tol=1e-6, verbose=False)
+                       max_iter=100, tol=1e-6)
 
-Internally this is Newton-Raphson: at each iteration, ``J(u, params)``
-is solved against the residual to update ``u``. The whole call is
-implemented as a custom :class:`torch.autograd.Function` with an
-*adjoint* backward — gradients of ``u`` with respect to ``params``
-flow through the implicit-function theorem rather than through the
-Newton iterations themselves, so backprop cost is roughly one extra
-linear solve regardless of how many Newton iterations the forward
-pass took.
-
-
-Choosing a backend
-------------------
-
-A pragmatic first cut:
-
-* **SPD + CPU + small-medium** → ``backend="auto"``, ``method="cg"``,
-  ``preconditioner="jacobi"``. The TensorMesh default.
-* **SPD + GPU** → ``backend="pytorch"`` (fully differentiable) or
-  ``backend="cudss"`` (fastest direct, gradients still flow through
-  the autograd-aware wrapper).
-* **Indefinite / non-symmetric** → ``is_spd=False`` plus
-  ``method="bicgstab"`` or ``"gmres"``. For tough conditioning, drop
-  to a direct factorization with ``method="superlu"`` (CPU) or
-  ``backend="cudss"`` (GPU).
-* **Many right-hand sides, same matrix** → batch the RHS and let the
-  SuperLU auto-routing kick in.
-
-For autodiff workflows (parameter identification, topology
-optimization, neural-network couplings) the safe defaults are
-``backend="auto"`` on CPU and ``backend="pytorch"`` on GPU. The
-SciPy and Eigen backends route through ``torch-sla``'s autograd
-wrapper too, but the pure-PyTorch path is the most painless if you
-hit any rough edges.
+Forward pass is Newton-Raphson; backward pass uses the implicit-function
+theorem, so gradients of ``u`` w.r.t. ``params`` cost roughly one extra
+linear solve regardless of how many Newton iterations the forward took.
 
 
 What's next

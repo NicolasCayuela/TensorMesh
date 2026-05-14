@@ -58,7 +58,7 @@ setup(
         "numpy",
         "scipy",
         "torch>=2.0.0",
-        "torch-sla>=0.1.4",
+        "torch-sla>=0.2.0",
         "meshio",
         "matplotlib",
         "psutil",

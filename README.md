@@ -29,7 +29,7 @@
 **Requirements:** Python >= 3.10, PyTorch >= 2.0
 
 ```bash
-pip install torch-sla>=0.1.4
+pip install "torch-sla>=0.2.0"
 pip install git+https://github.com/camlab-ethz/TensorMesh.git
 ```
 

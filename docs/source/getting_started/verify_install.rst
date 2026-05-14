@@ -208,10 +208,10 @@ Troubleshooting
 isn't installed in the active Python environment. Re-check
 :doc:`installation`.
 
-**``torch-sla : MISSING``** — ``pip install torch-sla>=0.1.4``. This is a
-required dependency; without it, ``SparseMatrix.solve`` will fall back to
-slower paths and certain features (autograd through solves, batched
-solves) won't work.
+**``torch-sla : MISSING``** — ``pip install "torch-sla>=0.2.0"``. This is
+a hard, import-time dependency: :mod:`tensormesh.sparse` will refuse to
+import without it, so every solver-touching code path fails until it is
+installed.
 
 **Stuck on ``[CPU ] Poisson 2D``** — your PyTorch build may be downloading
 ``gmsh`` cache files on first use; subsequent runs are instant.

@@ -295,7 +295,7 @@ def distributed_element_assemble(
     if not HAS_DSPARSE:
         raise ImportError(
             "torch-sla with DSparseTensor support is required.\n"
-            "Install with: pip install torch-sla>=0.1.4"
+            "Install with: pip install torch-sla>=0.2.0"
         )
 
     if call_kwargs is None:

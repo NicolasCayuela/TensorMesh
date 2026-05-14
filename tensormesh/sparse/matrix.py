@@ -19,7 +19,7 @@ try:
 except ImportError as e:
     raise ImportError(
         "torch-sla is required for TensorMesh sparse operations.\n"
-        "Install with: pip install torch-sla>=0.1.4"
+        "Install with: pip install torch-sla>=0.2.0"
     ) from e
 
 
