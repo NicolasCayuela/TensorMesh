@@ -35,17 +35,17 @@ Linear Algebra
 .. grid:: 1 2 3 3
    :gutter: 4
 
-   .. grid-item-card:: Sparse
-      :link: sparse
-      :link-type: doc
-      
-      Sparse matrix operations and solvers.
-
    .. grid-item-card:: Operator
       :link: operator
       :link-type: doc
-      
+
       Differential operators and boundary conditions.
+
+   .. grid-item-card:: Sparse
+      :link: sparse
+      :link-type: doc
+
+      Sparse matrix operations and solvers.
 
 
 Solvers & Integration
@@ -131,8 +131,8 @@ Visualization
    mesh
    element
    assemble
-   sparse
    operator
+   sparse
    ode
    functional
    optimizer
