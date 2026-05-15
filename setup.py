@@ -1,31 +1,6 @@
-import os 
+import os
 import re
-import sys
 from setuptools import setup, find_packages
-import subprocess
-
-# Function to run the setup script of a submodule
-def build_submodule(submodule_path):
-    subprocess.check_call(['python', 'setup.py', 'build_ext', '--inplace'], cwd=submodule_path)
-
-# Only build C++ extension if torch is available and not in egg_info/metadata mode
-# This allows pip to install dependencies first
-def try_build_cpp_extension():
-    # Skip build during pip's dependency resolution phase
-    if any(arg in sys.argv for arg in ['egg_info', '--version', 'sdist']):
-        return
-    try:
-        import torch
-        build_submodule('tensormesh/cpp/spsolve')
-    except ImportError:
-        print("Warning: PyTorch not found. C++ sparse solver extension will not be built.")
-        print("         The package will still work using the Python fallback solver.")
-        print("         To enable the C++ backend, install PyTorch first, then reinstall tensormesh.")
-    except subprocess.CalledProcessError as e:
-        print(f"Warning: Failed to build C++ extension: {e}")
-        print("         The package will still work using the Python fallback solver.")
-
-try_build_cpp_extension()
 
 
 def read_version():

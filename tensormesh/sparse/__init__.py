@@ -8,7 +8,7 @@ not installed (see ``tensormesh.sparse.matrix``).
 from torch_sla import SparseTensor
 
 from .matrix import SparseMatrix
-from .solve import spsolve, is_cpp_backend_available
+from .solve import spsolve
 from .mm import spmm
 from .nonlinear_solve import nonlinear_solve
 from .utils import is_petsc_available, is_cupy_available
@@ -19,7 +19,6 @@ __all__ = [
     'spsolve',
     'spmm',
     'nonlinear_solve',
-    'is_cpp_backend_available',
     'is_petsc_available',
     'is_cupy_available',
 ]

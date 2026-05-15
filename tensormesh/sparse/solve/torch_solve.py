@@ -7,26 +7,19 @@ Provides:
 - :func:`bicgstab_py` — Jacobi-preconditioned BiCGSTAB for general
   square systems;
 - :class:`SparseSolveTorch` — :class:`torch.autograd.Function` wrapping
-  ``lse_solver`` (BiCGSTAB) with an adjoint backward.
+  :func:`bicgstab_py` with an adjoint backward.
 
-If the C++ extension under :mod:`tensormesh.cpp.spsolve` is available and
-``TORCH_FEM_USE_CPP`` is unset or ``"true"``, ``lse_solver`` is replaced
-with the compiled BiCGSTAB / CG routines; otherwise it falls back to the
-Python implementations above.
+This module is part of the legacy fallback path used only when
+``torch-sla`` is not installed; with ``torch-sla`` (the default
+dependency) the dispatcher in :func:`tensormesh.sparse.spsolve` does
+not reach here.
 """
 
-import os
 import math
 import torch
 from torch.autograd import Function
 import warnings
 from ..utils import shapeT
-
-try:
-    from ...cpp.spsolve import spsolve_cpp
-    is_cpp_backend_available = True
-except ImportError:
-    is_cpp_backend_available = False
 
 def coo_diagonal(A, at_least=1):
     """Extract the diagonal of a sparse COO tensor.
@@ -254,18 +247,7 @@ def bicgstab_py(indices, values, m, n, b, x0=None, atol=1e-5, max_iter=10000):
 
     return x0.view(-1)
 
-if is_cpp_backend_available and (not "TORCH_FEM_USE_CPP" in os.environ or os.environ["TORCH_FEM_USE_CPP"] == "true"):
-    def bicgstab_cpp(indices, values, m, n, b, x0=None, atol=1e-5, max_iter=10000):
-        indices = indices.long()
-        # TODO: pass x0 to cpp solver if supported
-        return spsolve_cpp.bicgstab(indices, values, m, n, b, atol, max_iter)
-    def cg_cpp(indices, values, m, n, b, x0=None, atol=1e-5, max_iter=10000):
-        indices = indices.long()
-        # TODO: pass x0 to cpp solver if supported
-        return spsolve_cpp.cg(indices, values, m, n, b, atol, max_iter)
-    lse_solver = bicgstab_cpp
-else:
-    lse_solver = bicgstab_py
+lse_solver = bicgstab_py
 
 class SparseSolveTorch(Function):
     @staticmethod

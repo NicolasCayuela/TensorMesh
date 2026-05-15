@@ -44,9 +44,6 @@ backends were detected. ``torch-sla`` itself is a hard dependency — its
 absence raises at import time rather than flipping a flag — so it is not
 listed here.
 
-.. autodata:: tensormesh.sparse.is_cpp_backend_available
-   :annotation:
-
 .. autodata:: tensormesh.sparse.is_petsc_available
    :annotation:
 

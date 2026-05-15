@@ -25,9 +25,6 @@ except ImportError:
 
 from ..utils import is_petsc_available, is_cupy_available
 
-# Re-exported from torch_solve so callers can gate on the C++ extension.
-from .torch_solve import is_cpp_backend_available
-
 
 def spsolve(edata, row, col, shape, b,
             backend='auto', method='cg', preconditioner='jacobi',
