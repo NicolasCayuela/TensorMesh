@@ -9,6 +9,4 @@ Where to ask questions, share work, file bugs, and credit the project.
    discord
    github_discussions
    github_issues
-   wechat
-   code_of_conduct
    citing
