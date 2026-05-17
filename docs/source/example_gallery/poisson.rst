@@ -50,11 +50,12 @@ in 25 lines:
                            Condenser, NodeAssembler)
    from tensormesh.dataset import PoissonMultiFrequency
 
-   mesh      = Mesh.gen_rectangle(chara_length=0.02)
-   assembler = LaplaceElementAssembler.from_mesh(mesh)
-   equation  = PoissonMultiFrequency(K=16)
-   condenser = Condenser(mesh.boundary_mask,
-                         torch.zeros(mesh.boundary_mask.shape))
+   device         = "cuda" if torch.cuda.is_available() else "cpu"
+   mesh           = Mesh.gen_rectangle(chara_length=0.02).to(device=device)
+   assembler      = LaplaceElementAssembler.from_mesh(mesh)
+   equation       = PoissonMultiFrequency(K=16)
+   boundary_value = torch.zeros(mesh.boundary_mask.shape).to(device=device)
+   condenser      = Condenser(mesh.boundary_mask, boundary_value)
 
    f = equation.source_term(mesh.points, domain="rectangle")
    K = assembler(mesh.points)
@@ -120,10 +121,10 @@ PNG for quick inspection.
    :align: center
 
    Output of ``poisson_3d.py``: half-domain cut at :math:`x=0.5`
-   showing the FEM solution on the unit cube. Reported relative
-   :math:`L^2` error against the analytical Fourier solution is
-   on the order of :math:`5\times10^{-3}` at
-   ``chara_length=0.05``.
+   showing the FEM solution on the unit cube. The reported
+   mass-weighted relative :math:`L^2` error against the analytical
+   Fourier solution is :math:`\mathrm{rel\_L2} = 1.059\times10^{-2}`
+   at ``chara_length=0.05``.
 
 
 h-adaptive refinement on the L-shape — ``poisson_h_adaptivity.py``

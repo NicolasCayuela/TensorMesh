@@ -72,6 +72,27 @@ analytical solution to ``poisson.png``:
    :align: center
    :width: 95%
 
+.. note::
+
+   **Running on GPU.** Add a single line after creating the mesh::
+
+      mesh = mesh.to("cuda")
+
+   Every tensor derived from ``mesh`` (assembled matrices, load vectors,
+   the condensed solve) then lives on the GPU automatically — including
+   ``f_vals`` here, since it is built from ``mesh.points``. Only tensors
+   you construct independently of the mesh need to be moved over
+   explicitly, e.g. ``my_tensor = my_tensor.to(mesh.device)``.
+
+.. note::
+
+   **Built-in assemblers.** The Laplace and source forms above are common
+   enough that TensorMesh ships ready-made versions
+   (:class:`~tensormesh.LaplaceElementAssembler`,
+   :func:`~tensormesh.func_node_assembler`, and others), so you usually
+   don't need to write them by hand. See :ref:`forms-builtins` for the
+   full catalogue.
+
 
 Step by step
 ------------

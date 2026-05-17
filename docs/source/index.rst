@@ -26,8 +26,11 @@ Core Strengths
 --------------
 
 - **GPU-Native & Differentiable**: Built on PyTorch from the ground up.
+  Moving an entire FEM workflow to the GPU takes a single line of code —
+  every downstream assembly, solve, and gradient inherits the device
+  automatically, with no separate backend or data-marshalling step.
   Native autograd flows seamlessly through assembly and solve, enabling
-  end-to-end differentiable PDE pipelines with GPU acceleration.
+  end-to-end differentiable PDE pipelines.
 
 - **High-Performance Tensorized Assembly**: A fully tensorized Map-Reduce
   algorithm powered by `TensorGalerkin <https://arxiv.org/abs/2602.05052>`_,

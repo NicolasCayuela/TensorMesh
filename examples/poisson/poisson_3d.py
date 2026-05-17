@@ -28,9 +28,10 @@ def main():
     # NOTE: Mesh.gen_cube uses gmsh and may generate tetra/hex depending on settings.
     # We keep it as-is but enforce 3D Poisson correctness independent of element type.
     # Smaller => denser mesh (clearer visualization, slower mesh generation/solve)
-    chara_length = 0.12
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    chara_length = 0.05
     order = 1
-    mesh = Mesh.gen_cube(chara_length=chara_length, order=order).double()
+    mesh = Mesh.gen_cube(chara_length=chara_length, order=order).to(device=device).double()
 
     x = mesh.points  # [n_points, 3]
 
@@ -136,7 +137,7 @@ def main():
             smooth_shading=True,
         )
 
-        p3.add_title(f"3D Poisson (half-domain cut x=0.5, view from cut side)  rel_L2={rel_l2:.2e}")
+        p3.add_title(f"3D Poisson (half-domain cut x=0.5, view from cut side)")
         # View FROM the removed side (x > 0.5) looking towards the cut face
         p3.camera_position = [(3,3,3), (0.5, 0.5, 0.5), (0.0, 0.0, 1.0)]
         # p3.camera.zoom(1.2)
