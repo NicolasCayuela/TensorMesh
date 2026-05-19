@@ -34,11 +34,6 @@ classical FEM. Custom weak forms are written in pure Python; the library
 takes care of tensorized assembly, sparse linear algebra, boundary
 conditions, and time integration.
 
-TensorMesh is the FEM solver component of the
-[**TensorGalerkin**](https://arxiv.org/abs/2602.05052) framework, and is
-powered by [**torch-sla**](https://www.torchsla.com/) for differentiable
-sparse linear algebra.
-
 ## Core strengths
 
 - **GPU-native & differentiable.** Built on PyTorch from the ground up. Moving an entire FEM workflow to the GPU takes a single line of code — every downstream assembly, solve, and gradient inherits the device automatically, with no separate backend or data-marshalling step. Native autograd flows seamlessly through assembly and solve, enabling end-to-end differentiable PDE pipelines.
