@@ -33,22 +33,20 @@ setup(
         "numpy",
         "scipy",
         "torch>=2.0.0",
-        "torch-sla>=0.2.0",
+        "torch-sla>=0.2.1",
         "meshio",
         "matplotlib",
         "psutil",
         "toml",
     ],
     extras_require={
-        "petsc":[
-            "petsc4py"
-        ],
-        "cupy":[
-            "cupy"
-        ],
-        "example":[
-            "plotly"
-        ],
+        # GPU backends — mirror torch-sla's extras so users can do a
+        # single `pip install "tensor-mesh[cupy]"` (or [cudss], or [gpu])
+        # and get the right CUDA stack in one step.
+        "cupy":  ["torch-sla[cupy]>=0.2.1"],
+        "cudss": ["torch-sla[cudss]>=0.2.1"],
+        "gpu":   ["torch-sla[all]>=0.2.1"],
+        "example": ["plotly"],
         "test": [
             "pytest",
             "pytest-cov",

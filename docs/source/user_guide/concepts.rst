@@ -47,7 +47,7 @@ flow, not import direction:
    │   Mesh   │ →  │ Assembler  │ →  │ SparseMatrix │ →  │ Condenser │ →  │  Solve  │
    │  (nn.    │    │ (Element / │    │ (torch_sla.  │    │ (Dirichlet│    │ (torch- │
    │  Module) │    │  Node /    │    │  SparseTensor│    │  static   │    │  sla    │
-   │          │    │  Facet)    │    │  + spmm / @) │    │  cond.)   │    │ spsolve)│
+   │          │    │  Facet)    │    │  + spmm / @) │    │  cond.)   │    │ .solve) │
    └──────────┘    └────────────┘    └──────────────┘    └───────────┘    └─────────┘
         ↑                ↑                                                       │
         │                │                                                       ▼
@@ -73,9 +73,13 @@ What lives in each module:
   :class:`~tensormesh.NodeAssembler`,
   :class:`~tensormesh.FacetAssembler`, plus built-ins for the most
   common forms (Laplace, mass, linear elasticity, Neo-Hookean, …).
-* :mod:`tensormesh.sparse` — :class:`~tensormesh.sparse.SparseMatrix`,
-  the ``spsolve`` entry point, and the
-  :func:`~tensormesh.sparse.nonlinear_solve` Newton driver.
+* :mod:`tensormesh.sparse` — :class:`~tensormesh.sparse.SparseMatrix`
+  (subclass of ``torch_sla.SparseTensor``), so linear systems are
+  solved by ``K.solve(b)`` and nonlinear systems by
+  ``K.nonlinear_solve(residual, u0, *params)``, dispatched through
+  ``torch-sla``. The in-tree ``spsolve`` /
+  :func:`~tensormesh.sparse.nonlinear_solve` free functions are
+  legacy entry points scheduled for removal.
 * :mod:`tensormesh.operator` — :class:`~tensormesh.Condenser` for
   Dirichlet BCs via static condensation.
 * :mod:`tensormesh.ode` — explicit and implicit-linear time
@@ -94,8 +98,9 @@ What lives in each module:
 * :mod:`tensormesh.distributed` — graph-partitioned distributed
   assembly across multiple ranks (advanced; see the example gallery).
 
-The sparse-linear-algebra stack (``SparseMatrix``, ``spsolve``,
-gradient-aware solves) is delegated to a separate package,
+The sparse-linear-algebra stack (``SparseMatrix``, ``.solve`` /
+``.nonlinear_solve``, gradient-aware adjoint backward) is delegated to
+a separate package,
 `torch-sla <https://www.torchsla.com/>`_, and shared with
 other projects in the same ecosystem.
 

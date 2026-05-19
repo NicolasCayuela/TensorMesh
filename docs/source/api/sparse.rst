@@ -29,9 +29,28 @@ SparseMatrix
 Solvers
 -------
 
-.. autofunction:: tensormesh.sparse.spsolve
-
 .. autofunction:: tensormesh.sparse.spmm
+
+Legacy entry points (deprecated)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. deprecated:: 0.x
+
+   The two functions below pre-date the ``torch-sla`` integration and
+   are **scheduled for removal**. The canonical solver path is the
+   methods on :class:`~tensormesh.sparse.SparseMatrix` itself (inherited
+   from ``torch_sla.SparseTensor``):
+
+   * Linear solves → ``SparseMatrix.solve`` (i.e.
+     ``torch_sla.SparseTensor.solve``) — see
+     :doc:`/user_guide/linear_solvers`.
+   * Nonlinear solves → ``SparseMatrix.nonlinear_solve`` (Newton /
+     Picard / Anderson with line search and autograd Jacobian).
+
+   Both will be retired once the remaining in-tree call sites have
+   migrated. New code should not use them.
+
+.. autofunction:: tensormesh.sparse.spsolve
 
 .. autofunction:: tensormesh.sparse.nonlinear_solve
 

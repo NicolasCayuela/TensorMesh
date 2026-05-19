@@ -1,4 +1,16 @@
-"""Newton-Raphson solver for ``F(u, params) = 0`` with implicit-diff support."""
+"""Newton-Raphson solver for ``F(u, params) = 0`` with implicit-diff support.
+
+.. deprecated:: 0.x
+
+   This module is a **TensorMesh-internal driver scheduled for removal**.
+   The canonical nonlinear-solve path has migrated to
+   :meth:`torch_sla.SparseTensor.nonlinear_solve` (available on every
+   :class:`~tensormesh.sparse.SparseMatrix` since it subclasses
+   ``SparseTensor``), which supports Newton / Picard / Anderson, Armijo
+   line search, and an autograd-derived Jacobian — so callers no longer
+   need to supply a separate Jacobian closure. See
+   :doc:`/user_guide/linear_solvers`.
+"""
 
 import torch
 from torch.autograd import Function
@@ -120,7 +132,18 @@ def nonlinear_solve(
     tol: float = 1e-6,
     verbose: bool = False,
 ) -> torch.Tensor:
-    """Solve ``F(u, params) = 0`` for ``u``, with implicit differentiation.
+    """Solve ``F(u, params) = 0`` for ``u`` (legacy in-tree implementation).
+
+    .. deprecated:: 0.x
+
+       This in-tree Newton-Raphson driver is **scheduled for removal**.
+       ``torch-sla`` ships a richer
+       ``torch_sla.SparseTensor.nonlinear_solve`` (also accessible
+       as ``SparseMatrix.nonlinear_solve``) with Newton / Picard /
+       Anderson modes, Armijo line search, and an autograd-based
+       Jacobian — so the user no longer has to supply ``j``. Migrate to
+       ``A.nonlinear_solve(residual, u0, *params)``; see
+       :doc:`/user_guide/linear_solvers`.
 
     Drives Newton-Raphson on the forward pass and the implicit-function
     theorem on the backward pass: gradients w.r.t. ``params`` cost

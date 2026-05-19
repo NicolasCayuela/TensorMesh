@@ -18,11 +18,22 @@ The recommended way to install TensorMesh is from PyPI:
 
 .. code-block:: bash
 
-    pip install tensor-mesh
+    pip install tensor-mesh             # CPU only
+    pip install "tensor-mesh[gpu]"      # + CUDA sparse solvers (CuPy + cuDSS)
 
-This pulls in all required dependencies, including
+Use the second form if you have an NVIDIA GPU and want the CUDA sparse-solver
+backends — the ``[gpu]`` extra pulls in both CuPy and cuDSS through
+``torch-sla``. The quotes are needed because ``[...]`` is a shell glob
+character; see `Sparse solvers and GPU acceleration`_ for the per-backend
+breakdown if you only want one of CuPy or cuDSS.
+
+Either form pulls in all required dependencies, including
 `torch-sla <https://www.torchsla.com/>`_, the differentiable sparse linear
-algebra library that powers TensorMesh's solvers.
+algebra library that powers TensorMesh's solvers. The base
+``pip install tensor-mesh`` installs only the **CPU** sparse stack
+(SciPy / native PyTorch); see `Sparse solvers and GPU acceleration`_
+below for the full extras matrix (``[cupy]`` / ``[cudss]`` / ``[gpu]``) and
+how to verify which backends are usable on your machine.
 
 
 Install from source
@@ -44,19 +55,71 @@ without reinstalling. To install with the test dependencies as well:
 
     pip install -e ".[test]"
 
-.. note::
 
-   The first install builds a small C++ extension for the sparse solver. If
-   PyTorch is missing or the build fails, TensorMesh falls back to a pure
-   Python solver and prints a warning — the package still works, just with
-   reduced performance on large systems.
+Sparse solvers and GPU acceleration
+-----------------------------------
+
+The sparse linear-algebra layer that powers TensorMesh's solvers lives in a
+standalone library, `torch-sla <https://www.torchsla.com/>`_, so that it can
+evolve independently and serve other projects. ``torch-sla`` is a **hard,
+import-time** dependency — :mod:`tensormesh.sparse` will not import without it
+— and is the canonical entry point for both CPU and GPU sparse solves. All
+current and future solver work lands in ``torch-sla`` first; we recommend
+keeping it up to date.
+
+The base ``tensor-mesh`` wheel only pulls the **CPU** stack
+(SciPy / native PyTorch). To enable a GPU backend, install one of the
+mirrored extras:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 25 45
+
+   * - Install command
+     - Adds backend
+     - When to pick this
+   * - ``pip install tensor-mesh``
+     - CPU only
+     - Default; no GPU sparse solves.
+   * - ``pip install "tensor-mesh[cupy]"``
+     - CuPy (CUDA)
+     - Iterative GPU solvers (CG / GMRES / …) + CuPy SuperLU.
+   * - ``pip install "tensor-mesh[cudss]"``
+     - cuDSS (CUDA)
+     - Fastest GPU direct solver (LU / Cholesky / LDLT).
+   * - ``pip install "tensor-mesh[gpu]"``
+     - Both
+     - Convenience extra — installs ``torch-sla[all]``.
+
+These mirror the upstream ``torch-sla`` extras (``[cupy]`` / ``[cudss]`` /
+``[all]``) — installing ``tensor-mesh[gpu]`` is exactly equivalent to
+``pip install tensor-mesh torch-sla[all]``, just spelled in one step.
+
+Inspect what's installed
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+After installing, you can see which backends are usable on the current
+machine — and a one-line install hint for any that are not:
+
+.. code-block:: python
+
+    >>> import torch_sla
+    >>> torch_sla.show_backends()
+    torch-sla backend status (CUDA: available)
+      scipy    [CPU]      available
+      eigen    [CPU]      not available — JIT-compiled C++ extension (requires a C++ compiler)
+      pytorch  [CPU/CUDA] available
+      cupy     [CUDA]     not available — pip install torch-sla[cupy]
+      cudss    [CUDA]     not available — pip install torch-sla[cudss]
+
+See :doc:`/user_guide/linear_solvers` for the full backend / method matrix
+and how to pick a non-default backend at solve time.
 
 
-Optional extras
----------------
+Other extras
+~~~~~~~~~~~~
 
-Several features depend on packages that are *not* installed by default. Pick
-the extras you need:
+A couple of smaller extras for optional functionality:
 
 .. list-table::
    :header-rows: 1
@@ -64,10 +127,6 @@ the extras you need:
 
    * - Extra
      - Install command
-   * - PETSc solver backend (``petsc4py``)
-     - ``pip install "tensor-mesh[petsc]"``
-   * - CuPy GPU sparse backend (``cupy``)
-     - ``pip install "tensor-mesh[cupy]"``
    * - Plotly for example notebooks
      - ``pip install "tensor-mesh[example]"``
    * - Test suite (pytest, pytest-cov)
@@ -80,42 +139,6 @@ install them directly when needed:
 
     pip install gmsh       # external mesh generation / .msh I/O
     pip install pyvista    # interactive 3D visualization
-
-
-Sparse solvers and GPU acceleration
------------------------------------
-
-The sparse linear-algebra layer that powers TensorMesh's solvers has been
-split out into a standalone library,
-`torch-sla <https://github.com/sparsexlab/torch-sla>`_, so that it can
-evolve independently and serve other projects. ``torch-sla`` is a
-**hard, import-time** dependency — :mod:`tensormesh.sparse` will not
-import without it — and is the canonical entry point for both CPU and
-GPU sparse solves. All current and future solver work lands in
-``torch-sla`` first; we recommend keeping it up to date.
-
-.. code-block:: bash
-
-    pip install "torch-sla>=0.2.0"
-
-To enable GPU sparse solves, install ``torch-sla`` with the ``[cuda]``
-extra:
-
-.. code-block:: bash
-
-    pip install "torch-sla[cuda]>=0.2.0"
-
-This pulls in ``cupy-cuda12x`` (CUDA 12 wheels of CuPy) and
-``nvmath-python`` (NVIDIA's cuDSS bindings), which together give
-``torch-sla`` access to its CuPy and cuDSS GPU solvers.
-
-The TensorMesh-side extras (legacy / interop):
-
-* ``tensor-mesh[cupy]`` — installs the generic ``cupy`` package; only
-  useful for legacy code that touches the in-tree
-  ``tensormesh.sparse.solve.cupy_solve`` wrappers directly.
-* ``tensor-mesh[petsc]`` — installs ``petsc4py`` for direct interop
-  with an existing PETSc installation. Independent of ``torch-sla``.
 
 
 Next steps

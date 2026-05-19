@@ -37,11 +37,11 @@ design choices, and how to wield each component.
 
       Apply Dirichlet BCs via static condensation; handle Neumann naturally.
 
-   .. grid-item-card:: Linear Solvers
+   .. grid-item-card:: Sparse Solvers
       :link: linear_solvers
       :link-type: doc
 
-      Sparse solvers via torch-sla — five backends, batched RHS, nonlinear Newton.
+      Linear and nonlinear sparse solves via torch-sla — five backends, batched RHS, Newton / Picard / Anderson.
 
    .. grid-item-card:: Time Integration
       :link: time_integration

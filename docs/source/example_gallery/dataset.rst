@@ -110,9 +110,11 @@ A few details that make the GPU path fast:
   matrix-multiplication ``M @ U`` broadcasts over the batch axis on
   GPU.
 * ``K_.solve(F_)`` with ``F_`` shape ``[n_inner, batch_size]``
-  routes to :func:`~tensormesh.sparse.spsolve` 's batched-RHS path.
-  On CPU this is SciPy's SuperLU; on GPU it is CuPy's sparse direct
-  solver. One factorization is reused across all 1000 samples.
+  routes to ``torch-sla``'s batched-RHS direct-solve path
+  (``K_`` is a :class:`~tensormesh.sparse.SparseMatrix`, so
+  ``.solve`` is the inherited ``torch_sla.SparseTensor.solve``).
+  On CPU this is SciPy's SuperLU; on GPU it is CuPy / cuDSS. One
+  factorization is reused across all 1000 samples.
 * The L-shape is meshed at ``chara_length=0.008``, giving on the
   order of 50–100k DOFs — large enough that the batched solve is
   much faster than 1000 independent CG calls.
@@ -176,7 +178,8 @@ Python level — they come from two TensorMesh defaults:
    element — and, in the time-dependent cases, every timestep.
    SciPy's SuperLU and CuPy's sparse direct solver both expose
    this factor-once / back-sub-many pattern through
-   :func:`~tensormesh.sparse.spsolve`.
+   ``SparseMatrix.solve`` (inherited from
+   ``torch_sla.SparseTensor``).
 2. **Native batched RHS.** ``[n_inner, batch_size]`` lands in the
    solver as a 2D dense matrix; back-substitution iterates over
    the batch axis at the C / CUDA level, with no Python loop in

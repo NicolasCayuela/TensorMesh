@@ -174,11 +174,12 @@ Two things that make this easy to write:
   and the alternative (computing analytical Jacobians by hand)
   would require pages of additional code.
 
-For nonlinear problems where the residual / Jacobian split is
-already in place, the alternative is the
-:func:`~tensormesh.sparse.nonlinear_solve` driver from
-:doc:`../user_guide/linear_solvers` — which also gives you a
-correct adjoint backward through the converged solution.
+For nonlinear problems where you would rather hand the whole
+residual to a packaged driver, ``torch-sla``'s
+``SparseMatrix.nonlinear_solve`` (Newton / Picard / Anderson with
+Armijo line search; see :doc:`../user_guide/linear_solvers`) takes a
+single residual closure, builds the Jacobian via autograd, and gives
+you a correct adjoint backward through the converged solution.
 
 .. raw:: html
 
@@ -213,8 +214,8 @@ What's next
 * :doc:`../user_guide/time_integration` — the same heat problem,
   rewritten in terms of :class:`~tensormesh.ode.builtin.ImplicitLinearEuler`.
 * :doc:`../user_guide/linear_solvers` —
-  :func:`~tensormesh.sparse.nonlinear_solve` for a packaged Newton
-  loop with adjoint backward.
+  ``SparseMatrix.nonlinear_solve`` for a packaged Newton / Picard /
+  Anderson loop with adjoint backward.
 * :doc:`wave` — the next transient PDE up: hyperbolic, explicit
   central differences.
 * :doc:`dataset` — batched heat solves for ML training data.

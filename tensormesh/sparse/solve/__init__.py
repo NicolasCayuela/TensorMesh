@@ -1,8 +1,21 @@
-"""Sparse linear system solvers for TensorMesh.
+"""Sparse linear system solvers for TensorMesh (legacy entry points).
 
-The primary entry point is :func:`spsolve`. With ``torch-sla`` installed
-(the default and recommended path) it dispatches to one of the torch-sla
-backends — SciPy / native PyTorch / Eigen / cuDSS / CuPy — chosen by the
+.. deprecated:: 0.x
+
+   The module-level :func:`spsolve` here is a **TensorMesh-internal
+   wrapper scheduled for removal**. The canonical solver path has
+   migrated to ``torch-sla``: assembly returns a
+   :class:`~tensormesh.sparse.SparseMatrix` (a subclass of
+   :class:`torch_sla.SparseTensor`), and you simply call ``K.solve(b)``,
+   which auto-detects symmetry / positive-definiteness and dispatches
+   directly to ``torch_sla.spsolve``. See
+   :doc:`/user_guide/linear_solvers`.
+
+The free function below remains only for the niche case where a caller
+holds raw ``(edata, row, col, shape, b)`` arrays without a
+:class:`SparseMatrix`. With ``torch-sla`` installed (the default and
+recommended path) it dispatches to one of the torch-sla backends —
+SciPy / native PyTorch / Eigen / cuDSS / CuPy — chosen by the
 ``backend`` argument, honours ``method`` / ``preconditioner`` /
 ``is_spd`` hints, and routes batched right-hand sides through SuperLU.
 
@@ -30,11 +43,22 @@ def spsolve(edata, row, col, shape, b,
             backend='auto', method='cg', preconditioner='jacobi',
             tol=1e-5, max_iter=10000, x0=None, is_spd=True,
             verbose=False):
-    """Solve the sparse linear system ``A x = b``.
+    """Solve the sparse linear system ``A x = b`` (legacy entry point).
 
-    Main entry point of :mod:`tensormesh.sparse`. With ``torch-sla``
-    installed, dispatches to a differentiable sparse-linear-algebra
-    backend; without it, falls back to a curated mini-stack of
+    .. deprecated:: 0.x
+
+       This free function pre-dates the ``torch-sla`` integration and is
+       **scheduled for removal**. The canonical path is to wrap the data
+       in a :class:`~tensormesh.sparse.SparseMatrix` and call its
+       ``solve`` method (inherited from ``torch_sla.SparseTensor``),
+       which auto-detects symmetry / positive-definiteness and routes
+       to ``torch_sla.spsolve`` directly. See
+       :doc:`/user_guide/linear_solvers`.
+
+    Low-level entry point: takes raw COO arrays instead of a
+    :class:`~tensormesh.sparse.SparseMatrix` object. With ``torch-sla`` installed,
+    dispatches to a differentiable sparse-linear-algebra backend;
+    without it, falls back to a curated mini-stack of
     SciPy / SuperLU / CuPy / PETSc wrappers.
 
     Parameters
