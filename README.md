@@ -53,14 +53,20 @@ sparse linear algebra.
 **Requirements:** Python ≥ 3.10, PyTorch ≥ 2.0.
 
 ```bash
-pip install tensor-mesh
+pip install tensor-mesh             # CPU only
+pip install "tensor-mesh[gpu]"      # + CUDA sparse solvers (CuPy + cuDSS)
 ```
 
-For GPU sparse solves, install `torch-sla` with the `[cuda]` extra:
+The base install ships only the CPU sparse stack (SciPy / native PyTorch via
+[torch-sla](https://www.torchsla.com/)). The `[gpu]` extra pulls in both
+CUDA backends; if you only want one, use `[cupy]` or `[cudss]` instead:
 
 ```bash
-pip install "torch-sla[cuda]>=0.2.0"
+pip install "tensor-mesh[cupy]"     # CuPy CUDA backend (iterative + SuperLU)
+pip install "tensor-mesh[cudss]"    # cuDSS CUDA backend (fastest GPU direct)
 ```
+
+The quotes are needed because `[...]` is a shell glob character.
 
 <details>
 <summary>Install from source (for development)</summary>
@@ -72,22 +78,18 @@ pip install -e ".[test]"
 ```
 </details>
 
-<details>
-<summary>Optional extras</summary>
-
-```bash
-pip install "tensor-mesh[petsc]"    # PETSc solver backend
-pip install "tensor-mesh[cupy]"     # CuPy GPU backend (legacy)
-pip install "tensor-mesh[example]"  # Plotly for example notebooks
-pip install gmsh                    # external mesh generation / .msh I/O
-pip install pyvista                 # interactive 3D visualization
-```
-</details>
-
 After installing, sanity-check the install:
 
 ```bash
 python -m tensormesh.verify_install
+```
+
+To see which sparse-solver backends are usable on your machine — and a
+one-line install hint for any that are not — run:
+
+```python
+import torch_sla
+torch_sla.show_backends()
 ```
 
 ## Quickstart
@@ -222,7 +224,7 @@ The core workflow: **Mesh → Assembler → SparseMatrix → Condenser → Solve
 | `tensormesh.mesh`            | Mesh data structure; built-in generators (`gen_rectangle`, `gen_circle`, `gen_cube`, `gen_L`, …); Gmsh / VTK-HDF5 I/O |
 | `tensormesh.element`         | Shape functions, quadrature rules, element transformations (geometric order 1–4) |
 | `tensormesh.assemble`        | `ElementAssembler`, `NodeAssembler`, `FacetAssembler` for matrix and vector assembly |
-| `tensormesh.sparse`          | `SparseMatrix` with multiple solver backends (SciPy / PyTorch / Eigen / cuDSS / CuPy / PETSc) |
+| `tensormesh.sparse`          | `SparseMatrix` (subclass of `torch_sla.SparseTensor`); linear & nonlinear sparse solves via torch-sla backends (SciPy / Eigen / native PyTorch / CuPy / cuDSS) |
 | `tensormesh.operator`        | `Condenser` for Dirichlet boundary conditions via static condensation |
 | `tensormesh.ode`             | Time integrators: explicit / implicit Euler, midpoint, Runge–Kutta |
 | `tensormesh.dataset`         | Parametric PDE dataset generation (Poisson, Heat, Wave, linear elasticity) |
