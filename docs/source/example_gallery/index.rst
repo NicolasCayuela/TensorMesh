@@ -63,6 +63,12 @@ script you can run.
 
       Differentiable FEM: coefficient-field identification and density-based topology optimization.
 
+   .. grid-item-card:: Physics-Informed Learning
+      :link: physics_informed
+      :link-type: doc
+
+      Train a neural network to minimize the assembled Galerkin residual ``||K u - F||²``.
+
 
 .. toctree::
    :hidden:
@@ -77,3 +83,4 @@ script you can run.
    fluid/index
    solid/index
    inverse_design
+   physics_informed
