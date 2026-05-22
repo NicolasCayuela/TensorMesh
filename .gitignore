@@ -90,6 +90,8 @@ examples/**/*.xdmf
 examples/**/*.h5
 !examples/**/*.md
 
+# Plan 
+TODO.md
 # Experimental
 experimental/
 
