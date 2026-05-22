@@ -18,8 +18,11 @@ Requirements:
 
 * **Python ≥ 3.10**
 * **PyTorch ≥ 2.0** (with CUDA if you want to run the GPU paths)
-* A C++ toolchain — the sparse-solver extension under
-  ``tensormesh/cpp/spsolve/`` is built automatically by ``setup.py``.
+
+Everything else installs from PyPI in the step below — including
+``torch-sla`` (``>= 0.2.1``), the hard dependency that provides every
+sparse-solver backend. No C++ toolchain or manual build step is
+required.
 
 Clone and install in editable mode:
 
@@ -27,16 +30,11 @@ Clone and install in editable mode:
 
    git clone https://github.com/camlab-ethz/TensorMesh.git
    cd TensorMesh
-
-   # 1) The torch-sla dependency is not on PyPI under that exact name
-   #    yet; install it explicitly first:
-   pip install "torch-sla>=0.2.0"
-
-   # 2) Editable install with the test extra:
    pip install -e ".[test]"
 
-Other optional extras: ``petsc`` (PETSc backend for ``spsolve``),
-``cupy`` (CuPy backend), ``example`` (Plotly for some figure scripts).
+Optional extras: ``cupy`` / ``cudss`` (GPU sparse-direct solver
+backends), ``gpu`` (both at once), and ``example`` (Plotly for some
+figure scripts).
 
 Smoke-test the install by running the bundled checker, which solves a
 tiny Poisson problem on CPU (and on GPU if available) and reports
@@ -48,16 +46,6 @@ which sparse-solver backends are wired up:
 
 If both the CPU and the CUDA solve print sensible errors against the
 analytical reference, you're good.
-
-On the ETH cluster (and similar HPC environments) you may need a few
-modules loaded before the venv is usable; the exact incantation used
-by the project is:
-
-.. code-block:: bash
-
-   module load stack/.2024-04-silent gcc/8.5.0
-   module load mesa-glu/9.0.2
-   module load ffmpeg
 
 
 Running the tests
@@ -98,10 +86,11 @@ The docs use Sphinx with the ``pydata_sphinx_theme``. Build locally:
    make html
 
 Rendered output goes to ``docs/_build/html/``; open
-``docs/_build/html/index.html`` to view. Clean builds finish with
-exactly one warning (a pre-existing ``ExplicitRungeKutta`` cross-ref
-in ``example_gallery/wave.rst``) — anything else you introduce should
-be fixed before opening a PR.
+``docs/_build/html/index.html`` to view. A clean build currently emits
+a handful of pre-existing warnings — a stale ``ExplicitRungeKutta``
+cross-reference in ``example_gallery/wave.rst`` plus a few NumPy-style
+docstring-formatting warnings — so the working rule is simply: don't
+add new ones, and fixing an existing one is always welcome.
 
 The site is **bilingual EN/ZH** via Sphinx's gettext workflow. The
 canonical English source is the ``.rst`` files; Chinese strings live
@@ -260,8 +249,6 @@ A rough map of where things live, for new contributors:
        for ML training data.
    * - ``tensormesh/nn/``
      - ``BufferDict`` / ``BufferList``.
-   * - ``tensormesh/cpp/spsolve/``
-     - C++ extension for the sparse direct solver.
    * - ``tests/``
      - Test suite, mirroring the package layout.
    * - ``examples/``

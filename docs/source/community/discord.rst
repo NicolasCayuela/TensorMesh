@@ -59,8 +59,7 @@ community is just getting started.
   mesh load?", "What's the right API for Y?". See :ref:`asking-well`
   below for what to include.
 * ``#troubleshooting`` — installation issues, environment problems,
-  CUDA/torch version conflicts, build errors with the C++ sparse-solver
-  extension.
+  CUDA/torch version conflicts, and torch-sla solver-backend setup.
 
 **Development** — for people writing patches.
 
