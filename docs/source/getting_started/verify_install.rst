@@ -4,10 +4,11 @@ Verify Install
 A self-contained smoke test that confirms TensorMesh, ``torch-sla``, and
 your PyTorch build are wired up correctly. The script:
 
+* prints the core versions (TensorMesh, PyTorch, torch-sla, CUDA),
 * solves a tiny Poisson problem on the **CPU** (always),
-* repeats the solve on the **GPU** if CUDA is available,
-* prints version information, and
-* reports which sparse-solver backends are usable on your machine.
+* repeats the solve on the **GPU** if CUDA is available, and
+* reports the ``torch-sla`` sparse-solver backends available on your
+  machine.
 
 Save the snippet below as ``verify_install.py`` and run
 ``python verify_install.py``. Total runtime is a couple of seconds.
@@ -18,16 +19,16 @@ The script
 
 .. code-block:: python
 
-   """Verify a TensorMesh install: solve a tiny Poisson problem on CPU
-   (and on GPU if available), then report which sparse-solver backends
-   are wired up."""
+   """Verify a TensorMesh install: print the core versions, solve a tiny
+   Poisson problem on CPU (and on GPU if available), and report the
+   torch-sla sparse-solver backends available on this machine."""
 
    import math
-   import platform
-   import sys
    import time
 
    import torch
+   import torch_sla
+   import tensormesh
 
 
    def solve_poisson(device):
@@ -57,59 +58,29 @@ The script
        return float((u - u_exact).norm() / u_exact.norm())
 
 
-   def probe_backends():
-       out = {"scipy": (True, ""), "torch": (True, "")}
-       try:
-           import torch_sla  # noqa: F401
-           out["torch_sla"] = (True, "")
-       except ImportError:
-           out["torch_sla"] = (False, "pip install torch-sla")
-       try:
-           import pyamg  # noqa: F401
-           out["amg"] = (True, "")
-       except ImportError:
-           out["amg"] = (False, "pip install pyamg")
-       from tensormesh.sparse import is_petsc_available, is_cupy_available
-       out["petsc"] = (is_petsc_available,
-                       "" if is_petsc_available else "pip install petsc4py")
-       out["cupy"]  = (is_cupy_available and torch.cuda.is_available(),
-                       "" if is_cupy_available else "pip install cupy")
-       out["cudss"] = (torch.cuda.is_available(),
-                       "" if torch.cuda.is_available() else "requires CUDA + libcudss")
-       return out
-
-
    def main():
-       import tensormesh
        print("TensorMesh smoke test")
        print("=" * 40)
        print(f"tensormesh : {tensormesh.__version__}")
        print(f"torch      : {torch.__version__}")
-       try:
-           import torch_sla
-           print(f"torch-sla  : {getattr(torch_sla, '__version__', 'unknown')}")
-       except ImportError:
-           print(f"torch-sla  : MISSING")
-       print(f"python     : {sys.version.split()[0]} on {platform.system().lower()}")
+       print(f"torch-sla  : {torch_sla.__version__}")
+       print(f"cuda       : {torch.version.cuda or 'not available'}")
        print()
 
        t0 = time.perf_counter()
        err = solve_poisson("cpu")
-       print(f"[CPU ] Poisson 2D ... OK   L2 error = {err:.3e}   {time.perf_counter()-t0:.2f} s")
+       print(f"[CPU ] Poisson 2D ... OK   L2 error = {err:.3e}   {time.perf_counter() - t0:.2f} s")
 
        if torch.cuda.is_available():
            t0 = time.perf_counter()
            err = solve_poisson("cuda")
-           print(f"[CUDA] Poisson 2D ... OK   L2 error = {err:.3e}   {time.perf_counter()-t0:.2f} s")
+           print(f"[CUDA] Poisson 2D ... OK   L2 error = {err:.3e}   {time.perf_counter() - t0:.2f} s")
        else:
-           print(f"[CUDA] not available, skipping GPU test")
+           print("[CUDA] not available, skipping GPU test")
 
        print()
-       print("Sparse solver backends:")
-       for name, (ok, hint) in probe_backends().items():
-           mark = "OK " if ok else "-- "
-           suffix = f"  ({hint})" if (not ok and hint) else ""
-           print(f"  {name:<10s}: {mark}{suffix}")
+       # Every sparse-solver backend is provided by torch-sla; let it report them.
+       torch_sla.show_backends()
 
        print()
        print("All required checks passed.")
@@ -122,31 +93,34 @@ The script
 Expected output
 ---------------
 
-On a CPU-only macOS / Linux laptop with a fresh ``pip install tensor-mesh``,
-you should see something close to:
+On a CUDA machine (a Linux box with an NVIDIA GPU and a CUDA-enabled
+PyTorch build), you should see something close to:
 
 .. code-block:: text
 
    TensorMesh smoke test
    ========================================
    tensormesh : 0.1.0
-   torch      : 2.11.0
-   torch-sla  : 0.2.0
-   python     : 3.13.4 on darwin
+   torch      : 2.10.0+cu128
+   torch-sla  : 0.2.1
+   cuda       : 12.8
 
-   [CPU ] Poisson 2D ... OK   L2 error = 1.187e-02   0.04 s
-   [CUDA] not available, skipping GPU test
+   [CPU ] Poisson 2D ... OK   L2 error = 1.185e-02   0.05 s
+   [CUDA] Poisson 2D ... OK   L2 error = 1.185e-02   0.88 s
 
-   Sparse solver backends:
-     scipy     : OK
-     torch     : OK
-     torch_sla : OK
-     amg       : --   (pip install pyamg)
-     petsc     : --   (pip install petsc4py)
-     cupy      : --   (pip install cupy)
-     cudss     : --   (requires CUDA + libcudss)
+   torch-sla backend status (CUDA: available)
+     scipy    [CPU]       available
+     eigen    [CPU]       not available — JIT-compiled C++ extension (requires a C++ compiler)
+     pytorch  [CPU/CUDA]  available
+     cupy     [CUDA]      available
+     cudss    [CUDA]      available
 
    All required checks passed.
+
+On a CPU-only machine (e.g. a macOS / Linux laptop) the ``cuda`` line
+reads ``not available``, the ``[CUDA]`` solve is skipped, and the
+backend-table header reads ``(CUDA: not available)`` with ``cupy`` /
+``cudss`` listed as optional extras to install.
 
 The exact L2 error depends on the mesh, but should be on the order of
 :math:`10^{-2}` — anything more than a few percent indicates a numerical
@@ -187,18 +161,22 @@ problem.
    different solver explicitly, pass ``backend=...`` / ``method=...``
    to ``solve`` — see :doc:`../user_guide/linear_solvers`.
 
-The optional backends marked ``--`` are *not* a failure: they simply
-aren't installed. Pick the ones you need:
+Every sparse-solver backend is provided by ``torch-sla`` — TensorMesh
+adds none of its own. Backends reported as ``not available`` are not a
+failure; they are optional ``torch-sla`` extras you can install when you
+need them:
 
-* **petsc** — distributed direct / iterative solvers, useful for very
-  large 3D problems on CPU clusters.
-* **cupy** / **cudss** — GPU sparse-direct solvers for fast factorization
-  of small-to-medium 3D problems on CUDA.
-* **amg** — algebraic multigrid preconditioner; recommended for 3D
-  elasticity.
+* **scipy** ``[CPU]`` — SciPy / SuperLU direct and iterative solvers; the
+  default CPU path, always available.
+* **pytorch** ``[CPU/CUDA]`` — torch-native iterative solvers (CG /
+  BiCGSTAB), always available and fully autograd-friendly.
+* **eigen** ``[CPU]`` — a JIT-compiled C++ direct solver; needs a C++
+  compiler on the machine.
+* **cupy** ``[CUDA]`` / **cudss** ``[CUDA]`` — GPU sparse-direct solvers
+  (``pip install torch-sla[cupy]`` / ``pip install torch-sla[cudss]``).
 
-See :doc:`../user_guide/linear_solvers` for guidance on choosing among
-them.
+Run ``torch_sla.show_backends()`` at any time to re-check status. See
+:doc:`../user_guide/linear_solvers` for guidance on choosing among them.
 
 
 Troubleshooting
@@ -208,10 +186,10 @@ Troubleshooting
 isn't installed in the active Python environment. Re-check
 :doc:`installation`.
 
-**``torch-sla : MISSING``** — ``pip install "torch-sla>=0.2.0"``. This is
-a hard, import-time dependency: :mod:`tensormesh.sparse` will refuse to
-import without it, so every solver-touching code path fails until it is
-installed.
+**``ModuleNotFoundError: No module named 'torch_sla'``** — install it
+with ``pip install "torch-sla>=0.2.1"``. torch-sla is a hard,
+import-time dependency: :mod:`tensormesh.sparse` refuses to import
+without it, and every sparse-solver backend is provided through it.
 
 **Stuck on ``[CPU ] Poisson 2D``** — your PyTorch build may be downloading
 ``gmsh`` cache files on first use; subsequent runs are instant.

@@ -1,13 +1,13 @@
-"""Verify a TensorMesh install: solve a tiny Poisson problem on CPU
-(and on GPU if available), then report which sparse-solver backends
-are wired up."""
+"""Verify a TensorMesh install: print the core versions, solve a tiny
+Poisson problem on CPU (and on GPU if available), and report the
+torch-sla sparse-solver backends available on this machine."""
 
 import math
-import platform
-import sys
 import time
 
 import torch
+import torch_sla
+import tensormesh
 
 
 def solve_poisson(device):
@@ -37,59 +37,29 @@ def solve_poisson(device):
     return float((u - u_exact).norm() / u_exact.norm())
 
 
-def probe_backends():
-    out = {"scipy": (True, ""), "torch": (True, "")}
-    try:
-        import torch_sla  # noqa: F401
-        out["torch_sla"] = (True, "")
-    except ImportError:
-        out["torch_sla"] = (False, "pip install torch-sla")
-    try:
-        import pyamg  # noqa: F401
-        out["amg"] = (True, "")
-    except ImportError:
-        out["amg"] = (False, "pip install pyamg")
-    from tensormesh.sparse import is_petsc_available, is_cupy_available
-    out["petsc"] = (is_petsc_available,
-                    "" if is_petsc_available else "pip install petsc4py")
-    out["cupy"]  = (is_cupy_available and torch.cuda.is_available(),
-                    "" if is_cupy_available else "pip install cupy")
-    out["cudss"] = (torch.cuda.is_available(),
-                    "" if torch.cuda.is_available() else "requires CUDA + libcudss")
-    return out
-
-
 def main():
-    import tensormesh
     print("TensorMesh smoke test")
     print("=" * 40)
     print(f"tensormesh : {tensormesh.__version__}")
     print(f"torch      : {torch.__version__}")
-    try:
-        import torch_sla
-        print(f"torch-sla  : {getattr(torch_sla, '__version__', 'unknown')}")
-    except ImportError:
-        print(f"torch-sla  : MISSING")
-    print(f"python     : {sys.version.split()[0]} on {platform.system().lower()}")
+    print(f"torch-sla  : {torch_sla.__version__}")
+    print(f"cuda       : {torch.version.cuda or 'not available'}")
     print()
 
     t0 = time.perf_counter()
     err = solve_poisson("cpu")
-    print(f"[CPU ] Poisson 2D ... OK   L2 error = {err:.3e}   {time.perf_counter()-t0:.2f} s")
+    print(f"[CPU ] Poisson 2D ... OK   L2 error = {err:.3e}   {time.perf_counter() - t0:.2f} s")
 
     if torch.cuda.is_available():
         t0 = time.perf_counter()
         err = solve_poisson("cuda")
-        print(f"[CUDA] Poisson 2D ... OK   L2 error = {err:.3e}   {time.perf_counter()-t0:.2f} s")
+        print(f"[CUDA] Poisson 2D ... OK   L2 error = {err:.3e}   {time.perf_counter() - t0:.2f} s")
     else:
-        print(f"[CUDA] not available, skipping GPU test")
+        print("[CUDA] not available, skipping GPU test")
 
     print()
-    print("Sparse solver backends:")
-    for name, (ok, hint) in probe_backends().items():
-        mark = "OK " if ok else "-- "
-        suffix = f"  ({hint})" if (not ok and hint) else ""
-        print(f"  {name:<10s}: {mark}{suffix}")
+    # Every sparse-solver backend is provided by torch-sla; let it report them.
+    torch_sla.show_backends()
 
     print()
     print("All required checks passed.")
