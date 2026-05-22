@@ -1,9 +1,9 @@
-"""2D lid-driven cavity — steady incompressible Navier-Stokes.
+"""3D lid-driven cavity — steady incompressible Navier-Stokes.
 
-Equal-order P1-P1 velocity/pressure with SUPG/PSPG stabilization,
-linearized by Picard iteration. Per node the unknowns are laid out
-node-major as ``[u, v, p]``, so node ``i`` owns global DOFs
-``[3i, 3i+1, 3i+2]``.
+The 3D extension of ``cavity.py``. The ``NavierStokesAssembler`` below is
+dimension-generic (it reads ``dim`` from ``gradu.shape[0]`` and stamps a
+``(dim+1) x (dim+1)`` block), so the only real change from 2D is the mesh,
+the per-node DOF layout ``[u, v, w, p]``, and the volumetric output.
 """
 import os
 import sys
@@ -14,6 +14,7 @@ import torch
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
 from tensormesh import Mesh, Condenser, ElementAssembler
+from tensormesh.visualization import setup_headless
 
 
 class NavierStokesAssembler(ElementAssembler):
@@ -32,13 +33,8 @@ class NavierStokesAssembler(ElementAssembler):
     Galerkin form admits spurious pressure modes; the SUPG/PSPG terms
     scaled by ``tau`` restore stability. The velocity block is kept
     diagonal (components decoupled) -- the standard simplification for a
-    stabilized equal-order formulation.
-
-    Argument convention (see user_guide/forms): ``u, gradu`` are the test
-    shape value/gradient (row), ``v, gradv`` the trial ones (col);
-    ``w_prev`` is the previous Picard iterate, passed via ``point_data``.
-    The assembler stamps the per-node block into a block-COO sparse matrix
-    exactly as the built-in vector-valued assemblers do.
+    stabilized equal-order formulation. Identical to the assembler in
+    ``cavity.py``; the same class handles 2D and 3D.
     """
 
     def __post_init__(self, rho=1.0, mu=0.01, tau=0.1):
@@ -72,22 +68,24 @@ class NavierStokesAssembler(ElementAssembler):
 
 def component_dofs(n_points, n_dof, comp):
     """Global DOF indices of component ``comp`` under the node-major
-    ``[u, v, (w,) p]`` layout (``comp`` 0..dim-1 = velocity, last = pressure)."""
+    ``[u, v, w, p]`` layout (``comp`` 0..dim-1 = velocity, last = pressure)."""
     return torch.arange(n_points) * n_dof + comp
 
 
-def solve_cavity(re=100, n_grid=30, max_iter=20, tol=1e-4):
-    print(f"Solving 2D lid-driven cavity at Re={re} on a {n_grid}x{n_grid} grid...")
+def solve_cavity_3d(re=100, chara_length=0.05, max_iter=30, tol=1e-4):
+    setup_headless()
+    print(f"Solving 3D lid-driven cavity at Re={re}, chara_length={chara_length}...")
 
     # --- Mesh and physical parameters ---
-    mesh = Mesh.gen_rectangle(chara_length=1.0 / n_grid).double()
+    mesh = Mesh.gen_cube(chara_length=chara_length).double()
     points = mesh.points
     n_points = points.shape[0]
-    n_dof = 3  # (u, v, p) per node
+    n_dof = 4  # (u, v, w, p) per node
+    print(f"  Mesh: {n_points} nodes, {n_points * n_dof} DOFs")
 
     rho = 1.0
     mu = 1.0 / re
-    tau = 0.5 * (1.0 / n_grid)  # mesh-size-scaled stabilization parameter
+    tau = 0.5 * chara_length  # mesh-size-scaled stabilization parameter
 
     # --- Boundary conditions ---
     is_boundary = mesh.boundary_mask
@@ -96,7 +94,7 @@ def solve_cavity(re=100, n_grid=30, max_iter=20, tol=1e-4):
     bc_mask = torch.zeros(n_points * n_dof, dtype=torch.bool)
     bc_val = torch.zeros(n_points * n_dof, dtype=torch.float64)
 
-    for d in range(2):  # no-slip (u = v = 0) on every boundary node
+    for d in range(3):  # no-slip (u = v = w = 0) on every boundary node
         bc_mask[component_dofs(n_points, n_dof, d)] = is_boundary
     bc_val[component_dofs(n_points, n_dof, 0)[is_top]] = 1.0  # moving lid: u = 1 on top
     bc_mask[n_dof - 1] = True  # pin pressure at node 0 to fix the constant null space
@@ -109,7 +107,7 @@ def solve_cavity(re=100, n_grid=30, max_iter=20, tol=1e-4):
     u_full[bc_mask] = bc_val[bc_mask]
 
     for i in range(max_iter):
-        w_prev = u_full.reshape(-1, n_dof)[:, :2]  # previous-iterate velocity
+        w_prev = u_full.reshape(-1, n_dof)[:, :3]  # previous-iterate velocity (3D)
         K = assembler(points, point_data={"w_prev": w_prev})
         f = torch.zeros(n_points * n_dof, dtype=torch.float64)
 
@@ -125,17 +123,44 @@ def solve_cavity(re=100, n_grid=30, max_iter=20, tol=1e-4):
 
     # --- Post-processing ---
     sol = u_full.reshape(-1, n_dof)
-    speed = torch.norm(sol[:, :2], dim=1)
-    pressure = sol[:, 2]
+    velocity = sol[:, :3]
+    pressure = sol[:, 3]
+    speed = torch.norm(velocity, dim=1)
+    print(f"  Max speed: {speed.max().item():.4f}, "
+          f"pressure range: [{pressure.min().item():.4f}, {pressure.max().item():.4f}]")
 
-    mesh.plot(
-        {"speed": speed, "pressure": pressure},
-        save_path="cavity_results.png",
-        show_mesh=False,
-        cmap="jet",
-    )
-    print("Saved: cavity_results.png")
+    # Volumetric output: VTU for ParaView (full field) + a quick PyVista slice.
+    out_dir = os.path.dirname(os.path.abspath(__file__))
+    mesh.register_point_data("speed", speed)
+    mesh.register_point_data("pressure", pressure)
+    mesh.register_point_data("velocity", velocity)
+    vtu_path = os.path.join(out_dir, "cavity_3d.vtu")
+    mesh.save(vtu_path)
+    print(f"Saved: {vtu_path}")
+
+    try:
+        import pyvista as pv
+
+        grid = pv.read(vtu_path)
+        slice_z = grid.slice(normal="z", origin=(0.5, 0.5, 0.5))  # mid-depth x-y plane
+
+        p = pv.Plotter(shape=(1, 2), off_screen=True, window_size=(1600, 700))
+        p.subplot(0, 0)
+        p.add_mesh(slice_z, scalars="speed", cmap="jet", show_scalar_bar=True)
+        p.add_text("Speed (z=0.5 slice)", font_size=10, position="upper_edge")
+        p.view_xy()
+        p.subplot(0, 1)
+        p.add_mesh(slice_z, scalars="pressure", cmap="coolwarm", show_scalar_bar=True)
+        p.add_text("Pressure (z=0.5 slice)", font_size=10, position="upper_edge")
+        p.view_xy()
+
+        png_path = os.path.join(out_dir, "cavity_3d.png")
+        p.screenshot(png_path)
+        p.close()
+        print(f"Saved: {png_path}")
+    except Exception as ex:
+        print(f"Skip PyVista visualization: {type(ex).__name__}: {ex}")
 
 
 if __name__ == "__main__":
-    solve_cavity(re=100, n_grid=30)
+    solve_cavity_3d(re=100, chara_length=0.05, max_iter=30)

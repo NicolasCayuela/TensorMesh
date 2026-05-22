@@ -1,15 +1,14 @@
-import sys
 import os
-import torch
+import sys
+
 import numpy as np
-from tqdm import tqdm
+import torch
 
 # Add project root to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
-from tensormesh import Mesh, Condenser, ElementAssembler, NodeAssembler
-from tensormesh.visualization import draw_mesh_2d_stream
-import matplotlib.pyplot as plt
+from tensormesh import Mesh, Condenser, ElementAssembler
+
 
 class RayleighBenardAssembler(ElementAssembler):
     def __post_init__(self, rho=1.0, mu=0.01, kappa=0.01, g=9.81, beta=0.1, tau=0.1):
@@ -135,9 +134,7 @@ def solve_rayleigh_benard(ra=1e4, aspect_ratio=2, n_grid=20, max_iter=30):
         
         K_sparse = assembler(points, point_data={"w_prev": w_prev, "T_prev": T_prev})
         f = torch.zeros(n_points * 4, dtype=torch.float64)
-        
-        # Boussinesq term RHS if needed (here it's in the matrix for T)
-        
+
         K_cond, f_cond = condenser(K_sparse, f)
         u_new_cond = K_cond.solve(f_cond)
         u_new = condenser.recover(u_new_cond)
@@ -150,23 +147,15 @@ def solve_rayleigh_benard(ra=1e4, aspect_ratio=2, n_grid=20, max_iter=30):
             break
             
     # Visualization
-    print("Saving visualization...")
     sol = u_full.reshape(-1, 4)
     T = sol[:, 3]
     V = torch.norm(sol[:, :2], dim=1)
-    
-    elements = mesh.elements()
-    if isinstance(elements, torch.Tensor):
-        elements = {mesh.default_element_type: elements}
-        
-    from tensormesh.visualization.stream_plotter import draw_mesh_2d_static
-    draw_mesh_2d_static(
-        points,
-        elements,
+
+    mesh.plot(
         {"Temperature": T, "Velocity": V},
-        filename="rayleigh_benard.png",
+        save_path="rayleigh_benard.png",
         show_mesh=False,
-        cmap="inferno"
+        cmap="inferno",
     )
     print("Done! Results saved to rayleigh_benard.png")
 

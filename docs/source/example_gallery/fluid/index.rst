@@ -1,10 +1,10 @@
 Fluid Mechanics
 ===============
 
-Six worked Navier-Stokes examples in ``examples/fluid/``, from the
-2D lid-driven cavity benchmark to a Rayleigh-Bénard convection
-problem coupling momentum and energy. All six share the same
-underlying recipe — a custom ``NavierStokesAssembler`` (or its
+A family of worked Navier-Stokes examples in ``examples/fluid/``,
+from the lid-driven cavity benchmark (2D and 3D) to a Rayleigh-Bénard
+convection problem coupling momentum and energy. They all share the
+same underlying recipe — a custom ``NavierStokesAssembler`` (or its
 transient cousin) defined in the example file, SUPG/PSPG
 stabilization for equal-order P1-P1 elements, Picard linearization
 for steady solves, implicit Euler for transient ones — so once you
@@ -20,17 +20,12 @@ stabilizes.
 .. grid:: 1 2 3 3
    :gutter: 4
 
-   .. grid-item-card:: 2D Lid-Driven Cavity
+   .. grid-item-card:: Lid-Driven Cavity
       :link: cavity
       :link-type: doc
 
-      Steady NS at Re=100, SUPG/PSPG stabilization, Picard iteration.
-
-   .. grid-item-card:: 3D Lid-Driven Cavity
-      :link: cavity_3d
-      :link-type: doc
-
-      Same physics on a tetrahedral cube — the assembler is dimension-generic.
+      Steady NS at Re=100, SUPG/PSPG stabilization, Picard iteration —
+      in 2D and 3D with one dimension-generic assembler.
 
    .. grid-item-card:: Cylinder Flow (Vortex Shedding)
       :link: cylinder_flow
@@ -62,7 +57,6 @@ stabilizes.
    :maxdepth: 1
 
    cavity
-   cavity_3d
    cylinder_flow
    flow_obstacles
    rayleigh_benard

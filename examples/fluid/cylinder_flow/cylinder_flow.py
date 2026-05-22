@@ -12,7 +12,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.
 
 from tensormesh import Condenser, ElementAssembler, MeshGen, NodeAssembler
 from tensormesh.assemble import MassElementAssembler
-from tensormesh.visualization import draw_mesh_2d_static
 
 
 class NavierStokesTransientAssembler(ElementAssembler):
@@ -250,26 +249,18 @@ def solve_cylinder_flow(
             pressure_frames.append(pressure.detach().cpu())
             vorticity_frames.append(omega.detach().cpu())
 
-    elements = mesh.elements()
-    if isinstance(elements, torch.Tensor):
-        elements = {mesh.default_element_type: elements}
-
     os.makedirs("frames", exist_ok=True)
     for i, (vort, spd, pres) in enumerate(zip(vorticity_frames, speed_frames, pressure_frames)):
-        draw_mesh_2d_static(
-            points,
-            elements,
+        mesh.plot(
             {"vorticity": vort, "speed": spd, "pressure": pres},
-            filename=f"frames/frame_{i:04d}.png",
+            save_path=f"frames/frame_{i:04d}.png",
             show_mesh=False,
         )
     print(f"Saved {len(vorticity_frames)} frames to frames/")
 
-    draw_mesh_2d_static(
-        points,
-        elements,
+    mesh.plot(
         {"vorticity": vorticity_frames[-1], "speed": speed_frames[-1], "pressure": pressure_frames[-1]},
-        filename="cylinder_flow_final.png",
+        save_path="cylinder_flow_final.png",
         show_mesh=False,
     )
     print("Saved: cylinder_flow_final.png")

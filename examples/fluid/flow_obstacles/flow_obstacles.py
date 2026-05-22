@@ -1,18 +1,17 @@
-import sys
 import os
+import sys
+
 import torch
-import numpy as np
-from tqdm import tqdm
 
 # Add project root to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
-from tensormesh import Mesh, Condenser, ElementAssembler, NodeAssembler, MeshGen
-from tensormesh.visualization import draw_mesh_2d_static
-import matplotlib.pyplot as plt
+from tensormesh import Condenser, ElementAssembler, MeshGen
 
-# Reuse the NavierStokesAssembler logic from cavity.py but more robustly
+
 class NavierStokesAssembler(ElementAssembler):
+    """Steady Navier-Stokes with SUPG/PSPG stabilization (same weak form as cavity.py)."""
+
     def __post_init__(self, rho=1.0, mu=0.01, tau=0.1):
         self.rho = rho
         self.mu = mu
@@ -130,22 +129,15 @@ def solve_flow_obstacles(re=200, n_grid=25, max_iter=20):
             break
             
     # Visualization
-    print("Saving visualization...")
     u_res = u_full.reshape(-1, 3)
     speed = torch.norm(u_res[:, :2], dim=1)
     pressure = u_res[:, 2]
-    
-    elements = mesh.elements()
-    if isinstance(elements, torch.Tensor):
-        elements = {mesh.default_element_type: elements}
-        
-    draw_mesh_2d_static(
-        points,
-        elements,
+
+    mesh.plot(
         {"Speed": speed, "Pressure": pressure},
-        filename="flow_obstacles.png",
+        save_path="flow_obstacles.png",
         show_mesh=False,
-        cmap="jet"
+        cmap="jet",
     )
     print("Done! Results saved to flow_obstacles.png")
 

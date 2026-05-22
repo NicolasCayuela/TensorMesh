@@ -110,38 +110,37 @@ wake.
 Post-processing
 ---------------
 
-Two derived fields are computed at every saved frame:
+At every saved frame the script derives a **vorticity** field
+:math:`\omega = \partial_x v - \partial_y u` by :math:`L^2`
+projection: assemble a mass matrix
+:class:`~tensormesh.MassElementAssembler`, build the projection
+right-hand side :math:`\tilde\omega` from
+:math:`\partial_x v - \partial_y u` (itself assembled with a
+:class:`~tensormesh.NodeAssembler`), and solve
+:math:`M\,\omega = \tilde\omega`. This is the standard recipe for
+recovering a smooth nodal field from element-wise gradients on
+piecewise-linear FEM.
 
-* **Vorticity** :math:`\omega = \partial_x v - \partial_y u` —
-  computed by L² projection: assemble a mass matrix
-  :class:`~tensormesh.MassElementAssembler`, project
-  :math:`\partial_x v - \partial_y u` evaluated on quadrature
-  points back onto the nodal basis, solve
-  :math:`M \omega = \tilde\omega`. Standard postprocessing recipe
-  for piecewise-linear FEM.
-* **Drag and lift coefficients** on the cylinder surface — the
-  script integrates the surface traction
-  :math:`\mathbf{t} = (\sigma \cdot \mathbf{n})` over the cylinder
-  facets via a :class:`~tensormesh.FacetAssembler` instance.
-
-For a Strouhal number :math:`\mathrm{St} = f D / \bar{U}` of about
-0.30, the script's plotted lift coefficient should oscillate at
-roughly :math:`f \approx 3` Hz once the wake stabilizes
-(typically after :math:`t \gtrsim 5`).
+The von Kármán street is the qualitative signature to look for:
+once the wake destabilizes (typically after :math:`t \gtrsim 5`)
+vortices shed alternately from the top and bottom of the cylinder
+at a Strouhal number :math:`\mathrm{St} = f D / \bar{U} \approx 0.3`,
+visible directly in the vorticity animation.
 
 
 Output and rendering
 --------------------
 
-* **Frame sequence.** Every ``N`` steps the script writes a VTU
-  with the velocity, pressure, and vorticity fields. ParaView
-  opens the whole sequence as a time series.
+* **Frame sequence.** Every ``N`` steps the script renders a
+  three-panel PNG (vorticity, speed, pressure) into ``frames/``
+  via ``mesh.plot``.
 * **MP4 rendering.** The companion script
-  ``examples/fluid/cylinder_flow/render_video.py`` rasterizes the
-  VTU sequence into ``cylinder_flow.mp4`` via PyVista + ffmpeg.
-* **Final snapshot.** ``cylinder_flow_final.png`` is a three-panel
-  static figure (vorticity, speed, pressure) of the last step,
-  for inclusion in talks and reports.
+  ``examples/fluid/cylinder_flow/render_video.py`` stitches the
+  ``frames/*.png`` sequence into ``vortex_street.mp4`` with an
+  ``ffmpeg`` concat pass.
+* **Final snapshot.** ``cylinder_flow_final.png`` is the same
+  three-panel figure for the last step, for inclusion in talks and
+  reports.
 
 .. raw:: html
 
@@ -164,8 +163,8 @@ Running it
 .. code-block:: bash
 
    cd examples/fluid/cylinder_flow
-   python cylinder_flow.py            # writes vtu sequence + final.png
-   python render_video.py             # writes cylinder_flow.mp4
+   python cylinder_flow.py            # writes frames/*.png + cylinder_flow_final.png
+   python render_video.py             # stitches frames/ into vortex_street.mp4
 
 The transient run is the longest in the gallery — the default
 configuration is several thousand timesteps. Reduce ``n_steps`` or
