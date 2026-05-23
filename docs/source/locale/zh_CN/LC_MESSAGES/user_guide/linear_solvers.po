@@ -71,10 +71,10 @@ msgstr ""
 #: 2ffb7a7cccd34811af04b7247eada599
 msgid ""
 "TensorMesh also exposes the GPU extras at its own install layer (``pip "
-"install \"tensor-mesh[cupy]\"`` etc.) — see "
+"install \"tensormesh-fem[cupy]\"`` etc.) — see "
 ":doc:`/getting_started/installation`."
 msgstr ""
-"TensorMesh 也在自身的安装层暴露了这些 GPU 附加项（\\ ``pip install \"tensor-mesh[cupy]\"`` "
+"TensorMesh 也在自身的安装层暴露了这些 GPU 附加项（\\ ``pip install \"tensormesh-fem[cupy]\"`` "
 "等）——参见 :doc:`/getting_started/installation`\\ 。"
 
 #: ../../source/user_guide/linear_solvers.rst:40

@@ -82,7 +82,7 @@ msgid ""
 "usable on your machine."
 msgstr ""
 "两种形式都会安装所有必需的依赖，包括 `torch-sla <https://www.torchsla.com/>`_——这是为 TensorMesh "
-"求解器提供动力的可微稀疏线性代数库。基础的 ``pip install tensor-mesh`` 只会安装 **CPU** 稀疏栈（SciPy / "
+"求解器提供动力的可微稀疏线性代数库。基础的 ``pip install tensormesh-fem`` 只会安装 **CPU** 稀疏栈（SciPy / "
 "原生 PyTorch）；完整的 extras 矩阵（\\ ``[cupy]`` / ``[cudss]`` / ``[gpu]``\\ "
 "）以及如何验证你的机器上有哪些后端可用，请参阅下文的 `Sparse solvers and GPU acceleration`_\\ 。"
 
@@ -129,10 +129,10 @@ msgstr ""
 #: ../../source/getting_started/installation.rst:70
 #: 07298eb2f77449e99724283d551c992b
 msgid ""
-"The base ``tensor-mesh`` wheel only pulls the **CPU** stack (SciPy / native "
+"The base ``tensormesh-fem`` wheel only pulls the **CPU** stack (SciPy / native "
 "PyTorch). To enable a GPU backend, install one of the mirrored extras:"
 msgstr ""
-"基础的 ``tensor-mesh`` wheel 只会安装 **CPU** 栈（SciPy / 原生 PyTorch）。若要启用 GPU "
+"基础的 ``tensormesh-fem`` wheel 只会安装 **CPU** 栈（SciPy / 原生 PyTorch）。若要启用 GPU "
 "后端，请安装其中一个镜像的 extra："
 
 #: ../../source/getting_started/installation.rst:78
@@ -153,8 +153,8 @@ msgstr "适用场景"
 
 #: ../../source/getting_started/installation.rst:81
 #: 0c600881889b4c3ca5de55890197ddfb
-msgid "``pip install tensor-mesh``"
-msgstr "``pip install tensor-mesh``"
+msgid "``pip install tensormesh-fem``"
+msgstr "``pip install tensormesh-fem``"
 
 #: ../../source/getting_started/installation.rst:82
 #: 061028aafbe94ee697c5d06d39a1c60c
@@ -168,8 +168,8 @@ msgstr "默认；不进行 GPU 稀疏求解。"
 
 #: ../../source/getting_started/installation.rst:84
 #: d7c9c2b86c0240a382db0192ef96deaf
-msgid "``pip install \"tensor-mesh[cupy]\"``"
-msgstr "``pip install \"tensor-mesh[cupy]\"``"
+msgid "``pip install \"tensormesh-fem[cupy]\"``"
+msgstr "``pip install \"tensormesh-fem[cupy]\"``"
 
 #: ../../source/getting_started/installation.rst:85
 #: ec57c3895cfe46ecab29d6145e1b6af8
@@ -183,8 +183,8 @@ msgstr "迭代式 GPU 求解器（CG / GMRES / …）+ CuPy SuperLU。"
 
 #: ../../source/getting_started/installation.rst:87
 #: 190a24cce95b45a09a627fa3970a3dc0
-msgid "``pip install \"tensor-mesh[cudss]\"``"
-msgstr "``pip install \"tensor-mesh[cudss]\"``"
+msgid "``pip install \"tensormesh-fem[cudss]\"``"
+msgstr "``pip install \"tensormesh-fem[cudss]\"``"
 
 #: ../../source/getting_started/installation.rst:88
 #: c0c370852fd44e1989ff7a9aeedd0e99
@@ -198,8 +198,8 @@ msgstr "最快的 GPU 直接求解器（LU / Cholesky / LDLT）。"
 
 #: ../../source/getting_started/installation.rst:90
 #: f3e5ee896cd4431d880845b7095f7c5d
-msgid "``pip install \"tensor-mesh[gpu]\"``"
-msgstr "``pip install \"tensor-mesh[gpu]\"``"
+msgid "``pip install \"tensormesh-fem[gpu]\"``"
+msgstr "``pip install \"tensormesh-fem[gpu]\"``"
 
 #: ../../source/getting_started/installation.rst:91
 #: c58555bd71e04cc3967146060ce35a00
@@ -215,11 +215,11 @@ msgstr "便捷 extra——安装 ``torch-sla[all]``\\ 。"
 #: dba377e61c0c4cc29c62c2d335d246dc
 msgid ""
 "These mirror the upstream ``torch-sla`` extras (``[cupy]`` / ``[cudss]`` / "
-"``[all]``) — installing ``tensor-mesh[gpu]`` is exactly equivalent to ``pip "
-"install tensor-mesh torch-sla[all]``, just spelled in one step."
+"``[all]``) — installing ``tensormesh-fem[gpu]`` is exactly equivalent to ``pip "
+"install tensormesh-fem torch-sla[all]``, just spelled in one step."
 msgstr ""
 "这些 extra 镜像了上游 ``torch-sla`` 的 extra（\\ ``[cupy]`` / ``[cudss]`` / "
-"``[all]``\\ ）——安装 ``tensor-mesh[gpu]`` 与 ``pip install tensor-mesh torch-"
+"``[all]``\\ ）——安装 ``tensormesh-fem[gpu]`` 与 ``pip install tensormesh-fem torch-"
 "sla[all]`` 完全等价，只是将其写成了一步完成。"
 
 #: ../../source/getting_started/installation.rst:99
@@ -263,8 +263,8 @@ msgstr "用于示例 notebook 的 Plotly"
 
 #: ../../source/getting_started/installation.rst:131
 #: 88025dc49ef145c893df1eda9d98ace4
-msgid "``pip install \"tensor-mesh[example]\"``"
-msgstr "``pip install \"tensor-mesh[example]\"``"
+msgid "``pip install \"tensormesh-fem[example]\"``"
+msgstr "``pip install \"tensormesh-fem[example]\"``"
 
 #: ../../source/getting_started/installation.rst:132
 #: cc6c18ee464846a0a117fd003de28cc4
@@ -273,8 +273,8 @@ msgstr "测试套件（pytest、pytest-cov）"
 
 #: ../../source/getting_started/installation.rst:133
 #: 07a252bf97754fc3bfaa58a1d66ce045
-msgid "``pip install \"tensor-mesh[test]\"``"
-msgstr "``pip install \"tensor-mesh[test]\"``"
+msgid "``pip install \"tensormesh-fem[test]\"``"
+msgstr "``pip install \"tensormesh-fem[test]\"``"
 
 #: ../../source/getting_started/installation.rst:135
 #: 5aa1e465adb54a94b6ce70bb7f84d3a4
@@ -317,7 +317,7 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid ""
-#~ "The base ``tensor-mesh`` wheel only pulls the **CPU** stack (SciPy / Eigen /"
+#~ "The base ``tensormesh-fem`` wheel only pulls the **CPU** stack (SciPy / Eigen /"
 #~ " native PyTorch). To enable a GPU backend, install one of the mirrored "
 #~ "extras:"
 #~ msgstr ""

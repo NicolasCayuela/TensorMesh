@@ -18,8 +18,8 @@ The recommended way to install TensorMesh is from PyPI:
 
 .. code-block:: bash
 
-    pip install tensor-mesh             # CPU only
-    pip install "tensor-mesh[gpu]"      # + CUDA sparse solvers (CuPy + cuDSS)
+    pip install tensormesh-fem             # CPU only
+    pip install "tensormesh-fem[gpu]"      # + CUDA sparse solvers (CuPy + cuDSS)
 
 Use the second form if you have an NVIDIA GPU and want the CUDA sparse-solver
 backends — the ``[gpu]`` extra pulls in both CuPy and cuDSS through
@@ -30,7 +30,7 @@ breakdown if you only want one of CuPy or cuDSS.
 Either form pulls in all required dependencies, including
 `torch-sla <https://www.torchsla.com/>`_, the differentiable sparse linear
 algebra library that powers TensorMesh's solvers. The base
-``pip install tensor-mesh`` installs only the **CPU** sparse stack
+``pip install tensormesh-fem`` installs only the **CPU** sparse stack
 (SciPy / native PyTorch); see `Sparse solvers and GPU acceleration`_
 below for the full extras matrix (``[cupy]`` / ``[cudss]`` / ``[gpu]``) and
 how to verify which backends are usable on your machine.
@@ -67,7 +67,7 @@ import-time** dependency — :mod:`tensormesh.sparse` will not import without it
 current and future solver work lands in ``torch-sla`` first; we recommend
 keeping it up to date.
 
-The base ``tensor-mesh`` wheel only pulls the **CPU** stack
+The base ``tensormesh-fem`` wheel only pulls the **CPU** stack
 (SciPy / native PyTorch). To enable a GPU backend, install one of the
 mirrored extras:
 
@@ -78,22 +78,22 @@ mirrored extras:
    * - Install command
      - Adds backend
      - When to pick this
-   * - ``pip install tensor-mesh``
+   * - ``pip install tensormesh-fem``
      - CPU only
      - Default; no GPU sparse solves.
-   * - ``pip install "tensor-mesh[cupy]"``
+   * - ``pip install "tensormesh-fem[cupy]"``
      - CuPy (CUDA)
      - Iterative GPU solvers (CG / GMRES / …) + CuPy SuperLU.
-   * - ``pip install "tensor-mesh[cudss]"``
+   * - ``pip install "tensormesh-fem[cudss]"``
      - cuDSS (CUDA)
      - Fastest GPU direct solver (LU / Cholesky / LDLT).
-   * - ``pip install "tensor-mesh[gpu]"``
+   * - ``pip install "tensormesh-fem[gpu]"``
      - Both
      - Convenience extra — installs ``torch-sla[all]``.
 
 These mirror the upstream ``torch-sla`` extras (``[cupy]`` / ``[cudss]`` /
-``[all]``) — installing ``tensor-mesh[gpu]`` is exactly equivalent to
-``pip install tensor-mesh torch-sla[all]``, just spelled in one step.
+``[all]``) — installing ``tensormesh-fem[gpu]`` is exactly equivalent to
+``pip install tensormesh-fem torch-sla[all]``, just spelled in one step.
 
 Inspect what's installed
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -128,9 +128,9 @@ A couple of smaller extras for optional functionality:
    * - Extra
      - Install command
    * - Plotly for example notebooks
-     - ``pip install "tensor-mesh[example]"``
+     - ``pip install "tensormesh-fem[example]"``
    * - Test suite (pytest, pytest-cov)
-     - ``pip install "tensor-mesh[test]"``
+     - ``pip install "tensormesh-fem[test]"``
 
 Two further packages are commonly useful but are *not* declared as extras —
 install them directly when needed:

@@ -48,8 +48,8 @@ conditions, and time integration.
 **Requirements:** Python ≥ 3.10, PyTorch ≥ 2.0.
 
 ```bash
-pip install tensor-mesh             # CPU only
-pip install "tensor-mesh[gpu]"      # + CUDA sparse solvers (CuPy + cuDSS)
+pip install tensormesh-fem             # CPU only
+pip install "tensormesh-fem[gpu]"      # + CUDA sparse solvers (CuPy + cuDSS)
 ```
 
 The base install ships only the CPU sparse stack (SciPy / native PyTorch via
@@ -57,8 +57,8 @@ The base install ships only the CPU sparse stack (SciPy / native PyTorch via
 CUDA backends; if you only want one, use `[cupy]` or `[cudss]` instead:
 
 ```bash
-pip install "tensor-mesh[cupy]"     # CuPy CUDA backend (iterative + SuperLU)
-pip install "tensor-mesh[cudss]"    # cuDSS CUDA backend (fastest GPU direct)
+pip install "tensormesh-fem[cupy]"     # CuPy CUDA backend (iterative + SuperLU)
+pip install "tensormesh-fem[cudss]"    # cuDSS CUDA backend (fastest GPU direct)
 ```
 
 The quotes are needed because `[...]` is a shell glob character.

@@ -285,7 +285,7 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid ""
-#~ "On a CPU-only macOS / Linux laptop with a fresh ``pip install tensor-mesh``,"
+#~ "On a CPU-only macOS / Linux laptop with a fresh ``pip install tensormesh-fem``,"
 #~ " you should see something close to:"
 #~ msgstr ""
 

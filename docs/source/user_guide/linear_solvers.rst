@@ -33,7 +33,7 @@ on which CUDA solver you want:
    pip install "torch-sla[all]"       # both GPU backends + dev tooling
 
 TensorMesh also exposes the GPU extras at its own install layer
-(``pip install "tensor-mesh[cupy]"`` etc.) — see
+(``pip install "tensormesh-fem[cupy]"`` etc.) — see
 :doc:`/getting_started/installation`.
 
 Inspect available backends
