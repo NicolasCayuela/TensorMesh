@@ -53,13 +53,15 @@ msgid ""
 msgstr "报告你的机器上可用的 ``torch-sla`` 稀疏求解器后端。"
 
 #: ../../source/getting_started/verify_install.rst:13
-#: fe3b6ea437554258819e1547dbbd1bfa
+#: 58bb1650c0b2405c9f6bf48aaae00c3f
 msgid ""
-"Save the snippet below as ``verify_install.py`` and run ``python "
-"verify_install.py``. Total runtime is a couple of seconds."
+"The checker ships with the package, so after installing just run ``python"
+" -m tensormesh.verify_install`` — there is no file to save. Total runtime"
+" is a couple of seconds; the full source is reproduced below for "
+"reference."
 msgstr ""
-"将下面的代码片段保存为 ``verify_install.py``\\ ，然后运行 ``python verify_install.py``\\ "
-"。总运行时间为几秒钟。"
+"该检查器随包一起分发，因此安装后只需运行\\ ``python -m tensormesh.verify_install``\\ "
+"即可——无需保存任何文件。总运行时间为几秒钟；完整源码在下方列出，供参考。"
 
 #: ../../source/getting_started/verify_install.rst:18
 #: 957f93523db94a1a95dfbec16a1518bb

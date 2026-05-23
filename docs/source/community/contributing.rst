@@ -42,7 +42,7 @@ which sparse-solver backends are wired up:
 
 .. code-block:: bash
 
-   python verify_install.py
+   python -m tensormesh.verify_install
 
 If both the CPU and the CUDA solve print sensible errors against the
 analytical reference, you're good.

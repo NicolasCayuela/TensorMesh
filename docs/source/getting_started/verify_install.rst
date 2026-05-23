@@ -10,8 +10,10 @@ your PyTorch build are wired up correctly. The script:
 * reports the ``torch-sla`` sparse-solver backends available on your
   machine.
 
-Save the snippet below as ``verify_install.py`` and run
-``python verify_install.py``. Total runtime is a couple of seconds.
+The checker ships with the package, so after installing just run
+``python -m tensormesh.verify_install`` — there is no file to save. Total
+runtime is a couple of seconds; the full source is reproduced below for
+reference.
 
 
 The script

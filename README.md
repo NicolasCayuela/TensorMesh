@@ -149,31 +149,39 @@ A small selection from the
 
 <table>
   <tr>
-    <td align="center" width="33%">
+    <td align="center" width="25%">
       <img src="assets/poisson_3d_half_from_cut.png" alt="3D Poisson" width="100%"/><br/>
       <sub><b>3D Poisson</b> — tetrahedral mesh, cut view of the scalar field.</sub>
     </td>
-    <td align="center" width="33%">
+    <td align="center" width="25%">
       <img src="assets/Allen-Cahn.gif" alt="Allen–Cahn phase field" width="100%"/><br/>
       <sub><b>Allen–Cahn phase field</b> — nonlinear time evolution with Newton iteration per step.</sub>
     </td>
-    <td align="center" width="33%">
+    <td align="center" width="25%">
       <img src="assets/wave.gif" alt="2D wave equation" width="100%"/><br/>
       <sub><b>Wave equation</b> — explicit central-difference time integration.</sub>
     </td>
-  </tr>
-  <tr>
-    <td align="center">
-      <img src="assets/cavity_results.png" alt="Lid-driven cavity flow" width="100%"/><br/>
-      <sub><b>Lid-driven cavity</b> — incompressible Navier–Stokes; velocity field and streamlines.</sub>
-    </td>
-    <td align="center">
+    <td align="center" width="25%">
       <img src="assets/hyperelastic_rubber.png" alt="Hyperelastic rubber" width="100%"/><br/>
       <sub><b>Hyperelastic rubber</b> — large-deformation solid mechanics with a Newton solver.</sub>
     </td>
-    <td align="center">
+  </tr>
+  <tr>
+    <td align="center" width="25%">
+      <img src="assets/cavity_results.png" alt="Lid-driven cavity flow" width="100%"/><br/>
+      <sub><b>Lid-driven cavity</b> — incompressible Navier–Stokes; velocity field and streamlines.</sub>
+    </td>
+    <td align="center" width="25%">
+      <img src="assets/magnetostatic_field.png" alt="Magnetostatic field" width="100%"/><br/>
+      <sub><b>Magnetostatics</b> — 3D magnetic field around a current-carrying wire (stabilized nodal curl-curl).</sub>
+    </td>
+    <td align="center" width="25%">
       <img src="assets/tensormesh_optimization.gif" alt="Topology optimization" width="100%"/><br/>
       <sub><b>Topology optimization</b> — compliance minimization via the Optimality Criteria method.</sub>
+    </td>
+    <td align="center" width="25%">
+      <img src="assets/poisson_galerkin_loss.png" alt="Physics-informed Galerkin training" width="100%"/><br/>
+      <sub><b>Physics-informed learning</b> — a network trained to minimize the assembled Galerkin residual.</sub>
     </td>
   </tr>
 </table>
@@ -184,9 +192,12 @@ A small selection from the
 | **Poisson** | [`examples/poisson/`](examples/poisson) | 2D / 3D Poisson, batched RHS, h-adaptivity |
 | **Diffusion** | [`examples/diffusion/`](examples/diffusion) | Heat equation, Allen-Cahn phase field |
 | **Wave** | [`examples/wave/`](examples/wave) | Wave equation with central-difference scheme |
-| **Dataset** | [`examples/dataset/`](examples/dataset) | Batch dataset generation for ML (heat, wave, Poisson) |
-| **Fluid** | [`examples/fluid/`](examples/fluid) | Lid-driven cavity, cylinder flow, Rayleigh-Bénard, Taylor-Green |
 | **Solid** | [`examples/solid/`](examples/solid) | Cantilever beam, hyperelasticity, contact, plasticity |
+| **Fluid** | [`examples/fluid/`](examples/fluid) | Lid-driven cavity, cylinder flow, flow past obstacles, Rayleigh-Bénard, Taylor-Green |
+| **Magnetostatics** | [`examples/maxwell/`](examples/maxwell) | 3D Maxwell: magnetic field around a current-carrying wire via a stabilized nodal curl-curl formulation |
+| **Inverse design** | [`examples/inverse_design/`](examples/inverse_design) | Coefficient-field identification and density-based topology optimization, all via autograd |
+| **Physics-informed** | [`examples/physics_informed/`](examples/physics_informed) | Train a neural network to minimize the assembled Galerkin residual |
+| **Dataset** | [`examples/dataset/`](examples/dataset) | Batch dataset generation for ML (heat, wave, Poisson) |
 | **Distributed** | [`examples/distributed/`](examples/distributed) | Graph coloring, mesh partitioning, multi-GPU assembly |
 
 ## Feature comparison
@@ -248,7 +259,7 @@ Key entry points:
 - [Discord](https://discord.gg/EC9kbHSnrx) — real-time chat, help channels, and showcase.
 - [GitHub Discussions](https://github.com/camlab-ethz/TensorMesh/discussions) — announcements, Q&A, ideas & RFCs.
 - [GitHub Issues](https://github.com/camlab-ethz/TensorMesh/issues) — bug reports and feature requests.
-- Email: [tensormesh.dev@gmail.com](mailto:tensormesh.dev@gmail.com) — collaborations and partnerships.
+- Email to Shizheng Wen at [shizheng.wen@sam.math.ethz.ch](mailto:shizheng.wen@sam.math.ethz.ch) — collaborations and partnerships.
 
 ## Contributing
 
