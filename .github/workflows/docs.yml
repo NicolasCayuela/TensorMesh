@@ -39,7 +39,11 @@ jobs:
       - name: Build documentation
         run: |
           cd docs
-          make html
+          # Build BOTH languages: English at _build/html/, Chinese at
+          # _build/html/zh/. The deploy below uses force_orphan, which
+          # replaces the whole gh-pages branch, so EN-only here would wipe
+          # the published /zh/ subtree (404). Keep this as html-all.
+          make html-all
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
