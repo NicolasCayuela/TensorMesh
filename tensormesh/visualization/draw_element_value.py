@@ -186,15 +186,22 @@ def update_element_value_2d_tri(
                         values:Union[torch.Tensor,np.ndarray],
                         alpha:Optional[Union[float,torch.Tensor,np.ndarray]]=None,
                         )->PolyCollection:
-    """
-    Parameters:
-    -----------
-    img: PolyCollection
-    values: torch.Tensor or np.ndarray
-        [n_elements]
-    alpha: float or torch.Tensor or np.ndarray
-        [n_elements]
-        should be greater or equal 0
+    """Update face colors of a triangle ``PolyCollection``.
+
+    Parameters
+    ----------
+    img : PolyCollection
+        Collection returned by a draw helper.
+    values : torch.Tensor or np.ndarray
+        Per-element values, shape ``(n_elements,)``.
+    alpha : float or torch.Tensor or np.ndarray, optional
+        Per-element opacity, shape ``(n_elements,)``; must be
+        non-negative when provided as an array.
+
+    Returns
+    -------
+    PolyCollection
+        The same collection with updated array data.
     """
     # assertion
     assert dim(values) == 1

@@ -105,17 +105,15 @@ def deviatoric_stress(stress:torch.Tensor)->torch.Tensor:
     return stress - divide(1. , dim * stress.trace().repeat(dim).diag())
 
 def deviatoric_stress_norm(stress:torch.Tensor)->torch.Tensor:
-    r"""
+    r"""Euclidean norm of the deviatoric stress tensor.
 
     .. math::
 
         \|s\| = \sqrt{\frac{3}{2} s:s}
-    where:
 
-    - :math:`s \in \mathbb{R}^{d \times d}` is the deviatoric stress tensor
-    - :math:`\|s\| \in \mathbb{R}` is the norm of the deviatoric stress tensor 
-    - :math:`:` denotes the double dot product :math:`\mathbb{R}^{d \times d} \times \mathbb{R}^{d \times d} \rightarrow \mathbb{R}`
-    
+    where :math:`s` is the deviatoric stress tensor, :math:`\|s\|` is its
+    norm, and ``:`` denotes the double-dot product.
+
     Parameters
     ----------
     stress: torch.Tensor

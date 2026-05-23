@@ -102,16 +102,12 @@ class OCOptimizer:
     
     @torch.no_grad()
     def step(self, dc: Optional[torch.Tensor] = None, dv: Optional[torch.Tensor] = None):
-        """
-        Perform OC update step.
-        
-        Args:
-            dc: Compliance sensitivity (dC/dρ). If None, uses param.grad.
-                Note: dc should be negative for compliance minimization.
-            dv: Volume sensitivity (dV/dρ). If None, uses uniform 1/n_elem.
-        
-        Returns:
-            dict: Step info including 'lambda' and 'volume'
+        """Perform one OC update step.
+
+        If ``dc`` is omitted, uses each parameter's gradient (negative for
+        compliance minimization). If ``dv`` is omitted, uses a uniform
+        volume sensitivity. Returns a dict with keys ``lambda`` and
+        ``volume``.
         """
         self.state['step'] += 1
         

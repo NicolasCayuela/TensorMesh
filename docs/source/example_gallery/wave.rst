@@ -109,7 +109,7 @@ A few practical notes:
   visualization.
 
 For a higher-order time integrator (Newmark, Runge-Kutta) drop in
-:class:`~tensormesh.ode.builtin.ExplicitRungeKutta` from
+:class:`~tensormesh.ode.ExplicitRungeKutta` from
 :mod:`tensormesh.ode` — see :doc:`../user_guide/time_integration`.
 
 .. raw:: html

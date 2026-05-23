@@ -196,8 +196,11 @@ def draw_point_value_2d(points:Union[torch.Tensor,np.ndarray],
                         cmap:str              = 'jet',
                         use_scatter:bool      = False,
                         ax:Optional[plt.Axes] = None):
-    """for first order triangle element draw using the tri_gouraud
-    otherwise, draw with the 2d interpolation
+    """Draw nodal values on a 2D mesh.
+
+    For first-order triangles uses Gouraud shading; otherwise uses 2D
+    interpolation.
+
     Parameters
     ----------
     points: Union[torch.Tensor,np.ndarray]
