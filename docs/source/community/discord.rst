@@ -23,7 +23,7 @@ Join the server
      </iframe>
      <div style="flex: 1; min-width: 240px;">
        <p><strong>Invite link:</strong>
-       <a href="https://discord.gg/qgZhyVh2">https://discord.gg/qgZhyVh2</a></p>
+       <a href="https://discord.gg/EC9kbHSnrx">https://discord.gg/EC9kbHSnrx</a></p>
        <p>The widget on the left shows who is online right now and lets you
        join in one click. The invite link is permanent.</p>
      </div>

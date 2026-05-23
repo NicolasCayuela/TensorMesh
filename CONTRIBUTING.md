@@ -12,7 +12,7 @@ A 30-second summary if you're in a hurry:
 
 1. **Got a question?** → ask on
    [Discussions Q&A](https://github.com/camlab-ethz/TensorMesh/discussions/categories/q-a)
-   or [Discord](https://discord.gg/qgZhyVh2).
+   or [Discord](https://discord.gg/EC9kbHSnrx).
 2. **Found a bug?** → file a
    [bug report](https://github.com/camlab-ethz/TensorMesh/issues/new/choose).
 3. **Have an idea?** → float it on

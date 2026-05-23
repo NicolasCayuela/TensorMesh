@@ -245,7 +245,7 @@ Key entry points:
 
 ## Community
 
-- [Discord](https://discord.gg/qgZhyVh2) — real-time chat, help channels, and showcase.
+- [Discord](https://discord.gg/EC9kbHSnrx) — real-time chat, help channels, and showcase.
 - [GitHub Discussions](https://github.com/camlab-ethz/TensorMesh/discussions) — announcements, Q&A, ideas & RFCs.
 - [GitHub Issues](https://github.com/camlab-ethz/TensorMesh/issues) — bug reports and feature requests.
 - Email: [tensormesh.dev@gmail.com](mailto:tensormesh.dev@gmail.com) — collaborations and partnerships.
