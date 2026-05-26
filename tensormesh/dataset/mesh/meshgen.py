@@ -1,32 +1,39 @@
-import importlib.util
+import importlib
 import os
-import sys
 from warnings import warn
 from ...mesh import Mesh
 from ...element import element_type2dimension, element_type2order
 
 
-def _lazy_import(name):
-    """Defer loading a native module until first attribute access.
+class _LazyImport:
+    """Defer ``import name`` until the module is first used.
+
+    Using ``importlib.util.LazyLoader`` to register a stub in
+    ``sys.modules`` is fragile: on some Python/gmsh combinations
+    (e.g. Python 3.12 + gmsh 4.15) attribute access on the stub raises
+    ``'_LazyModule' object has no attribute ...``.  Worse, the stub
+    shadows the real module, so a plain ``import gmsh`` elsewhere picks
+    up the broken stub too.  This proxy instead does a normal ``import``
+    on first attribute access and never touches ``sys.modules``.
     """
-    spec = importlib.util.find_spec(name)
-    if spec is None:
-        class _Missing:
-            def __getattr__(self, attr):
+
+    def __init__(self, name):
+        self._name = name
+        self._module = None
+
+    def __getattr__(self, attr):
+        if self._module is None:
+            try:
+                self._module = importlib.import_module(self._name)
+            except ImportError as exc:
                 raise ImportError(
-                    f"{name!r} is required for this functionality. "
-                    f"Install it with: pip install {name}"
-                )
-        return _Missing()
-    loader = importlib.util.LazyLoader(spec.loader)
-    spec.loader = loader
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[name] = module
-    loader.exec_module(module)
-    return module
+                    f"{self._name!r} is required for this functionality. "
+                    f"Install it with: pip install {self._name}"
+                ) from exc
+        return getattr(self._module, attr)
 
 
-gmsh = _lazy_import("gmsh")
+gmsh = _LazyImport("gmsh")
 
 
 abbr2element_type = {
