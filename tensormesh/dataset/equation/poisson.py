@@ -26,17 +26,52 @@ class PoissonMultiFrequency:
         r: float, optional
             the coefficient of the poisson equation, default is :math:`0.5`
     """
-    def __init__(self, a=None, K=2, r= -0.5 ):
-
+    def __init__(self, a=None, K=2, r=-0.5):
         if a is None:
             assert K is not None, "K should be specified if a is None"
-            a = torch.zeros((K, K)).uniform_(-1, 1)
+            a = self._sample_coeff(K)
         else:
             K = a.shape[-1]
             assert a.shape[-2:] == (K, K), f"the shape of a should be (N, {K}, {K}) or ({K}, {K}), but got {a.shape}"
         self.K = K
         self.a = a
         self.r = r
+
+    @staticmethod
+    def _sample_coeff(K: int) -> torch.Tensor:
+        """Sample the (K, K) coefficient matrix in a distributed-safe way.
+
+        When a process group is active, only rank 0 samples and the
+        result is broadcast to every other rank. Without this every
+        rank sees a different ``a``, producing different source terms
+        and breaking any distributed solve that uses this dataset --
+        the source term must be identical across ranks for the
+        condensed system to be globally consistent. Single-process use
+        is unchanged.
+        """
+        try:
+            import torch.distributed as dist
+        except ImportError:
+            dist = None  # type: ignore[assignment]
+
+        if dist is not None and dist.is_available() and dist.is_initialized():
+            world = dist.get_world_size()
+            if world > 1:
+                # Sample once on rank 0, broadcast bytes-identical to others.
+                rank = dist.get_rank()
+                backend = dist.get_backend()
+                # NCCL broadcasts must be on CUDA; Gloo prefers CPU.
+                bcast_device = (
+                    torch.device("cuda", torch.cuda.current_device())
+                    if backend == "nccl" else torch.device("cpu")
+                )
+                if rank == 0:
+                    a = torch.empty((K, K), device=bcast_device).uniform_(-1, 1)
+                else:
+                    a = torch.empty((K, K), device=bcast_device)
+                dist.broadcast(a, src=0)
+                return a.cpu()
+        return torch.empty((K, K)).uniform_(-1, 1)
 
     def source_term(self, points, domain="rectangle"):
         r"""Generate the poisson source function at each point in the domain
