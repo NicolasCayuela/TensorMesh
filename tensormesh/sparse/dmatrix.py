@@ -1,13 +1,29 @@
 """Distributed FEM sparse matrix.
 
-:class:`DSparseMatrix` wraps :class:`torch_sla.DSparseTensor` with the
-same FEM-flavoured surface as the single-device :class:`SparseMatrix`
-(layout signature, type-preserving arithmetic, scipy interop bridge via
-:meth:`to_single`). Unlike :class:`SparseMatrix`, this uses
-**composition** over the torch-sla primitive rather than inheritance --
-the boundary between the FEM layer and the distributed sparse algebra
-layer stays explicit and the brittleness of subclassing a third-party
-distributed class is avoided.
+:class:`DSparseMatrix` is a subclass of
+:class:`torch_sla.distributed.DSparseTensor` that adds the FEM-flavoured
+surface (layout signature with broadcast UUID, type-preserving
+arithmetic, ``to_single()`` allgather bridge).
+
+Subclass rather than composition
+--------------------------------
+
+The earlier draft of this class used composition (``self._t:
+DSparseTensor``) for cleaner separation between the FEM layer and the
+distributed sparse algebra layer. That design failed the Liskov
+substitution test: torch-sla's free functions (``torch_sla.solve``,
+``torch_sla.io.save``, ``DSparseTensor.__add__``) gate on
+``isinstance(x, DSparseTensor)`` to dispatch into the distributed
+path; a composition-based ``DSparseMatrix`` silently misses the gate
+and routes to the single-device or duck-typed fallback. Subclassing
+makes ``isinstance(D, DSparseTensor)`` true and every torch-sla API
+accepts ``DSparseMatrix`` directly.
+
+The cost is the same boilerplate ``_wrap`` pattern as
+:class:`SparseMatrix`: arithmetic and device-conversion methods inherit
+from the parent but return parent-typed ``DSparseTensor`` instances, so
+each one is overridden to re-wrap into ``DSparseMatrix`` and preserve
+the FEM identity (partition UUID + mixin signature).
 
 Partition-broadcasted UUID
 --------------------------
@@ -22,19 +38,17 @@ seed) and ranks would silently share caches. To prevent that, every
 0 with :func:`uuid.uuid4` and broadcast through the active process
 group at construction time. The UUID is included in
 :attr:`layout_signature`, so two ``DSparseMatrix`` instances with the
-same partition (e.g. ``A + B`` of matrices built against the same
-partition) share signatures, while two independently-partitioned matrices
-do not -- even if local layouts coincidentally match.
+same partition share signatures while two independently-partitioned
+matrices do not -- even if local layouts coincidentally match.
 
-Arithmetic that derives from an existing ``DSparseMatrix``
-(:meth:`__add__`, :meth:`__sub__`, etc.) propagates the parent's UUID
-instead of generating a fresh one: the resulting matrix shares the
-same partition and therefore the same caches.
+Arithmetic / device methods propagate the parent's UUID (the result
+lives on the same partition); fresh constructions (``partition``,
+``from_sparse_local``) draw a new UUID.
 """
 from __future__ import annotations
 
 import uuid
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple
 
 import torch
 
@@ -81,25 +95,27 @@ def _generate_partition_uuid() -> int:
     return uuid.uuid4().int & 0x7FFFFFFFFFFFFFFF
 
 
-class DSparseMatrix(_FEMSparsityMixin):
+class DSparseMatrix(_FEMSparsityMixin, DSparseTensor):
     """Distributed FEM sparse matrix.
 
-    Composition over :class:`torch_sla.distributed.DSparseTensor` --
-    delegates primitives (shape, device, ``@``, ``solve``) and adds the
-    FEM-flavoured surface (layout signature with broadcast UUID,
-    type-preserving arithmetic, ``to_single()`` allgather bridge).
+    Subclass of :class:`torch_sla.distributed.DSparseTensor` so
+    ``isinstance(D, DSparseTensor)`` holds and torch-sla's free
+    functions (solve / io / arithmetic dispatch) accept it.
+
+    Constructed by wrapping an existing :class:`DSparseTensor`
+    (typically returned by :meth:`DSparseTensor.partition` or
+    :func:`~tensormesh.distributed.distributed_element_assemble`).
 
     Parameters
     ----------
-    dsparse_tensor : torch_sla.distributed.DSparseTensor
-        The underlying distributed sparse tensor (carries the
-        :class:`~torch_sla.partition.Partition` and the local
-        :class:`~torch_sla.SparseTensor` shard).
-    partition_uuid : int, optional
-        63-bit UUID identifying the partition build. Pass this when
-        deriving a new ``DSparseMatrix`` from an existing one (so the
-        cache caches share); leave as ``None`` to freshly generate +
-        broadcast (default).
+    dsparse_tensor
+        The underlying distributed sparse tensor. ``DSparseMatrix``
+        copies its state and adds the FEM identity layer on top.
+    partition_uuid
+        63-bit UUID identifying the partition build. Pass when
+        deriving a new ``DSparseMatrix`` from an existing one (so
+        caches are shared); leave as ``None`` to freshly generate +
+        broadcast.
     """
 
     def __init__(
@@ -107,49 +123,38 @@ class DSparseMatrix(_FEMSparsityMixin):
         dsparse_tensor: "DSparseTensor",
         partition_uuid: Optional[int] = None,
     ):
-        self._t = dsparse_tensor
+        # DSparseTensor.__init__ raises TypeError to discourage direct
+        # instantiation. We bypass it because we are not constructing
+        # from scratch -- we are wrapping an already-built instance.
+        # ``__dict__.update`` is a shallow copy of every backing
+        # attribute (``_local_tensor``, ``_spec``, halo buffers, etc.),
+        # which is exactly what subclassing-by-promotion needs.
+        self.__dict__.update(dsparse_tensor.__dict__)
         self._partition_uuid = (
             partition_uuid if partition_uuid is not None
             else _generate_partition_uuid()
         )
 
-    # ==================== Delegation to DSparseTensor ====================
-
-    @property
-    def shape(self) -> Tuple[int, int]:
-        return self._t.shape
-
-    @property
-    def dtype(self):
-        return self._t.dtype
-
-    @property
-    def device(self):
-        return self._t.device
-
-    @property
-    def values(self) -> torch.Tensor:
-        """Local owned-row values (the rank's slice of the global value array)."""
-        return self._t._local_tensor.values
-
-    @property
-    def row_indices(self) -> torch.Tensor:
-        """Local row indices (already in local coordinates)."""
-        return self._t._local_tensor.row_indices
-
-    @property
-    def col_indices(self) -> torch.Tensor:
-        """Local column indices (in local coordinates; halo columns
-        point to halo positions in ``local_to_global``)."""
-        return self._t._local_tensor.col_indices
-
-    @property
-    def partition(self):
-        return self._t._spec.placement.partition
+    # ==================== Identity ====================
 
     @property
     def partition_uuid(self) -> int:
         return self._partition_uuid
+
+    @property
+    def partition(self):
+        """The :class:`~torch_sla.partition.Partition` from the spec."""
+        return self._spec.placement.partition
+
+    @property
+    def row_indices(self) -> torch.Tensor:
+        """Local row indices (in local coordinates)."""
+        return self._local_tensor.row_indices
+
+    @property
+    def col_indices(self) -> torch.Tensor:
+        """Local column indices (in local coordinates)."""
+        return self._local_tensor.col_indices
 
     # ==================== Layout signature (overrides mixin) ====================
 
@@ -158,7 +163,7 @@ class DSparseMatrix(_FEMSparsityMixin):
         """Sequence-identity signature scoped to the partition build.
 
         Combines the mixin's local sequence identity with the
-        partition UUID so that two matrices on the same partition share
+        partition UUID so two matrices on the same partition share
         signatures (and therefore caches) while two matrices on
         independently-built partitions do not, even if local layouts
         coincidentally match.
@@ -166,62 +171,63 @@ class DSparseMatrix(_FEMSparsityMixin):
         base = super().layout_signature   # uses self.row_indices / col_indices
         return base + (self._partition_uuid,)
 
-    # ==================== matvec / solve ====================
-
-    def __matmul__(self, x):
-        """``D @ x``: returns a DTensor or owned-slice tensor depending
-        on ``x``'s placement, exactly like the underlying DSparseTensor."""
-        return self._t @ x
-
-    def solve(self, b, **kw):
-        """Distributed solve. Delegates to ``torch_sla.solve``; the
-        SolverConfig context applies as usual."""
-        from torch_sla import solve as _solve
-        return _solve(self._t, b, **kw)
-
-    # ==================== Type-preserving arithmetic ====================
+    # ==================== Type-preserving wrappers ====================
 
     def _wrap(self, result):
-        """Wrap a DSparseTensor result back into DSparseMatrix while
-        preserving the partition UUID (the result lives on the same
-        partition as ``self``, so it should share caches)."""
-        if isinstance(result, DSparseTensor):
+        """Re-wrap a DSparseTensor result back into a DSparseMatrix on
+        the same partition.
+
+        Three cases to handle:
+
+        1. Non-DSparseTensor (e.g. DTensor from matvec) → pass through.
+        2. Plain DSparseTensor → wrap into DSparseMatrix with our UUID.
+        3. DSparseMatrix that lacks ``_partition_uuid``. This happens
+           because ``DSparseTensor._wrap_local`` uses
+           ``type(self).__new__(type(self))`` to build the result --
+           that picks up our subclass type but skips
+           ``__init__``, so the FEM identity attributes were never
+           set. Stamp the UUID retroactively.
+        """
+        if not isinstance(result, DSparseTensor):
+            return result
+        if not isinstance(result, DSparseMatrix):
             return DSparseMatrix(result, partition_uuid=self._partition_uuid)
+        # Already a DSparseMatrix (from parent's _wrap_local) but
+        # potentially missing our FEM identity layer.
+        result._partition_uuid = self._partition_uuid
         return result
 
     def __add__(self, other):
-        rhs = other._t if isinstance(other, DSparseMatrix) else other
-        return self._wrap(self._t + rhs)
+        return self._wrap(super().__add__(other))
 
     def __sub__(self, other):
-        rhs = other._t if isinstance(other, DSparseMatrix) else other
-        return self._wrap(self._t - rhs)
+        return self._wrap(super().__sub__(other))
 
     def __mul__(self, scalar):
-        return self._wrap(self._t * scalar)
+        return self._wrap(super().__mul__(scalar))
 
     def __rmul__(self, scalar):
-        return self._wrap(scalar * self._t)
+        return self._wrap(super().__rmul__(scalar))
 
     def __neg__(self):
-        return self._wrap(-self._t)
+        return self._wrap(super().__neg__())
 
-    # ==================== Device / dtype ====================
+    # Device / dtype methods on DSparseTensor return DSparseTensor; rewrap.
 
     def to(self, *args, **kw) -> "DSparseMatrix":
-        return self._wrap(self._t.to(*args, **kw))
+        return self._wrap(super().to(*args, **kw))
 
     def cuda(self, device=None) -> "DSparseMatrix":
-        return self._wrap(self._t.cuda(device))
+        return self._wrap(super().cuda(device))
 
     def cpu(self) -> "DSparseMatrix":
-        return self._wrap(self._t.cpu())
+        return self._wrap(super().cpu())
 
     def double(self) -> "DSparseMatrix":
-        return self._wrap(self._t.double())
+        return self._wrap(super().double())
 
     def float(self) -> "DSparseMatrix":
-        return self._wrap(self._t.float())
+        return self._wrap(super().float())
 
     # ==================== Bridges ====================
 
@@ -235,28 +241,11 @@ class DSparseMatrix(_FEMSparsityMixin):
         avoid in hot paths.
         """
         from .matrix import SparseMatrix
-        st_global = self._t.full_tensor()
+        st_global = self.full_tensor()
         return SparseMatrix(
             st_global.values, st_global.row_indices, st_global.col_indices,
             tuple(st_global.shape),
         )
-
-    # ==================== Constructors ====================
-
-    @classmethod
-    def from_dsparse_tensor(
-        cls,
-        dst: "DSparseTensor",
-        partition_uuid: Optional[int] = None,
-    ) -> "DSparseMatrix":
-        """Wrap an existing :class:`~torch_sla.distributed.DSparseTensor`.
-
-        If ``partition_uuid`` is not given, a fresh broadcast UUID is
-        drawn -- only safe when this is the first DSparseMatrix derived
-        from that partition. Otherwise pass the UUID of an existing
-        sibling so they share caches.
-        """
-        return cls(dst, partition_uuid=partition_uuid)
 
     # ==================== repr ====================
 
@@ -267,7 +256,7 @@ class DSparseMatrix(_FEMSparsityMixin):
         except Exception:
             world, rank = 1, 0
         return (
-            f"DSparseMatrix(shape={self.shape}, "
+            f"DSparseMatrix(shape={tuple(self.shape)}, "
             f"local_nnz={self.row_indices.numel()}, "
             f"rank={rank}/{world}, "
             f"partition_uuid={self._partition_uuid:#x})"
