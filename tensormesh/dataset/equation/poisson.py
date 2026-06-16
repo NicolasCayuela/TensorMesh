@@ -26,20 +26,11 @@ class PoissonMultiFrequency:
         r: float, optional
             the coefficient of the poisson equation, default is :math:`0.5`
     """
-    def __init__(self, a=None, K=2, r=-0.5):
+    def __init__(self, a=None, K=2, r= -0.5 ):
+
         if a is None:
             assert K is not None, "K should be specified if a is None"
-            # Distributed-safe: rank 0 samples ``a`` and broadcasts to
-            # every rank via the generic
-            # :func:`tensormesh.distributed.broadcast_from_rank0`
-            # helper. Without this every rank sees a different ``a``
-            # and the source term diverges across ranks. Single-
-            # process mode is unchanged (helper short-circuits to a
-            # plain factory call).
-            from ...distributed import broadcast_from_rank0
-            a = broadcast_from_rank0(
-                lambda: torch.empty((K, K)).uniform_(-1, 1)
-            )
+            a = torch.zeros((K, K)).uniform_(-1, 1)
         else:
             K = a.shape[-1]
             assert a.shape[-2:] == (K, K), f"the shape of a should be (N, {K}, {K}) or ({K}, {K}), but got {a.shape}"

@@ -48,7 +48,8 @@ def run(rank: int, world: int, *, chara_length: float = 0.05,
     from tensormesh.assemble import LaplaceElementAssembler, NodeAssembler
     from tensormesh.dataset import PoissonMultiFrequency
     from tensormesh.distributed import (
-        DistributedMesh, distributed, distributed_node_assemble,
+        DistributedMesh, broadcast_from_rank0,
+        distributed, distributed_node_assemble,
     )
     from tensormesh.sparse import DSparseMatrix
     from torch_sla import SolverConfig, solve
@@ -68,12 +69,23 @@ def run(rank: int, world: int, *, chara_length: float = 0.05,
     mesh = mesh.to(device=device)
 
     # ---- Source term (PoissonMultiFrequency reference) ---------------
-    # PoissonMultiFrequency is distributed-safe: when an active process
-    # group is detected its constructor broadcasts the coefficient
-    # matrix from rank 0 so every rank sees the same source term. User
-    # code does not need to manually ``torch.manual_seed`` or
-    # ``dist.broadcast`` to share the sampled coefficients.
-    equation = PoissonMultiFrequency(K=8)
+    # ``PoissonMultiFrequency.__init__`` samples its coefficient matrix
+    # ``a`` from the local RNG -- benign in single-process use, fatal
+    # under multi-rank: every rank would draw a *different* ``a``, the
+    # source terms diverge and the distributed solve converges to a
+    # rank-dependent (wrong) answer. The library class is intentionally
+    # left distributed-naive; this example, being the distributed
+    # entry point, is responsible for sharing the random draw.
+    #
+    # Pattern: sample on rank 0 inside ``broadcast_from_rank0``, hand
+    # the resulting tensor in via the ``a=`` constructor argument that
+    # the class already exposes. Single-process runs are a no-op (the
+    # helper short-circuits to a plain call).
+    K = 8
+    a = broadcast_from_rank0(
+        lambda: torch.empty((K, K)).uniform_(-1, 1)
+    )
+    equation = PoissonMultiFrequency(a=a)
     f_vals = equation.source_term(mesh.points, domain="rectangle")
 
     # ---- Distributed assembly via decorator --------------------------
