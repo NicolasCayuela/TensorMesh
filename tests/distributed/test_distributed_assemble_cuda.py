@@ -250,29 +250,31 @@ def _poisson_example_worker(rank, world, port, q):
 
 
 def test_nccl_poisson_example_runs():
-    """Smoke test for ``examples/distributed/poisson_distributed_cuda.py``.
+    """End-to-end test for ``examples/distributed/poisson_distributed_cuda.py``.
 
-    Catches API drift: if the example file stops working, this test
-    goes red instead of the example silently rotting.
+    Asserts FEM-level accuracy: the distributed Poisson solve on a
+    mesh with chara_length=0.05 (N≈500 DOFs) converges to the
+    analytical PoissonMultiFrequency reference within ~10% rel-err,
+    matching the single-device baseline (~6%).
 
-    Note: this is *not* a numeric accuracy test. The distributed path
-    in the example currently round-trips through Condenser._call_distributed,
-    which re-partitions with METIS and then solves; the round-trip
-    inflates the relative-error vs analytical over a single-device
-    reference, but the solve itself is exercised + converged. Numeric
-    convergence is asserted separately by
-    ``test_nccl_torch_sla_solve_accepts_dsparsematrix``. Once the per-
-    rank distributed Condenser (task #92) lands, this test can be
-    tightened to a real accuracy bound.
+    Was a smoke test ("no NaN") when first checked in -- the loose
+    bound was masking a real bug: ``PoissonMultiFrequency.__init__``
+    samples its coefficient matrix from the local RNG, so ranks saw
+    different source terms unless seeded; the example now does
+    ``torch.manual_seed(0)`` before construction so every rank
+    builds the same source. With the seed fix this test catches any
+    future regression in the Condenser dispatch path numerically.
     """
     r = _run(_poisson_example_worker, 35517)
     assert len(r) == 2
     for rank, tag, *rest in r:
         assert tag == "OK", f"rank {rank}: {rest}"
         (info,) = rest
-        # The solve must at least produce a finite-magnitude result.
-        # Anything finite + non-NaN means assembly + condense + solve +
-        # recover all completed without exception.
         rel = info["rel_err_vs_analytical"]
-        assert rel == rel, f"rank {rank} rel_err is NaN"  # NaN check
-        assert rel < float("inf"), f"rank {rank} rel_err is Inf"
+        assert rel == rel, f"rank {rank} rel_err is NaN"
+        # FEM accuracy bound: chara_length=0.05 + PoissonMultiFrequency
+        # gives single-device rel_err ~6%; allow 10% slack.
+        assert rel < 0.10, (
+            f"rank {rank} poisson example rel_err = {rel:.3e}; "
+            "distributed solve has drifted from the single-device baseline"
+        )

@@ -68,6 +68,15 @@ def run(rank: int, world: int, *, chara_length: float = 0.05,
     mesh = mesh.to(device=device)
 
     # ---- Source term (PoissonMultiFrequency reference) ---------------
+    # PoissonMultiFrequency.__init__ samples the coefficient matrix ``a``
+    # with ``torch.zeros((K,K)).uniform_(-1, 1)`` from each process's
+    # local RNG. Without a shared seed every rank sees a *different*
+    # source term, the distributed solve converges to a different
+    # answer per rank, and the cross-rank halo exchange poisons the
+    # final solution. Seed the local RNG identically across ranks so
+    # every rank constructs the same ``a`` (cheapest fix; an
+    # alternative would be to explicitly ``dist.broadcast(equation.a)``).
+    torch.manual_seed(0)
     equation = PoissonMultiFrequency(K=8)
     f_vals = equation.source_term(mesh.points, domain="rectangle")
 
