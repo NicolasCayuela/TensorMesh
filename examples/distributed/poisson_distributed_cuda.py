@@ -34,7 +34,7 @@ import torch
 import torch.distributed as dist
 
 
-def run(rank: int, world: int, *, chara_length: float = 0.1,
+def run(rank: int, world: int, *, chara_length: float = 0.05,
         check_against_analytical: bool = True) -> dict:
     """Run the distributed Poisson solve on this rank.
 
@@ -54,11 +54,18 @@ def run(rank: int, world: int, *, chara_length: float = 0.1,
     from torch_sla import SolverConfig, solve
 
     # ---- Mesh ---------------------------------------------------------
-    mesh = Mesh.gen_rectangle(chara_length=chara_length).to(device=device)
+    # Build + partition on CPU first: the RCB / geometric partitioner
+    # in tensormesh.mesh.partition indexes on CPU and cross-device
+    # access trips ``indices should be either on cpu or on the same
+    # device as the indexed tensor``. Move to CUDA after the
+    # DistributedMesh is built (the per-rank submeshes inherit the
+    # ``devices`` arg).
+    mesh = Mesh.gen_rectangle(chara_length=chara_length)
     dmesh = DistributedMesh(
         mesh, num_partitions=world,
         devices=[device] * world,
     )
+    mesh = mesh.to(device=device)
 
     # ---- Source term (PoissonMultiFrequency reference) ---------------
     equation = PoissonMultiFrequency(K=8)
@@ -82,14 +89,39 @@ def run(rank: int, world: int, *, chara_length: float = 0.1,
     )
 
     # ---- Apply Dirichlet BC + distributed CG -------------------------
-    cond = Condenser(mesh.boundary_mask)
+    # Condenser keeps its dirichlet_mask as a buffer on the device it
+    # was constructed with. The Condenser._call_distributed bridge for
+    # DSparseMatrix routes the cached single-device condensation logic
+    # through CPU (the inner-edge mask gather is cross-device-unsafe);
+    # construct the mask on CPU so the cached buffers stay on CPU and
+    # the round-trip doesn't trip a cross-device index. The condensed
+    # output is moved back to CUDA inside _call_distributed.
+    cond = Condenser(mesh.boundary_mask.cpu())
     K_inner, b_inner = cond(K_dist, b)
     # K_inner is a fresh DSparseMatrix (round-trip via to_single in this
     # interim contract); torch_sla.solve accepts it directly because the
     # subclass passes the isinstance gate.
+    # The current Condenser DSparseMatrix bridge round-trips through
+    # ``to_single`` and returns a global ``b_inner`` vector (replicated
+    # across ranks). torch_sla.solve expects the per-rank owned slice,
+    # so we explicitly hand it the slice corresponding to the new
+    # condensed partition and re-gather the result.
+    from torch_sla.distributed import gather_owned_to_global
+    owned_inner = K_inner.partition.owned_nodes.long().to(device)
+    b_inner_owned = b_inner.to(device)[owned_inner]
+
+    # DSparseTensor exposes no instance ``.solve(b)``; use the
+    # ``torch_sla.solve`` free function. This works because
+    # DSparseMatrix is-a DSparseTensor (subclass) -- the whole point
+    # of the inheritance refactor.
     with SolverConfig(method="cg", atol=1e-12, rtol=1e-10, maxiter=1000,
                        verbose=(rank == 0)):
-        u_inner = K_inner.solve(b_inner)
+        u_inner_owned = solve(K_inner, b_inner_owned)
+    # Allgather owned -> global so ``cond.recover`` (cpu-only path)
+    # can splat into the full DOF vector.
+    u_inner = gather_owned_to_global(
+        owned_inner, u_inner_owned, b_inner.shape[0],
+    ).cpu()
     u_dist = cond.recover(u_inner)
 
     # ---- Compare to analytical (broadcast to every rank for the dist
@@ -98,7 +130,8 @@ def run(rank: int, world: int, *, chara_length: float = 0.1,
     info = {"rank": rank, "world": world, "n_dof": int(mesh.n_points)}
     if check_against_analytical:
         u_analytical = equation.solution(mesh.points).to(device=device)
-        rel_err = float(((u_dist - u_analytical).norm() /
+        u_dist_cuda = u_dist.to(device=device)
+        rel_err = float(((u_dist_cuda - u_analytical).norm() /
                           u_analytical.norm()).item())
         info["rel_err_vs_analytical"] = rel_err
     return info
