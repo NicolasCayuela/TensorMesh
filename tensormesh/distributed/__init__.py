@@ -6,7 +6,7 @@ with integration into torch-sla's distributed sparse solver.
 """
 
 from .mesh import DistributedMesh
-from .dmatrix import DSparseMatrix
+from .matrix import DSparseMatrix
 from .assemble import (
     distributed_element_assemble,
     distributed_element_assemble_to_sparse,
