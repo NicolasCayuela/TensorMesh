@@ -71,8 +71,17 @@ class BlochReducer(nn.Module):
         waveguide periodic in one direction.
     dofs_per_node : int, optional
         Number of DOFs per node (1 for scalar acoustics/Helmholtz, ``dim`` for
-        elasticity, 6 for a 3D frame).  DOF ``d`` of node ``i`` lives at global
-        index ``i * dofs_per_node + d``.  Default 1.
+        elasticity, 6 for a 3D frame).  Default 1.
+
+        The components are assumed **node-major (component-interleaved)**: DOF
+        ``d`` of node ``i`` lives at global index ``i * dofs_per_node + d``, so
+        the global vector is ``[n0_x, n0_y, n1_x, n1_y, ...]``.  This is the
+        layout TensorMesh's vector assemblers and projector produce -- the
+        :class:`~tensormesh.assemble.NodeAssembler` integral is returned
+        ``flatten()``-ed from shape ``[n_nodes, dofs_per_node]`` -- so a Bloch
+        reduction of a vector operator assembled by
+        :class:`~tensormesh.assemble.LinearElasticityElementAssembler` lines up
+        with its ``K``/``M`` without any DOF re-ordering.
     tol : float, optional
         Absolute coordinate tolerance for node matching (default scales with the
         bounding box: ``1e-7 * diag``).
@@ -256,8 +265,11 @@ class BlochReducer(nn.Module):
         """Convenience: reduce a stiffness/mass pair, ``(K_r, M_r)``."""
         return self.reduce(K, k), self.reduce(M, k)
 
-    def expand(self, u_reduced: torch.Tensor, k) -> torch.Tensor:
+    def recover(self, u_reduced: torch.Tensor, k) -> torch.Tensor:
         """Scatter a reduced-DOF field back to all DOFs with the Floquet phase.
+
+        The scatter-back counterpart of :meth:`reduce`, named to mirror
+        :meth:`~tensormesh.operator.condense.Condenser.recover`:
 
         ``u_full[i] = exp(sign i k·R_i) * u_reduced[master(i)]``.
 
@@ -280,4 +292,4 @@ def _to_numpy(x):
     return np.asarray(x)
 
 
-BlochReducer.__autodoc__ = ["reduce", "reduce_system", "expand"]
+BlochReducer.__autodoc__ = ["reduce", "reduce_system", "recover"]

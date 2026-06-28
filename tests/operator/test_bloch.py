@@ -164,13 +164,13 @@ class TestVectorDOFs:
 
 
 # --------------------------------------------------------------------------- #
-class TestExpand:
-    def test_expand_phase(self):
+class TestRecover:
+    def test_recover_phase(self):
         pts = grid_points(5, 5)
         bloch = BlochReducer(pts, [[1.0, 0.0], [0.0, 1.0]])
         k = [0.3, 1.7]
         u_red = torch.randn(bloch.n_reduced_dof, dtype=torch.complex128)
-        u_full = bloch.expand(u_red, k)
+        u_full = bloch.recover(u_red, k)
         T = dense_T(bloch, k)
         assert torch.allclose(u_full, T @ u_red, atol=1e-12)
 
